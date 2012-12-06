@@ -15,8 +15,6 @@ pygame.display.set_caption(titre)
 # Jeu de 600*600
 # cases de 30*30
 
-
-
 liste_cartes = list()
 
 for i in range(len(os.listdir(".\map\\"))):
