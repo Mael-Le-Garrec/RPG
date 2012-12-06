@@ -1,0 +1,10 @@
+haut:0
+bas:0
+gauche:2
+droite:0
+
+120:120;420:150;arbre;1
+120:120;150:450;arbre;1
+
+30:30;60:60;maison_gauche;1
+60:30;90:60;maison_droite;1
