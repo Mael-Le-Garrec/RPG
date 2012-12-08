@@ -28,9 +28,8 @@ for i in os.listdir(".\pnj\\"): # i vaut le nom du pnj, "bidule.txt"
     if re.match("[0-9a-zA-Z_\-\.]+.txt", i):
         liste_pnjs[i] = PNJ(i)
         liste_pnjs[i].charger_pnj(liste_cartes)
-
-
-
+        
+        
 bentz = Joueur()
 
 cle_deplacement = [K_UP, K_DOWN, K_LEFT, K_RIGHT]
