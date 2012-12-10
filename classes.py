@@ -24,7 +24,6 @@ class Carte:
         self.lignes = self.fichier.readlines()
         self.fichier.close()
         
-        
         # {'droite': '4', 'haut': '2', 'gauche': '1', 'bas': '3'}
         for i in range(4):
             self.tableau.append(self.lignes[i].rstrip().split(":"))
