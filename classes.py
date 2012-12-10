@@ -79,7 +79,7 @@ class Carte:
                     # print("Point de coordonnées : {0};{1}".format(int(self.coords[i][0][0]) + j * 30, int(self.coords[i][0][1]) + k * 30))
                     
                     try:
-                        self.tp.append([int(self.coords[i][3]), (int(self.coords[i][0][0]) + 100, int(self.coords[i][0][1]) + 150), (int(self.coords[i][4][0]) + 100, int(self.coords[i][4][1]) + 150)])
+                        self.tp.append([int(self.coords[i][3]), (int(self.coords[i][0][0]) + j * 30 + 100, int(self.coords[i][0][1]) + k * 30 + 150), (int(self.coords[i][4][0]) + 100, int(self.coords[i][4][1]) + 150)])
                     except:
                         pass
         
