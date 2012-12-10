@@ -40,7 +40,7 @@ class Carte:
         # self.coords[i][4] => vers quelle position la zone téléporte
         # self.coords[i][5] => vers quelle carte la zone téléporte
         
-        ## ORIENTATION !!!
+        ## ORIENTATION DES TPS!!!
         
         # coords[i][1][0] - coords[i][0][0] = nb de repets en x
         # coords[i][1][1] - coords[i][0][1] = nb de repets en y
@@ -57,22 +57,17 @@ class Carte:
                 except:
                     pass
 
-                    
+
         for i in range(len(self.coords)):
             self.textures[self.coords[i][2]] =(pygame.image.load("textures\{0}.png".format(self.coords[i][2])).convert_alpha())
-            try:
-                self.tp.append([int(self.coords[i][3]), (int(self.coords[i][0][0]) + 100, int(self.coords[i][0][1]) + 150), (int(self.coords[i][4][0]) + 100, int(self.coords[i][4][1]) + 150)])
-            except:
-                pass
-        
+            
         # self.tp[i][0] => map destination
         # self.tp[i][1][0] => x map actuelle
         # self.tp[i][1][1] => y map actuelle 
         
         # self.tp[i][2][0] => x map destination
         # self.tp[i][2][1] => y map destination
-        
-        
+ 
         # print(self.tp)
         
         for i in range(len(self.coords)):
@@ -83,6 +78,10 @@ class Carte:
                     self.bloc.append((int(self.coords[i][0][0]) + j * 30 + 100, int(self.coords[i][0][1]) + k * 30 +150, self.textures[self.coords[i][2]]))
                     # print("Point de coordonnées : {0};{1}".format(int(self.coords[i][0][0]) + j * 30, int(self.coords[i][0][1]) + k * 30))
                     
+                    try:
+                        self.tp.append([int(self.coords[i][3]), (int(self.coords[i][0][0]) + 100, int(self.coords[i][0][1]) + 150), (int(self.coords[i][4][0]) + 100, int(self.coords[i][4][1]) + 150)])
+                    except:
+                        pass
         
         
     # premiere boucle : parcourir chaque intervalle de points
