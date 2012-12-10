@@ -3,6 +3,7 @@ import pygame
 from pygame.locals import *
 from classes import *
 import re
+import os
 
 
 # Initialisation Pygame
@@ -17,14 +18,14 @@ pygame.display.set_caption(titre)
 
 liste_cartes = list()
 
-for i in range(len(os.listdir(".\map\\"))):
+for i in range(len(os.listdir("map"))):
     liste_cartes.append(Carte(i))
     liste_cartes[i].charger_carte()
 # liste_cartes contient objets de chaque carte numérotée
 
 liste_pnjs = {}
 
-for i in os.listdir(".\pnj\\"): # i vaut le nom du pnj, "bidule.txt"
+for i in os.listdir("pnj"): # i vaut le nom du pnj, "bidule.txt"
     if re.match("[0-9a-zA-Z_\-\.]+.txt", i):
         liste_pnjs[i] = PNJ(i)
         liste_pnjs[i].charger_pnj(liste_cartes)

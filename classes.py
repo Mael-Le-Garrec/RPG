@@ -9,8 +9,8 @@ class Carte:
         self.directions = {}
         self.tableau = []
         self.coords = []
-        self.textures = {}
-        self.fond = pygame.image.load("textures\\fond.png")
+        self.textures = {} 
+        self.fond = pygame.image.load(os.path.join('textures', 'fond.png'))
         self.collisions = []
         self.bloc = []
         self.tp = []
@@ -20,7 +20,7 @@ class Carte:
         self.direction (dictionnaire) donne les maps autour de celle-ci
         self.lignes (liste) donne les intervalles où sont présents des obstacles ainsi que les textures'''
 
-        self.fichier = open(".\map\{0}".format(self.nom), "r")
+        self.fichier = open(os.path.join('map', '{}'.format(self.nom)), "r")
         self.lignes = self.fichier.readlines()
         self.fichier.close()
         
@@ -59,7 +59,7 @@ class Carte:
 
 
         for i in range(len(self.coords)):
-            self.textures[self.coords[i][2]] =(pygame.image.load("textures\{0}.png".format(self.coords[i][2])).convert_alpha())
+            self.textures[self.coords[i][2]] = pygame.image.load(os.path.join('textures', '{0}.png'.format(self.coords[i][2]))).convert_alpha()
             
         # self.tp[i][0] => map destination
         # self.tp[i][1][0] => x map actuelle
@@ -108,11 +108,12 @@ class Joueur:
         # self.perso_g = pygame.image.load("images\perso_gauche.png").convert_alpha()
         # self.perso_h = pygame.image.load("images\perso_haut.png").convert_alpha
         
-        self.perso = pygame.image.load("images\\fatman_down.png").convert_alpha()
-        self.perso_d = pygame.image.load("images\\fatman_right.png").convert_alpha()
-        self.perso_b = pygame.image.load("images\\fatman_down.png").convert_alpha()
-        self.perso_g = pygame.image.load("images\\fatman_left.png").convert_alpha()
-        self.perso_h = pygame.image.load("images\\fatman_up.png").convert_alpha()
+        self.perso = pygame.image.load(os.path.join('images', 'fatman_down.png')).convert_alpha()
+        self.perso_d = pygame.image.load(os.path.join('images', 'fatman_right.png')).convert_alpha()
+        self.perso_b = pygame.image.load(os.path.join('images', 'fatman_down.png')).convert_alpha()
+        self.perso_g = pygame.image.load(os.path.join('images', 'fatman_left.png')).convert_alpha()
+        self.perso_h = pygame.image.load(os.path.join('images', 'fatman_up.png')).convert_alpha()
+
         
         self.orientation = self.perso
         
@@ -267,9 +268,9 @@ class PNJ:
         self.dialogues = str()
 
     def charger_pnj(self, liste_cartes):
-        self.image = pygame.image.load("pnj\\images\{0}.png".format(self.nom)).convert_alpha()
+        self.image = pygame.image.load(os.path.join('pnj', 'images', '{0}.png'.format(self.nom))).convert_alpha()
         
-        self.fichier = open("pnj\\{0}.txt".format(self.nom), "r")
+        self.fichier = open(os.path.join('pnj', '{0}.txt'.format(self.nom)), "r")
         self.contenu = self.fichier.read()        
         self.fichier.close()
         
