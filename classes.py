@@ -137,6 +137,7 @@ class Joueur:
                         perso.position_y = 150
                         
                     # Système de TP
+                    # On change la carte du perso et ses coordonnées
                     for i in range(len(liste_cartes[perso.carte].tp)):
                         if liste_cartes[perso.carte].tp[i][1] == (self.position_x, self.position_y):
                             self.position_x = liste_cartes[perso.carte].tp[i][2][0]
