@@ -22,17 +22,18 @@ for text in os.listdir("textures"):
 fond_1 = pygame.image.load("fond_1.png")
 fenetre.blit(fond_1, (630, 10))
 
-    
 i = 0
 j = 0
 for key in textures.keys():
-    j+= 1
-    # if j == 8:
-        # j = 1
-    fenetre.blit(textures[key], (40*j + 650 - ((j//7 * (240+40))), (i//7) * 40 + 20))
-    position[key] = (40*j + 650 - ((j//7 * (240+40))), (i//7) * 40 + 20)
+    if i//8 >= 1:
+        i = 0
+        j += 1
 
-    i+= 1
+    fenetre.blit(textures[key], (650 + i * 40 , 20 + j * 40))
+    position[key] = (650 + i * 40 , 20 + j * 40)
+
+    i += 1
+
     
     
 fond = pygame.image.load("textures\\fond.png")
