@@ -1,5 +1,5 @@
 ﻿# Générateur de carte !
-
+import textwrap
 import os
 import pygame
 from pygame.locals import *

@@ -1,6 +1,7 @@
 ﻿import os
 import re
 import pygame
+import textwrap
 from pygame.locals import *
 
 class Carte:
@@ -98,8 +99,8 @@ class Carte:
 # Classe du personnage à jouer
 class Joueur:
     def __init__(self):
-        self.position_x = 100
-        self.position_y = 150
+        self.position_x = 100 + 300
+        self.position_y = 150 + 300
               
         
         # self.perso = pygame.image.load("images\perso.png").convert_alpha()
@@ -113,7 +114,8 @@ class Joueur:
         self.perso_b = pygame.image.load(os.path.join('images', 'fatman_down.png')).convert_alpha()
         self.perso_g = pygame.image.load(os.path.join('images', 'fatman_left.png')).convert_alpha()
         self.perso_h = pygame.image.load(os.path.join('images', 'fatman_up.png')).convert_alpha()
-
+        
+        self.fond_noir = pygame.image.load(os.path.join('images', 'fond_noir.png')).convert_alpha()
         
         self.orientation = self.perso
         
@@ -126,7 +128,9 @@ class Joueur:
             if self.perso_b == self.orientation:
                 self.orientation = self.perso_b
                 if (self.position_x, self.position_y+30) not in liste_cartes[perso.carte].collisions:
-                        
+                    
+                    fenetre.blit(self.fond_noir, (100,0))
+                    
                     if self.position_y < 700:
                         self.position_y += 30
                     else:
@@ -152,7 +156,9 @@ class Joueur:
             if self.perso_h == self.orientation:
                 self.orientation = self.perso_h
                 if (self.position_x, self.position_y-30) not in liste_cartes[perso.carte].collisions:
- 
+                    
+                    fenetre.blit(self.fond_noir, (100,0))
+                    
                     if self.position_y > 150:
                         self.position_y -= 30
                     else:
@@ -175,6 +181,8 @@ class Joueur:
                 self.orientation = self.perso_g
                 if (self.position_x-30, self.position_y) not in liste_cartes[perso.carte].collisions:
                 
+                    fenetre.blit(self.fond_noir, (100,0))
+                    
                     if self.position_x > 100:
                         self.position_x -= 30
                     else:
@@ -196,6 +204,8 @@ class Joueur:
                 self.orientation = self.perso_d
                 if (self.position_x+30, self.position_y) not in liste_cartes[perso.carte].collisions:
                 
+                    fenetre.blit(self.fond_noir, (100,0))
+                    
                     # print((self.position_x + 30, self.position_y))
                     # print(liste_cartes[perso.carte].tp)
                     
@@ -233,7 +243,7 @@ class Joueur:
         fenetre.blit(self.orientation, (self.position_x,self.position_y))
         pygame.display.flip()
      
-    def parler_pnj(self, perso, liste_pnjs):
+    def parler_pnj(self, perso, liste_pnjs, fenetre):
         self.voir_x = 0
         self.voir_y = 0
         
@@ -249,7 +259,17 @@ class Joueur:
         for val in liste_pnjs.values():
             if val.carte == perso.carte:
                if perso.position_x + self.voir_x == val.pos_x and perso.position_y + self.voir_y == val.pos_y:
-                    print("{0} : {1}".format(val.nom_entier, val.dialogues))
+                    # Affichage des dialogues                
+                    dialogue_wrap = textwrap.wrap(val.dialogues, 100)
+                    
+                    myfont = pygame.font.SysFont("Arial", 14)
+                    for i in range(len(dialogue_wrap)):
+                        label = myfont.render(dialogue_wrap[i], 1, (255,255,0))
+                        label_nom =  myfont.render("{0}:".format(val.nom_entier), 1, (255,255,0))
+                        # 120,180
+                        fenetre.blit(label_nom, (120, 60))
+                        fenetre.blit(label, (120, 80+i*20))
+                    pygame.display.flip()
             # print(val.pos_x)
             # print(val.pos_y)
             

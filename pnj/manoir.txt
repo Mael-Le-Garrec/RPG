@@ -1,0 +1,4 @@
+Manoir Man
+240;270
+6
+Bonjour et bienvenu dans mon Manôär ! Prennez le temps de visiter ma modeste demeure.

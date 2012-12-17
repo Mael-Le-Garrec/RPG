@@ -4,6 +4,7 @@ from pygame.locals import *
 from classes import *
 import re
 import os
+import textwrap
 
 
 # Initialisation Pygame
@@ -39,6 +40,11 @@ cle_deplacement = [K_UP, K_DOWN, K_LEFT, K_RIGHT]
 liste_cartes[bentz.carte].afficher_carte(fenetre)
 fenetre.blit(bentz.orientation, (bentz.position_x,bentz.position_y))
 
+for val in liste_pnjs.values():
+    if val.carte == bentz.carte:
+        fenetre.blit(val.image, (val.pos_x, val.pos_y))
+
+
 
 pygame.display.flip()
 
@@ -53,7 +59,7 @@ while continuer == 1:
             if event.key in cle_deplacement:
                 bentz.bouger_perso(event.key, fenetre, liste_cartes, bentz, liste_pnjs);
             if event.key == K_RETURN:
-                bentz.parler_pnj(bentz, liste_pnjs)
+                bentz.parler_pnj(bentz, liste_pnjs, fenetre)
 
-        # if event.type == MOUSEMOTION: # Décommenter pour avoir la position de la souris.
-            # print("position {},{}".format(event.pos[0] - 100,event.pos[1] - 150))
+        if event.type == MOUSEMOTION: # Décommenter pour avoir la position de la souris.
+            print("position {},{}".format(event.pos[0] - 100,event.pos[1] - 150))
