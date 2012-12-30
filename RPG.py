@@ -1,5 +1,4 @@
-﻿#test
-# RPG
+﻿# RPG
 import pygame
 from pygame.locals import *
 from classes import *
