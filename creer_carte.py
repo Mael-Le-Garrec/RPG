@@ -18,7 +18,6 @@ for text in os.listdir("textures"):
         text = text.replace(".png", "")
         textures[text] = pygame.image.load(os.path.join("textures","{0}.png".format(text)))
     
-    
 fond_1 = pygame.image.load(os.path.join("images", "fond_1.png"))
 fenetre.blit(fond_1, (630, 10))
 

@@ -2,6 +2,7 @@
 import re
 import pygame
 import textwrap
+import time
 from pygame.locals import *
 
 # Classe de carte contenant son nom, les cartes adjacentes, les objets dessus, les collisions, les zones de tps.
@@ -270,14 +271,48 @@ class Joueur:
                     label_nom =  myfont.render("{0}:".format(val.nom_entier), 1, (255,255,0))
                     fenetre.blit(label_nom, (120, 60))
                     
-                    
+                    coeff = 0
                     # On parcourt la liste de dialogue
                     for i in range(len(dialogue_wrap)):
-                        label = myfont.render(dialogue_wrap[i], 1, (255,255,0))
-                        # Et on affiche le dialogue du personnage
-                        fenetre.blit(label, (120, 80+i*20))
-                                             
-                    pygame.display.flip() # On raffraichi le tout, il fait chaud !
+                        continuer = 1
+                        
+                        # Si on a affiché 3 lignes de texte et que ce n'est pas la première
+                        if i % 3 == 0 and i != 0:
+                            # On la remet à 0, on commence une nouvelle "page"
+                            coeff = 0
+                            
+                            # On entre dans une boucle qui ne se finit que quand on a appuyé sur ctrl
+                            while continuer:
+                                for event in pygame.event.get():
+                                    if event.type == QUIT:
+                                        quit()
+                                    if event.type == KEYDOWN:
+                                        if event.key == K_RCTRL:
+                                            # Ainsi, on affiche un fond noir et denouveau le nom du personnage
+                                            # On arrête aussi la boucle
+                                            fenetre.blit(self.fond_noir, (100,0))
+                                            fenetre.blit(label_nom, (120, 60))
+                                            continuer = 0
+                         
+                        print("i:", i)
+                        
+                        # Si on se trouve sur la dernière ligne, on affiche 'blabla [...]"
+                        if  (i+1) % 3 == 0 and i !=0 and (i+1) != len(dialogue_wrap):
+                            label = myfont.render("{0} [...]".format(dialogue_wrap[i]), 1, (255,255,0))
+                        # Sinon sur la première (sauf à i=0), on affiche "[...] blabla"
+                        elif i % 3 == 0 and i != 0:
+                            label = myfont.render("[...] {0}".format(dialogue_wrap[i]), 1, (255,255,0))
+                        # Sinon c'est une ligne normale et on affiche juste le texte
+                        else:
+                            label = myfont.render(dialogue_wrap[i], 1, (255,255,0))
+                            
+                        # Et on affiche enfin ce texte
+                        fenetre.blit(label, (120, 80+coeff*20))
+                        
+                        # On incrémente cette variable, pour savoir à quelle ligne (sur les 3) on se trouve
+                        coeff += 1
+
+                        pygame.display.flip() # On raffraichi le tout, il fait chaud !
                    
 
 # Classe des Personnages Non Joueurs (PNJs)
