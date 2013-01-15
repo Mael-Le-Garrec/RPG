@@ -40,6 +40,15 @@ for i in os.listdir("pnj"): # i vaut le nom du pnj, "bidule.txt"
         liste_pnjs[i].charger_pnj(liste_cartes)
         
 
+liste_items = dict()
+
+for i in os.listdir("items"): # i vaut le nom du pnj, "bidule.txt"
+    if re.match("[0-9a-zA-Z_\-\.]+.txt", i):
+        liste_items[i] = Item(i) 
+        liste_items[i].charger_item(liste_cartes)
+
+        
+        
 # On crée notre personnage        
 bentz = Joueur()
 
@@ -55,7 +64,11 @@ for val in liste_pnjs.values():
     if val.carte == bentz.carte:
         fenetre.blit(val.image, (val.pos_x, val.pos_y))
 
-
+for val in liste_items.values():
+    for val2 in val.position:
+        if int(val2[1]) == bentz.carte:
+            fenetre.blit(val.image, (int(val2[0][0])+100, int(val2[0][1])+150))
+        
 
 pygame.display.flip() # Un petit peu d'eau, faut rafraichir
 
@@ -72,7 +85,7 @@ while continuer == 1:
         if event.type == KEYDOWN:
             # Soit elle se trouve dans les clés de déplacement et on bouge le perso
             if event.key in cle_deplacement:
-                bentz.bouger_perso(event.key, fenetre, liste_cartes, bentz, liste_pnjs);
+                bentz.bouger_perso(event.key, fenetre, liste_cartes, bentz, liste_pnjs, liste_items);
             
             # Soit c'est "Entrée" et on fait parler le personnage
             if event.key == K_RETURN:

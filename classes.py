@@ -129,7 +129,7 @@ class Joueur:
         self.orientation = self.perso
         
 
-    def bouger_perso(self, key, fenetre, liste_cartes, perso, liste_pnjs):
+    def bouger_perso(self, key, fenetre, liste_cartes, perso, liste_pnjs, liste_items):
         '''Cette fonction sert à bouger le personnage en fonction de la touche pressée (up/down/left/right)'''
         # On prend en paramères la touche envoyée, la surface pygame, la liste des cartes et pnjs pour pouvoir les afficher et le personnage
         
@@ -229,6 +229,9 @@ class Joueur:
         
         # On affiche la carte 
         liste_cartes[perso.carte].afficher_carte(fenetre)
+        
+        for i in liste_items:
+            liste_items[i].afficher_item(fenetre, perso)
 
         # Puis les pnjs en parcourant leur liste et en testant s'il sont sur la carte
         for val in liste_pnjs.values():
@@ -313,7 +316,17 @@ class Joueur:
                         coeff += 1
 
                         pygame.display.flip() # On raffraichi le tout, il fait chaud !
-                   
+                        
+                    continuer = 1
+                    while continuer:
+                        for event in pygame.event.get():
+                            if event.type == QUIT:
+                                quit()
+                            if event.type == KEYDOWN:
+                                if event.key == K_RCTRL:
+                                    fenetre.blit(self.fond_noir, (100,0))
+                                    continuer = 0
+                                    pygame.display.flip()
 
 # Classe des Personnages Non Joueurs (PNJs)
 class PNJ:
@@ -353,3 +366,39 @@ class PNJ:
     def afficher_personnage(self, fenetre):
         # On affiche simplement le personnage
         fenetre.blit(self.image, (self.pos_x, self.pos_y))
+        
+class Item:
+    def __init__(self, nom):
+        self.nom = nom.replace(".txt", "")
+        self.position = []
+        self.carte = []
+        self.ligne = []
+
+    def charger_item(self, liste_cartes):
+        try:
+            self.image = pygame.image.load(os.path.join('items', 'images', '{0}.png'.format(self.nom))).convert_alpha()
+        except:
+            self.image = pygame.image.load(os.path.join('items', 'images', 'defaut.png')).convert_alpha()
+        
+        
+        self.fichier = open(os.path.join('items', '{0}.txt'.format(self.nom)), "r")
+        self.contenu = self.fichier.readlines()
+        self.fichier.close()
+        
+        for i in range(len(self.contenu)):
+            if re.match("^[0-9]*:[0-9]*;[0-9]*$", self.contenu[i]):
+                self.ligne.append(self.contenu[i].strip())
+                self.ligne[-1] = self.ligne[-1].split(";")
+                self.ligne[-1][0] = self.ligne[-1][0].split(":")
+                
+                self.carte.append(int(self.ligne[-1][1]))
+                
+                liste_cartes[self.carte[-1]].collisions.append((int(self.ligne[-1][0][0])+100, int(self.ligne[-1][0][1])+150))
+                self.position.append(self.ligne[-1])
+                # x, y, carte
+
+        
+    def afficher_item(self, fenetre, perso):   
+        for val in self.position:
+            if int(val[1]) == perso.carte:
+                fenetre.blit(self.image, (int(val[0][0])+100, int(val[0][1])+150))
