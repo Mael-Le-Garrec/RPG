@@ -1,5 +1,5 @@
 ﻿# Générateur de carte !
-
+import textwrap
 import os
 import pygame
 from pygame.locals import *
@@ -16,10 +16,9 @@ position = {}
 for text in os.listdir("textures"):
     if text != "fond.png":
         text = text.replace(".png", "")
-        textures[text] = pygame.image.load("textures\{0}.png".format(text))
+        textures[text] = pygame.image.load(os.path.join("textures","{0}.png".format(text)))
     
-    
-fond_1 = pygame.image.load("fond_1.png")
+fond_1 = pygame.image.load(os.path.join("images", "fond_1.png"))
 fenetre.blit(fond_1, (630, 10))
 
 i = 0
@@ -36,7 +35,7 @@ for key in textures.keys():
 
     
     
-fond = pygame.image.load("textures\\fond.png")
+fond = pygame.image.load(os.path.join("textures", "fond.png"))
 fenetre.blit(fond , (10,10))
 
 yellow = (255, 255, 0)
@@ -90,7 +89,7 @@ while continuer == 1:
                 gauche = input("Entrez le numéro de la map adjacente en gauche de celle crée : ")
                 
                 
-                fichier = open("map\\{0}".format(nom), "w")
+                fichier = open(os.path.join("map","{0}".format(nom), "w"))
                 
                 fichier.write("haut:{0}\n".format(haut))
                 fichier.write("bas:{0}\n".format(bas))
