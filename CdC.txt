@@ -1,0 +1,44 @@
+    RPG (Role Playing Game) modulable
+    Le jeu est un jeu de rôle où on incarne un personnage. Celui-ci pourra trouver des objets, faire des quêtes,
+    parler aux personnages non joueurs (PNJs), se battre contre des monstres, faire monter son personnage de niveau.
+        
+    Les ressources utilisées par le jeu (personnages, cartes, sorts, clans, objets, ...) sont supposées modulables.
+ 
+   Gestion des personnages
+        Nombre de d'emplacements ?
+        Nombre de sauvegarde max ?
+        Statistiques
+        Niveaux, experience
+    Gestion des sauvegardes
+        En ligne ?
+        Cle USB ?
+        Local
+    Gestion des sorts
+        Niveau de sort
+        Sort en fonction des clans
+    Gestion des clans avec extension facilement intégrable
+    Gestion des monstres
+    Gestion des combats
+        Contre ordinateur
+        Contre joueurs ?
+        Contre joueurs en réseau local, en ligne ?
+    Gestion des équipements ?
+    Gestion des cartes
+        Changement de carte
+        Téléportation
+        Textures traversables
+    Gestion des PNJs
+        Texte
+        Carte, position
+        Lancer quête
+    Gestion des quêtes
+        Gagner ressources, xp, etc
+    Gestion des objets
+        Utilisables
+        Informations
+        Drag&Drop ?
+    Système d'inventaire
+        Objets transportés
+        Nombre maximal
+        Jeter objets
+    Minijeux ?

@@ -16,6 +16,7 @@ pygame.key.set_repeat(1, 200)
 fenetre = pygame.display.set_mode((800,800), RESIZABLE)
 pygame.display.set_caption(titre)
 
+fenetre.blit(pygame.image.load(os.path.join("images", "fond.png")), (100-1,150-1))
 
 # On crée une liste contenant chaque carte
 liste_cartes = list()
@@ -47,7 +48,9 @@ for i in os.listdir("items"): # i vaut le nom du pnj, "bidule.txt"
         liste_items[i] = Item(i) 
         liste_items[i].charger_item(liste_cartes)
 
-        
+inventaire = dict()
+for val in liste_items.keys():
+    inventaire[val.strip(".txt")] = liste_items[val].nombre     
         
 # On crée notre personnage        
 bentz = Joueur()
@@ -90,6 +93,9 @@ while continuer == 1:
             # Soit c'est "Entrée" et on fait parler le personnage
             if event.key == K_RETURN:
                 bentz.parler_pnj(bentz, liste_pnjs, fenetre)
+                
+            if event.key == K_ESCAPE:
+                options(fenetre, liste_cartes, bentz, liste_pnjs, liste_items)
 
-        # if event.type == MOUSEMOTION: # Décommenter pour avoir la position de la souris.
-            # print("position {},{}".format(event.pos[0] - 100,event.pos[1] - 150))
+        if event.type == MOUSEMOTION: # Décommenter pour avoir la position de la souris.
+            print("position {},{}".format(event.pos[0] - 100,event.pos[1] - 150))
