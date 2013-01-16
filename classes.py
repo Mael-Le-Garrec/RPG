@@ -406,30 +406,36 @@ class Sac:
 def options(fenetre, liste_cartes, perso, liste_pnjs, liste_items):
     curseur_x = 520
     curseur_y = 220
+    cst = 40
     
-    fenetre.blit(pygame.image.load(os.path.join("images", "options.png")), (490,150))
+    fenetre.blit(pygame.image.load(os.path.join("images", "options.png")), (600+100-159,150))
     
-    myfont = pygame.font.SysFont("Helvetica", 20)
+    # myfont = pygame.font.SysFont("Helvetica", 20)
+    myfont = pygame.font.Font(os.path.join("polices", "PKMNRSEU.FONT"), 20)
+    # myfont = pygame.font.Font(os.path.join("polices", "PIXELADE.TTF"), 20)
+
+    
     label_monstres =  myfont.render("Monstres", 1, (255,255,0))
-    fenetre.blit(label_monstres, (560, 220))
+    fenetre.blit(label_monstres, (560+cst, 220))
     
     label_inventaire =  myfont.render("Inventaire", 1, (255,255,0))
-    fenetre.blit(label_inventaire, (560, 260)) 
+    fenetre.blit(label_inventaire, (560+cst, 260)) 
     
     label_personnage =  myfont.render("Personnage", 1, (255,255,0))
-    fenetre.blit(label_personnage, (560, 300)) 
+    fenetre.blit(label_personnage, (560+cst, 300)) 
     
     label_sauvegarder =  myfont.render("Sauvegarder", 1, (255,255,0))
-    fenetre.blit(label_sauvegarder, (560, 340)) 
+    fenetre.blit(label_sauvegarder, (560+cst, 340)) 
     
     label_retour =  myfont.render("Retour", 1, (255,255,0))
-    fenetre.blit(label_retour, (560, 380))
+    fenetre.blit(label_retour, (560+cst, 380))
     
     label_retour =  myfont.render(">>", 1, (255,255,0))
-    fenetre.blit(label_retour, (curseur_x, curseur_y)) 
+    fenetre.blit(label_retour, (curseur_x+cst, curseur_y)) 
     
     pygame.display.flip()
     
+    curseur = 0
     continuer = 1
     while continuer:
         for event in pygame.event.get():
@@ -449,14 +455,18 @@ def options(fenetre, liste_cartes, perso, liste_pnjs, liste_items):
                     
                 if event.key == K_DOWN:
                     if curseur_y < 380:
-                        fenetre.blit(pygame.image.load(os.path.join("images", "noir_curseur.png")), (curseur_x,curseur_y))
+                        curseur += 1
+                        fenetre.blit(pygame.image.load(os.path.join("images", "noir_curseur.png")), (curseur_x+cst,curseur_y))
                         curseur_y += 40
-                        fenetre.blit(label_retour, (curseur_x, curseur_y))
+                        fenetre.blit(label_retour, (curseur_x+cst, curseur_y))
                         pygame.display.flip()
                         
                 if event.key == K_UP:
                     if curseur_y > 220:
-                        fenetre.blit(pygame.image.load(os.path.join("images", "noir_curseur.png")), (curseur_x,curseur_y))
+                        curseur -= 1
+                        fenetre.blit(pygame.image.load(os.path.join("images", "noir_curseur.png")), (curseur_x+cst,curseur_y))
                         curseur_y -= 40
-                        fenetre.blit(label_retour, (curseur_x, curseur_y))
+                        fenetre.blit(label_retour, (curseur_x+cst, curseur_y))
                         pygame.display.flip()
+                        
+                print(curseur)
