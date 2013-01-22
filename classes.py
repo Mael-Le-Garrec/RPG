@@ -406,7 +406,8 @@ class Sac:
 def options(fenetre, liste_cartes, perso, liste_pnjs, liste_items):
     curseur_x = 520
     curseur_y = 220
-    cst = 40
+    cst = 35
+    cst_c = cst + 5
     
     fenetre.blit(pygame.image.load(os.path.join("images", "options.png")), (600+100-159,150))
     
@@ -431,7 +432,7 @@ def options(fenetre, liste_cartes, perso, liste_pnjs, liste_items):
     fenetre.blit(label_retour, (560+cst, 380))
     
     label_retour =  myfont.render(">>", 1, (255,255,0))
-    fenetre.blit(label_retour, (curseur_x+cst, curseur_y)) 
+    fenetre.blit(label_retour, (curseur_x+cst_c, curseur_y)) 
     
     pygame.display.flip()
     
@@ -458,7 +459,7 @@ def options(fenetre, liste_cartes, perso, liste_pnjs, liste_items):
                         curseur += 1
                         fenetre.blit(pygame.image.load(os.path.join("images", "noir_curseur.png")), (curseur_x+cst,curseur_y))
                         curseur_y += 40
-                        fenetre.blit(label_retour, (curseur_x+cst, curseur_y))
+                        fenetre.blit(label_retour, (curseur_x+cst_c, curseur_y))
                         pygame.display.flip()
                         
                 if event.key == K_UP:
@@ -466,7 +467,17 @@ def options(fenetre, liste_cartes, perso, liste_pnjs, liste_items):
                         curseur -= 1
                         fenetre.blit(pygame.image.load(os.path.join("images", "noir_curseur.png")), (curseur_x+cst,curseur_y))
                         curseur_y -= 40
-                        fenetre.blit(label_retour, (curseur_x+cst, curseur_y))
+                        fenetre.blit(label_retour, (curseur_x+cst_c, curseur_y))
                         pygame.display.flip()
-                        
-                print(curseur)
+                         
+                if event.key == K_RETURN:
+                    if curseur == 4:
+                        liste_cartes[perso.carte].afficher_carte(fenetre)
+                        for val in liste_pnjs.values():
+                            if val.carte == perso.carte:
+                                fenetre.blit(val.image, (val.pos_x, val.pos_y))
+                        for i in liste_items:
+                            liste_items[i].afficher_item(fenetre, perso)
+                        fenetre.blit(perso.orientation, (perso.position_x,perso.position_y))
+                        pygame.display.flip()
+                        continuer = 0
