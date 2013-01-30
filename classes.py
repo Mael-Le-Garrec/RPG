@@ -65,6 +65,7 @@ class Carte:
         
         for i in range(len(self.coords)):
             self.textures[self.coords[i][2]] = pygame.image.load(os.path.join('textures', '{0}.png'.format(self.coords[i][2]))).convert_alpha()
+            self.textures[self.coords[i][2]] = pygame.transform.scale(self.textures[self.coords[i][2]], (30,30))
             
         # self.tp[i][0] => carte de  destination
         # self.tp[i][1][0] => x carte actuelle
@@ -84,22 +85,22 @@ class Carte:
                     # Si la texture n'est pas traversable, on ajoute la position dans la liste des collisions.
                     # On fait +100 en x et +150 en y car c'est la en haut à gauche.
                     if self.coords[i][3] == '1':
-                        self.collisions.append((int(self.coords[i][0][0]) + j * 30 + 100, int(self.coords[i][0][1]) + k * 30 + 150))
+                        self.collisions.append((int(self.coords[i][0][0]) + j * 30, int(self.coords[i][0][1]) + k * 30))
                     
                     # On ajoute dans la liste des blocs chaque bloc de la zone
-                    self.bloc.append((int(self.coords[i][0][0]) + j * 30 + 100, int(self.coords[i][0][1]) + k * 30 +150, self.textures[self.coords[i][2]]))
+                    self.bloc.append((int(self.coords[i][0][0]) + j * 30, int(self.coords[i][0][1]) + k * 30, self.textures[self.coords[i][2]]))
                     # print("Point de coordonnées : {0};{1}".format(int(self.coords[i][0][0]) + j * 30, int(self.coords[i][0][1]) + k * 30))
                     
                     # On essaye (il peut ne pas y avoir de tp) de mettre dans la liste des tps chaque bloc de la zone
                     try:
-                        self.tp.append([int(self.coords[i][5]), (int(self.coords[i][0][0]) + j * 30 + 100, int(self.coords[i][0][1]) + k * 30 + 150), (int(self.coords[i][4][0]) + 100, int(self.coords[i][4][1]) + 150)])
+                        self.tp.append([int(self.coords[i][5]), (int(self.coords[i][0][0]) + j * 30, int(self.coords[i][0][1]) + k * 30), (int(self.coords[i][4][0]), int(self.coords[i][4][1]))])
                     except:
                         pass
 
                         
     def afficher_carte(self, fenetre):
         # On réaffiche le fond
-        fenetre.blit(self.fond, (100, 150))        
+        fenetre.blit(self.fond, (0, 0))        
         
         # Puis chaque bloc un par un, contenus dans la liste des blocs
         for i in range(len(self.bloc)):
@@ -109,8 +110,8 @@ class Carte:
 class Joueur:
     def __init__(self):
         # On place le joueur au centre de la carte (en attendant les sauvegardes de pos)
-        self.position_x = 100 + 300
-        self.position_y = 150 + 300
+        self.position_x = 300
+        self.position_y = 300
         
         # On définit la carte du joueur comme étant la première (en attendant les sauvegardes toujours)
         self.carte = 0        
@@ -123,10 +124,10 @@ class Joueur:
         self.perso_h = pygame.image.load(os.path.join('images', 'fatman_up.png')).convert_alpha()
         
         # On charge le fond noir servant à recouvrir les dialogues
-        self.fond_noir = pygame.image.load(os.path.join('images', 'fond_noir.png')).convert_alpha()
+        self.fond_dial = pygame.image.load(os.path.join('images', 'fond_dialogue.png')).convert_alpha()
         
         # On met l'objet contenant l'orientation "bas" dans la varibable orientation, qu'on affichera
-        self.orientation = self.perso
+        self.orientation = self.perso_b
         
 
     def bouger_perso(self, key, fenetre, liste_cartes, perso, liste_pnjs, liste_items):
@@ -141,7 +142,7 @@ class Joueur:
                 # Si la position où l'on veut aller n'est pas dans la liste des collisions, on peut avancer
                 if (self.position_x, self.position_y+30) not in liste_cartes[perso.carte].collisions:
                     # Si on a pas atteint la limite de la carte, on avance tranquillou
-                    if self.position_y < 700:
+                    if self.position_y < (600-30):
                         self.position_y += 30
                     # Sinon on change de carte
                     else:
@@ -150,7 +151,7 @@ class Joueur:
                         # Comme on passe d'en bas à en haut, y vaut 150
                         liste_cartes[int(liste_cartes[perso.carte].directions["bas"])].afficher_carte(fenetre)
                         perso.carte = int(liste_cartes[perso.carte].directions["bas"])
-                        perso.position_y = 150
+                        perso.position_y = 0
                         
             # Si l'orientation n'est pas la même que celle du bas, on tourne le personnage
             else:
@@ -162,12 +163,12 @@ class Joueur:
             if self.perso_h == self.orientation:
                 self.orientation = self.perso_h
                 if (self.position_x, self.position_y-30) not in liste_cartes[perso.carte].collisions:
-                    if self.position_y > 150:
+                    if self.position_y > 0:
                         self.position_y -= 30
                     else:
                         liste_cartes[int(liste_cartes[perso.carte].directions['haut'])].afficher_carte(fenetre)
                         perso.carte = int(liste_cartes[perso.carte].directions['haut'])
-                        perso.position_y = 150+600-30    
+                        perso.position_y = 600-30    
             else:
                 self.orientation = self.perso_h
                 
@@ -176,12 +177,12 @@ class Joueur:
             if self.perso_g == self.orientation:
                 self.orientation = self.perso_g
                 if (self.position_x-30, self.position_y) not in liste_cartes[perso.carte].collisions:                  
-                    if self.position_x > 100:
+                    if self.position_x > 0:
                         self.position_x -= 30
                     else:
                         liste_cartes[int(liste_cartes[perso.carte].directions["gauche"])].afficher_carte(fenetre)
                         perso.carte = int(liste_cartes[perso.carte].directions["gauche"])
-                        perso.position_x = 100+600-30
+                        perso.position_x = 600-30
             else:
                 self.orientation = self.perso_g
                 
@@ -190,12 +191,12 @@ class Joueur:
             if self.perso_d == self.orientation:
                 self.orientation = self.perso_d
                 if (self.position_x+30, self.position_y) not in liste_cartes[perso.carte].collisions:
-                    if self.position_x < 650:
+                    if self.position_x < (600-30):
                         self.position_x += 30
                     else:
                         liste_cartes[int(liste_cartes[perso.carte].directions["droite"])].afficher_carte(fenetre)
                         perso.carte = int(liste_cartes[perso.carte].directions["droite"])
-                        perso.position_x = 100
+                        perso.position_x = 0
             else:
                 self.orientation = self.perso_d        
 
@@ -229,7 +230,7 @@ class Joueur:
         fenetre.blit(self.orientation, (self.position_x,self.position_y))
         pygame.display.flip() # Et on raffraichi tout ça
      
-    def parler_pnj(self, perso, liste_pnjs, fenetre):
+    def parler_pnj(self, perso, liste_pnjs, fenetre, liste_cartes, liste_items):
         # On définit deux varibles contenant la distance séparant le personnage du bloc qu'il voit
         self.voir_x = 0
         self.voir_y = 0
@@ -255,11 +256,14 @@ class Joueur:
                     dialogue_wrap = textwrap.wrap(val.dialogues, 100)
                     
                     # On définit la police d'écriture
-                    myfont = pygame.font.SysFont("Arial", 14)
+                    myfont = pygame.font.Font(os.path.join("polices", "PKMNRSEU.FONT"), 14)
+                    
+                    # On place le cadre
+                    fenetre.blit(self.fond_dial, (0,500))
                     
                     # On place le nom du personnage
-                    label_nom =  myfont.render("{0}:".format(val.nom_entier), 1, (255,255,0))
-                    fenetre.blit(label_nom, (120, 60))
+                    # label_nom =  myfont.render("{0}:".format(val.nom_entier), 1, (0,0,0))
+                    # fenetre.blit(label_nom, (40, 500))
                     
                     coeff = 0
                     # On parcourt la liste de dialogue
@@ -280,24 +284,25 @@ class Joueur:
                                         if event.key == K_RCTRL:
                                             # Ainsi, on affiche un fond noir et denouveau le nom du personnage
                                             # On arrête aussi la boucle
-                                            fenetre.blit(self.fond_noir, (100,0))
-                                            fenetre.blit(label_nom, (120, 60))
+                                            fenetre.blit(self.fond_dial, (0,500))
                                             continuer = 0
                          
                         # print("i:", i)
                         
                         # Si on se trouve sur la dernière ligne, on affiche 'blabla [...]"
                         if  (i+1) % 3 == 0 and i !=0 and (i+1) != len(dialogue_wrap):
-                            label = myfont.render("{0} [...]".format(dialogue_wrap[i]), 1, (255,255,0))
+                            label = myfont.render("{0} ...".format(dialogue_wrap[i]), 1, (0,0,0))
                         # Sinon sur la première (sauf à i=0), on affiche "[...] blabla"
                         elif i % 3 == 0 and i != 0:
-                            label = myfont.render("[...] {0}".format(dialogue_wrap[i]), 1, (255,255,0))
+                            label = myfont.render("... {0}".format(dialogue_wrap[i]), 1, (0,0,0))
                         # Sinon c'est une ligne normale et on affiche juste le texte
+                        elif i == 0:
+                            label = myfont.render("{0} : {1}".format(val.nom_entier, dialogue_wrap[i]), 1, (0,0,0))
                         else:
-                            label = myfont.render(dialogue_wrap[i], 1, (255,255,0))
+                            label = myfont.render(dialogue_wrap[i], 1, (0,0,0))
                             
                         # Et on affiche enfin ce texte
-                        fenetre.blit(label, (120, 80+coeff*20))
+                        fenetre.blit(label, (40, 520+coeff*20))
                         
                         # On incrémente cette variable, pour savoir à quelle ligne (sur les 3) on se trouve
                         coeff += 1
@@ -311,9 +316,17 @@ class Joueur:
                                 quit()
                             if event.type == KEYDOWN:
                                 if event.key == K_RCTRL:
-                                    fenetre.blit(self.fond_noir, (100,0))
                                     continuer = 0
+                                    liste_cartes[perso.carte].afficher_carte(fenetre)
+                                    for val in liste_pnjs.values():
+                                        if val.carte == perso.carte:
+                                            fenetre.blit(val.image, (val.pos_x, val.pos_y))
+                                    for i in liste_items:
+                                        liste_items[i].afficher_item(fenetre, perso)
+                                    fenetre.blit(perso.orientation, (perso.position_x,perso.position_y))
                                     pygame.display.flip()
+                                    continuer = 0
+                                                    
 
 # Classe des Personnages Non Joueurs (PNJs)
 class PNJ:
@@ -343,8 +356,8 @@ class PNJ:
         self.nom_entier = self.contenu[0].strip()
         self.dialogues = self.contenu[3].strip()
         self.carte = int(self.contenu[2])
-        self.pos_x = int(self.position[0]) + 100
-        self.pos_y = int(self.position[1]) + 150
+        self.pos_x = int(self.position[0])
+        self.pos_y = int(self.position[1])
         
         # On ajoute le personnage dans la liste des collisions
         liste_cartes[self.carte].collisions.append((self.pos_x, self.pos_y))
@@ -385,7 +398,7 @@ class Item:
                 
                 self.carte.append(int(self.ligne[-1][1]))
                 
-                liste_cartes[self.carte[-1]].collisions.append((int(self.ligne[-1][0][0])+100, int(self.ligne[-1][0][1])+150))
+                liste_cartes[self.carte[-1]].collisions.append((int(self.ligne[-1][0][0]), int(self.ligne[-1][0][1])))
                 self.position.append(self.ligne[-1])
                 # x, y, carte
 
@@ -393,7 +406,7 @@ class Item:
     def afficher_item(self, fenetre, perso):   
         for val in self.position:
             if int(val[1]) == perso.carte:
-                fenetre.blit(self.image, (int(val[0][0])+100, int(val[0][1])+150))
+                fenetre.blit(self.image, (int(val[0][0]), int(val[0][1])))
                 
 class Sac:
     def __init___(self, inventaire):
@@ -404,12 +417,13 @@ class Sac:
         
         
 def options(fenetre, liste_cartes, perso, liste_pnjs, liste_items):
-    curseur_x = 520
-    curseur_y = 220
-    cst = 35
+    curseur_x = 520-100
+    curseur_y = 220-150
+    cst = 35-100
     cst_c = cst + 5
+    cst_y = -150
     
-    fenetre.blit(pygame.image.load(os.path.join("images", "options.png")), (600+100-159,150))
+    fenetre.blit(pygame.image.load(os.path.join("images", "options.png")), (600-159,0))
     
     # myfont = pygame.font.SysFont("Helvetica", 20)
     myfont = pygame.font.Font(os.path.join("polices", "PKMNRSEU.FONT"), 20)
@@ -417,19 +431,19 @@ def options(fenetre, liste_cartes, perso, liste_pnjs, liste_items):
 
     
     label_monstres =  myfont.render("Monstres", 1, (255,255,0))
-    fenetre.blit(label_monstres, (560+cst, 220))
+    fenetre.blit(label_monstres, (560+cst, 220+cst_y))
     
     label_inventaire =  myfont.render("Inventaire", 1, (255,255,0))
-    fenetre.blit(label_inventaire, (560+cst, 260)) 
+    fenetre.blit(label_inventaire, (560+cst, 260+cst_y)) 
     
     label_personnage =  myfont.render("Personnage", 1, (255,255,0))
-    fenetre.blit(label_personnage, (560+cst, 300)) 
+    fenetre.blit(label_personnage, (560+cst, 300+cst_y)) 
     
     label_sauvegarder =  myfont.render("Sauvegarder", 1, (255,255,0))
-    fenetre.blit(label_sauvegarder, (560+cst, 340)) 
+    fenetre.blit(label_sauvegarder, (560+cst, 340+cst_y)) 
     
     label_retour =  myfont.render("Retour", 1, (255,255,0))
-    fenetre.blit(label_retour, (560+cst, 380))
+    fenetre.blit(label_retour, (560+cst, 380+cst_y))
     
     label_retour =  myfont.render(">>", 1, (255,255,0))
     fenetre.blit(label_retour, (curseur_x+cst_c, curseur_y)) 
@@ -455,7 +469,7 @@ def options(fenetre, liste_cartes, perso, liste_pnjs, liste_items):
                     continuer = 0
                     
                 if event.key == K_DOWN:
-                    if curseur_y < 380:
+                    if curseur_y < (380-150):
                         curseur += 1
                         fenetre.blit(pygame.image.load(os.path.join("images", "noir_curseur.png")), (curseur_x+cst,curseur_y))
                         curseur_y += 40
@@ -463,7 +477,7 @@ def options(fenetre, liste_cartes, perso, liste_pnjs, liste_items):
                         pygame.display.flip()
                         
                 if event.key == K_UP:
-                    if curseur_y > 220:
+                    if curseur_y > (220-150):
                         curseur -= 1
                         fenetre.blit(pygame.image.load(os.path.join("images", "noir_curseur.png")), (curseur_x+cst,curseur_y))
                         curseur_y -= 40

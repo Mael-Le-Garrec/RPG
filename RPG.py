@@ -13,10 +13,10 @@ import textwrap
 pygame.init()
 titre = 'Un super RPG'
 pygame.key.set_repeat(1, 200)
-fenetre = pygame.display.set_mode((800,800), RESIZABLE)
+fenetre = pygame.display.set_mode((600,600), RESIZABLE)
 pygame.display.set_caption(titre)
 
-fenetre.blit(pygame.image.load(os.path.join("images", "fond.png")), (100-1,150-1))
+# fenetre.blit(pygame.image.load(os.path.join("images", "fond.png")), (0,0))
 
 # On crée une liste contenant chaque carte
 liste_cartes = list()
@@ -70,7 +70,7 @@ for val in liste_pnjs.values():
 for val in liste_items.values():
     for val2 in val.position:
         if int(val2[1]) == bentz.carte:
-            fenetre.blit(val.image, (int(val2[0][0])+100, int(val2[0][1])+150))
+            fenetre.blit(val.image, (int(val2[0][0]), int(val2[0][1])))
         
 
 pygame.display.flip() # Un petit peu d'eau, faut rafraichir
@@ -92,10 +92,10 @@ while continuer == 1:
             
             # Soit c'est "Entrée" et on fait parler le personnage
             if event.key == K_RETURN:
-                bentz.parler_pnj(bentz, liste_pnjs, fenetre)
+                bentz.parler_pnj(bentz, liste_pnjs, fenetre, liste_cartes, liste_items)
                 
             if event.key == K_ESCAPE:
                 options(fenetre, liste_cartes, bentz, liste_pnjs, liste_items)
 
         if event.type == MOUSEMOTION: # Décommenter pour avoir la position de la souris.
-            print("position {},{}".format(event.pos[0] - 100,event.pos[1] - 150))
+            print("position {},{}".format(event.pos[0],event.pos[1]))
