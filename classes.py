@@ -328,28 +328,39 @@ class Joueur:
                                     pygame.display.flip()
                                     continuer = 0
                                                     
-    # def prendre_item(inventaire, liste_items, perso):
-        # On définit deux varibles contenant la distance séparant le personnage du bloc qu'il voit
-        # self.voir_x = 0
-        # self.voir_y = 0
+    def prendre_item(self, inventaire, liste_items, perso, liste_cartes, liste_pnjs, fenetre):
+        self.voir_x = 0
+        self.voir_y = 0
         
-        # En fonction de l'orientation du personnage, on change ces variables
-        # if perso.orientation == perso.perso_b:
-            # self.voir_y = 30
-        # elif perso.orientation == perso.perso_h:
-            # self.voir_y = -30
-        # elif perso.orientation == perso.perso_g:
-            # self.voir_x = -30
-        # else:
-            # self.voir_x = 30
-            
-        # for val in liste_items.values():
-            # Si ce pnj se trouve sur la carte actuelle
-            # if val.carte == perso.carte:
-               # Si sa position est égale à celle qu'on regarde
-                # if perso.position_x + self.voir_x == val.pos_x and perso.position_y + self.voir_y == val.pos_y:
+        if perso.orientation == perso.perso_b:
+            self.voir_y = 30
+        elif perso.orientation == perso.perso_h:
+            self.voir_y = -30
+        elif perso.orientation == perso.perso_g:
+            self.voir_x = -30
+        else:
+            self.voir_x = 30
+        
+        # Position item : [[x, y, carte],[x, y, carte]] etc
+        
+        for val in liste_items.values():
+            if perso.carte in val.carte :
+                # print([[perso.position_x + self.voir_x, perso.position_y + self.voir_y], perso.carte])
+                # print(val.position)
+                # print(val.nom)
+                if [[perso.position_x + self.voir_x, perso.position_y + self.voir_y], perso.carte] in val.position:
+                    # print(val.nom)
+                    inventaire[val.nom] +=1
+                    val.position.remove([[perso.position_x + self.voir_x, perso.position_y + self.voir_y], perso.carte])
                     
-    
+                    liste_cartes[perso.carte].afficher_carte(fenetre)
+                    for val in liste_pnjs.values():
+                        if val.carte == perso.carte:
+                            fenetre.blit(val.image, (val.pos_x, val.pos_y))
+                    for i in liste_items:
+                        liste_items[i].afficher_item(fenetre, perso)
+                    fenetre.blit(perso.orientation, (perso.position_x,perso.position_y))
+                    pygame.display.flip()
     
 # Classe des Personnages Non Joueurs (PNJs)
 class PNJ:
@@ -418,6 +429,10 @@ class Item:
                 self.ligne.append(self.contenu[i].strip())
                 self.ligne[-1] = self.ligne[-1].split(";")
                 self.ligne[-1][0] = self.ligne[-1][0].split(":")
+
+                self.ligne[-1][0][0] = int(self.ligne[-1][0][0])
+                self.ligne[-1][0][1] = int(self.ligne[-1][0][1])
+                self.ligne[-1][1] = int(self.ligne[-1][1])
                 
                 self.carte.append(int(self.ligne[-1][1]))
                 
@@ -432,7 +447,7 @@ class Item:
                 fenetre.blit(self.image, (int(val[0][0]), int(val[0][1])))
     
         
-def options(fenetre, liste_cartes, perso, liste_pnjs, liste_items):
+def options(fenetre, liste_cartes, perso, liste_pnjs, liste_items, inventaire):
     curseur_x = 520-100
     curseur_y = 220-150
     cst = 35
@@ -502,6 +517,9 @@ def options(fenetre, liste_cartes, perso, liste_pnjs, liste_items):
                         pygame.display.flip()
                          
                 if event.key == K_RETURN:
+                    if curseur == 1:
+                        print(inventaire)
+                    
                     if curseur == 4:
                         liste_cartes[perso.carte].afficher_carte(fenetre)
                         for val in liste_pnjs.values():

@@ -45,14 +45,16 @@ liste_items = dict()
 
 for i in os.listdir("items"): # i vaut le nom du pnj, "bidule.txt"
     if re.match("[0-9a-zA-Z_\-\.]+.txt", i):
-        liste_items[i] = Item(i) 
-        liste_items[i].charger_item(liste_cartes)
+        liste_items[i.replace(".txt", "")] = Item(i.replace(".txt", "")) 
+        liste_items[i.replace(".txt", "")].charger_item(liste_cartes)
 
 inventaire = dict()
 for val in liste_items.keys():
     inventaire[val.strip(".txt")] = liste_items[val].nombre     
         
-print(liste_items)        
+# print(liste_items)   
+# print(inventaire)
+   
 # On crée notre personnage        
 bentz = Joueur()
 
@@ -94,10 +96,10 @@ while continuer == 1:
             # Soit c'est "Entrée" et on fait parler le personnage
             if event.key == K_RETURN:
                 bentz.parler_pnj(bentz, liste_pnjs, fenetre, liste_cartes, liste_items)
-                # bentz.prendre_item(inventaire, liste_items, bentz);
-                
-            if event.key == K_ESCAPE:
-                options(fenetre, liste_cartes, bentz, liste_pnjs, liste_items)
+                bentz.prendre_item(inventaire, liste_items, bentz, liste_cartes, liste_pnjs, fenetre)
 
-        if event.type == MOUSEMOTION: # Décommenter pour avoir la position de la souris.
-            print("position {},{}".format(event.pos[0],event.pos[1]))
+            if event.key == K_ESCAPE:
+                options(fenetre, liste_cartes, bentz, liste_pnjs, liste_items, inventaire)
+
+        # if event.type == MOUSEMOTION: # Décommenter pour avoir la position de la souris.
+            # print("position {},{}".format(event.pos[0],event.pos[1]))
