@@ -17,6 +17,7 @@ for text in os.listdir("textures"):
     if text != "fond.png":
         text = text.replace(".png", "")
         textures[text] = pygame.image.load(os.path.join("textures","{0}.png".format(text)))
+        textures[text] = pygame.transform.scale(textures[text], (30,30))
     
 fond_1 = pygame.image.load(os.path.join("images", "fond_1.png"))
 fenetre.blit(fond_1, (630, 10))

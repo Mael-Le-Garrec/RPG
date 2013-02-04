@@ -52,6 +52,7 @@ inventaire = dict()
 for val in liste_items.keys():
     inventaire[val.strip(".txt")] = liste_items[val].nombre     
         
+print(liste_items)        
 # On crée notre personnage        
 bentz = Joueur()
 
@@ -93,6 +94,7 @@ while continuer == 1:
             # Soit c'est "Entrée" et on fait parler le personnage
             if event.key == K_RETURN:
                 bentz.parler_pnj(bentz, liste_pnjs, fenetre, liste_cartes, liste_items)
+                # bentz.prendre_item(inventaire, liste_items, bentz);
                 
             if event.key == K_ESCAPE:
                 options(fenetre, liste_cartes, bentz, liste_pnjs, liste_items)

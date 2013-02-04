@@ -253,10 +253,10 @@ class Joueur:
                if perso.position_x + self.voir_x == val.pos_x and perso.position_y + self.voir_y == val.pos_y:
                     # Alors on affiche le dialogue
                     # On découpe le dialogue en plusieurs listes pour ne pas déborder de l'écran
-                    dialogue_wrap = textwrap.wrap(val.dialogues, 100)
+                    dialogue_wrap = textwrap.wrap(val.dialogues, 60)
                     
                     # On définit la police d'écriture
-                    myfont = pygame.font.Font(os.path.join("polices", "PKMNRSEU.FONT"), 14)
+                    myfont = pygame.font.Font(os.path.join("polices", "Pokemon DPPt.ttf"), 24)
                     
                     # On place le cadre
                     fenetre.blit(self.fond_dial, (0,500))
@@ -297,7 +297,8 @@ class Joueur:
                             label = myfont.render("... {0}".format(dialogue_wrap[i]), 1, (0,0,0))
                         # Sinon c'est une ligne normale et on affiche juste le texte
                         elif i == 0:
-                            label = myfont.render("{0} : {1}".format(val.nom_entier, dialogue_wrap[i]), 1, (0,0,0))
+                            # label = myfont.render("{0} : {1}".format(val.nom_entier, dialogue_wrap[i]), 1, (0,0,0))
+                            label = myfont.render("{0}".format(dialogue_wrap[i]), 1, (0,0,0))
                         else:
                             label = myfont.render(dialogue_wrap[i], 1, (0,0,0))
                             
@@ -327,7 +328,29 @@ class Joueur:
                                     pygame.display.flip()
                                     continuer = 0
                                                     
-
+    # def prendre_item(inventaire, liste_items, perso):
+        # On définit deux varibles contenant la distance séparant le personnage du bloc qu'il voit
+        # self.voir_x = 0
+        # self.voir_y = 0
+        
+        # En fonction de l'orientation du personnage, on change ces variables
+        # if perso.orientation == perso.perso_b:
+            # self.voir_y = 30
+        # elif perso.orientation == perso.perso_h:
+            # self.voir_y = -30
+        # elif perso.orientation == perso.perso_g:
+            # self.voir_x = -30
+        # else:
+            # self.voir_x = 30
+            
+        # for val in liste_items.values():
+            # Si ce pnj se trouve sur la carte actuelle
+            # if val.carte == perso.carte:
+               # Si sa position est égale à celle qu'on regarde
+                # if perso.position_x + self.voir_x == val.pos_x and perso.position_y + self.voir_y == val.pos_y:
+                    
+    
+    
 # Classe des Personnages Non Joueurs (PNJs)
 class PNJ:
     def __init__(self, nom):
@@ -407,45 +430,39 @@ class Item:
         for val in self.position:
             if int(val[1]) == perso.carte:
                 fenetre.blit(self.image, (int(val[0][0]), int(val[0][1])))
-                
-class Sac:
-    def __init___(self, inventaire):
-        self.objets = inventaire
-        
-        # 390+100, 0+150
-        
-        
+    
         
 def options(fenetre, liste_cartes, perso, liste_pnjs, liste_items):
     curseur_x = 520-100
     curseur_y = 220-150
-    cst = 35-100
+    cst = 35
     cst_c = cst + 5
     cst_y = -150
-    
-    fenetre.blit(pygame.image.load(os.path.join("images", "options.png")), (600-159,0))
+
+    fenetre.blit(pygame.image.load(os.path.join("images", "options.png")), (600-160,0))
     
     # myfont = pygame.font.SysFont("Helvetica", 20)
-    myfont = pygame.font.Font(os.path.join("polices", "PKMNRSEU.FONT"), 20)
+    curseur_font = pygame.font.Font(os.path.join("polices", "PKMNRSEU.FONT"), 24)
     # myfont = pygame.font.Font(os.path.join("polices", "PIXELADE.TTF"), 20)
+    myfont = pygame.font.Font(os.path.join("polices", "Pokemon DPPt.ttf"), 24)
 
     
-    label_monstres =  myfont.render("Monstres", 1, (255,255,0))
-    fenetre.blit(label_monstres, (560+cst, 220+cst_y))
+    label_monstres =  myfont.render("Monstres", 1, (0,0,0))
+    fenetre.blit(label_monstres, (560-75, 220+cst_y))
     
-    label_inventaire =  myfont.render("Inventaire", 1, (255,255,0))
-    fenetre.blit(label_inventaire, (560+cst, 260+cst_y)) 
+    label_inventaire =  myfont.render("Inventaire", 1, (0,0,0))
+    fenetre.blit(label_inventaire, (560-75, 260+cst_y)) 
     
-    label_personnage =  myfont.render("Personnage", 1, (255,255,0))
-    fenetre.blit(label_personnage, (560+cst, 300+cst_y)) 
+    label_personnage =  myfont.render("Personnage", 1, (0,0,0))
+    fenetre.blit(label_personnage, (560-75, 300+cst_y)) 
     
-    label_sauvegarder =  myfont.render("Sauvegarder", 1, (255,255,0))
-    fenetre.blit(label_sauvegarder, (560+cst, 340+cst_y)) 
+    label_sauvegarder =  myfont.render("Sauvegarder", 1, (0,0,0))
+    fenetre.blit(label_sauvegarder, (560-75, 340+cst_y)) 
     
-    label_retour =  myfont.render("Retour", 1, (255,255,0))
-    fenetre.blit(label_retour, (560+cst, 380+cst_y))
+    label_retour =  myfont.render("Retour", 1, (0,0,0))
+    fenetre.blit(label_retour, (560-75, 380+cst_y))
     
-    label_retour =  myfont.render(">>", 1, (255,255,0))
+    label_retour =  curseur_font.render(">>", 1, (0,0,0))
     fenetre.blit(label_retour, (curseur_x+cst_c, curseur_y)) 
     
     pygame.display.flip()
@@ -471,7 +488,7 @@ def options(fenetre, liste_cartes, perso, liste_pnjs, liste_items):
                 if event.key == K_DOWN:
                     if curseur_y < (380-150):
                         curseur += 1
-                        fenetre.blit(pygame.image.load(os.path.join("images", "noir_curseur.png")), (curseur_x+cst,curseur_y))
+                        fenetre.blit(pygame.image.load(os.path.join("images", "blanc_curseur.png")), (curseur_x+cst,curseur_y))
                         curseur_y += 40
                         fenetre.blit(label_retour, (curseur_x+cst_c, curseur_y))
                         pygame.display.flip()
@@ -479,7 +496,7 @@ def options(fenetre, liste_cartes, perso, liste_pnjs, liste_items):
                 if event.key == K_UP:
                     if curseur_y > (220-150):
                         curseur -= 1
-                        fenetre.blit(pygame.image.load(os.path.join("images", "noir_curseur.png")), (curseur_x+cst,curseur_y))
+                        fenetre.blit(pygame.image.load(os.path.join("images", "blanc_curseur.png")), (curseur_x+cst,curseur_y))
                         curseur_y -= 40
                         fenetre.blit(label_retour, (curseur_x+cst_c, curseur_y))
                         pygame.display.flip()
