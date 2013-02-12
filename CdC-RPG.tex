@@ -1,0 +1,176 @@
+\documentclass[12pt,a4paper]{article}
+
+\usepackage[latin1]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[francais]{babel}
+
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+
+\title{Un Super RPG --- Cahier Des Charges}
+\author{
+    Mael \textit{Hatrix} \bsc{Le Garrec} \and
+    Dominique \textit{Evild67} \bsc{Haas}
+}
+\pagestyle{fancyplain} \chead{}\lhead{\textit{ISN}} \rhead{\emph{\textit{Un Super RPG}}}
+
+\date{4 Février 2013}
+
+\begin{document}
+	\maketitle
+	\newpage
+	
+	\tableofcontents
+	\newpage
+	
+	\section*{Introduction}
+	\addcontentsline{toc}{section}{Introduction} 
+	
+		La spécialisation \textit{Informatique et Sciences du Numérique} (ISN) qui a, comme son nom l'indique pour but de faire découvrir aux élèves de terminale les joies des sciences du numérique, prévoit dans son programme un projet à réaliser par lesdits élèves. Ce projet est a réaliser en plusieurs mois et doit compter dans l'évaluation de la spécialité.\\
+
+		Notre groupe ne s'est non pas formé au début de l'année, dès l'annonce d'un projet, mais bien après aux alentours du mois de Décembre. Chaque membre était en effet intégré dans un groupe avec ses amis, laissant bien évidement place à des niveaux déséquilibrés. Les groupes ont donc subi une restructuration afin de mener à mieux le projet. C'est ainsi que notre groupe s'est formé pour le meilleur et pour le pire !\\
+
+		Le but est donc de présenter un projet, celui-ci étant une application programmée en python. Nous avons ainsi décidé de présenter un jeu de rôle en 2D. On peut citer dans ce genre de nombreux jeux tels que \og Zelda \fg~ou encore \og Pokémon \fg. Ces jeux appartiennent au même genre mais sont pourtant très différents. Les possibilités offertes par les jeux de rôles sont en effet très grandes, nous laissant place à notre imagination la plus débordante.\\
+
+		Mais ce ne sont là que des avant-goûts de notre projet final, voyons maintenant plus en détail de quoi il est question !
+
+	\newpage
+	\section{Notre Groupe}
+		Nous nous connaissions depuis le collège. Nous avons ainsi appris à travailler ensemble depuis plusieurs années, l'entente dans notre groupe est assurée ! Une rapide présentation des membres du groupe s'impose afin de présenter nos affinités avec l'informatique et plus généralement les sciences du numérique.
+		
+		\subsection{Maël \textit{Hatrix}}
+			J'ai commencé la programmation avec le Visual Basic (VB.NET) quand je devais être en 4e au collège. Je ne me suis réellement mis à la programmation qu'en seconde et en première avec le PHP, couplé à l'HTML/CSS. J'ai également utilisé le C++ pour drivers projets liés à l'\textit{Arduino}. L'enseignement de spécialité ISN me permet d'apprendre un langage de programmation utile en plus de ceux que je connais déjà : le python. Ce projet est un des premiers de cette envergure que j'ai à réaliser, il me permet d'apprendre beaucoup sur la conception de jeux video. Je suis très motivé quant à son aboutissement et sa conception la meilleure possible !
+		
+		\subsection{Dominique \textit{Evild67}}
+            J'ai commencé à programmer assez jeune. Je me suis en effet intéressé à la programmation assez tôt de par mon père, trouvant cela intéressant. Ainsi, je me suis mis avec un peu d'aide de mon père à faire quelques petits programmes en VB.NET. Par la suite avec les années, j'ai commencé à très vite apprendre l'HTML/CSS pour ensuite poursuivre avec un peu de PHP. J'ai également regardé du côté des langages C/C++ et C\#, langages très connus dans le monde de la programmation. L'ISN est pour moi un très bon moyen d'apprendre le langage de programmation python que j'ai auparavant très peu utilisé. En plus du Python, je suis en plein apprentissage du langage Javascript pour mettre des animations sur un site et ainsi le dynamiser.
+            
+	\newpage
+	\section{Notre Projet}
+        \subsection{Introduction}
+            \subsubsection{Un \emph{RPG} ?}
+                Nous allons ici détailler ce qu'est un \textit{Role Playing Game} (RPG) afin de mieux comprendre le but de notre projet.
+            
+                \begin{figure}[h!]
+                    \centering
+                    \includegraphics[width=0.80\textwidth]{pokemon.jpg}
+                    \caption{Pokemon Crystal --- Gameboy Color --- 2001}
+                \end{figure}
+                
+                Un \bsc{RPG} (Role Playing Game) est tout d'abord un jeu de rôle. Ceux-ci sont de plusieurs sortes : les jeux de plateaux, les jeux grandeur nature et enfin dans notre cas, les jeux vidéo.
+                
+                Dans un RPG, le personnage incarné subit une évolution au cours du jeu. Ainsi, il peut la plupart du temps interagir avec son environement, que ce soit des personnages non-joueurs (PNJ) ou encore d'autres joueurs si le jeu supporte un mode multijoueur. Ces personnages peuvent donner des informations au joueur sur l'univers du jeu ou encore des conseils. La plupart du temps, l'interaction avec ceux-ci est primordiale pour faire avancer sa progression dans le jeu.
+                         
+                \newpage
+                L'environnement du personnage peut-être très libre. Ainsi dans \textit{The Elder Scrolls : Skyrim} de \bsc{Bethesda}, on peut se déplacer dans une carte très grande, agrémentée de plusieurs villages, remplis de PNJs. Même si le joueur est très libre, il peut être ralenti voire bloqué s'il n'a pas encore accompli certains objectifs.
+                
+                Le personnage incarné peut présenter divers caractéristiques, à améliorer afin de franchir certains obstacles durant le jeu. Ces caractéristiques peuvent également être attribuées à des monstres par exemple contrôlés par ledit personnage comme dans la franchise Pokémon.
+                
+                Des objets peuvent également faire leur apparition pour aider le joueur dans sa quête principal et ses quêtes secondaires. Un jeu de rôle présente en effet différents objectifs, ceux-ci sont bien évidemment responsables de l'immersion du joueur.
+            
+            \subsubsection{Pourquoi ce projet ?}
+                Nous avions la possibilité de réaliser ce que nous voulions, tant que ce projet restait codé en python. Nous nous sommes tournés vers un jeu car, il faut le dire, c'est plus fun !
+                
+                Un RPG offre beaucoup de possibilités, il nous est donc possible d'intégrer à notre projet beaucoup d'élément. Etant en 2D, nous pouvons nous concentrer sur le code plutôt que sur les graphismes, qui seront tout de même soignés.
+                
+                Nous avons la volonté de faire un jeu le plus modulable possible. C'est à dire que le joueur pourra lui même modifier la plupart des éléments du jeu. Il pourra en effet modifier les cartes, son propre personnage, ses sorts, ses monstres, les PNJs et bien d'autres !\\
+                Le projet sera bien évidemment livré avec certains de ces éléments prédéfinis.
+                
+                Le projet sera constitué de deux grandes parties : la phase d'exploration et la phase de combat. Dans la phase d'exploration le personnage pourra parcourir des cartes, parler à des personnages, etc, tandis que dans la phase de combat il pourra se battre et mettre à l'épreuve ses capacités !
+                
+                Un projet d'une telle envergure représente un réel défit pour notre groupe, c'est pourquoi nous l'avons choisi. Nous nous impliquons beaucoup dedans et espérons réaliser quelque chose de bien !
+        
+        \newpage
+        \subsection{Cartes}
+            Les cartes sont le support du jeu et ainsi très importantes. C'est sur celles-ci que le joueur va pouvoir se déplacer, que seront placés les PNJs, objets, etc.\\
+            Les cartes sont composées de cases de 30*30 pixels et en ont 20 en largeur comme en hauteur, constituant une carte de 600*600 pixels.\\
+            
+            Le joueur, via les touches directionnelles a la possibilité de déplacer son personnage de haut en bas et de droite à gauche. Arrivé au bord de la carte, s'il n'est pas bloqué par des éléments de décor ou objets, PNJs, etc, le personnage changera de carte et arrivera ainsi sur la suivante.\\
+            
+            Des cases peuvent être définies comme \textit{téléporteurs}, c'est à dire qu'en marchant dessus, le personnage sera téléporté. Cette téléportation peut s'effectuer n'importe où, aussi bien sur la même carte que sur une autre, aussi bien aux mêmes coordonnées qu'à d'autres.\\
+            
+            Les textures de chaque case sont également définies dans le fichier de chaque carte. Ces cases peuvent être traversables ou non et avoir n'importe quelle texture voulue par le joueur ou prédéfinie.\\
+            
+            Un éditeur/créateur de carte est également disponible pour aider à la création et l'édition desdites cartes. Le joueur peut ainsi créer son propre environnement ou modifier celui existant.            
+        
+        \subsection{Personnages non joueurs}
+            Les PNJs (Personnages Non Joueurs) sont comme leur nom l'indique des personnages intégrés au jeux, contrôlés par l'ordinateur.
+            Ces personnages fournissent des informations sur l'univers du jeu mais ausi des conseils, aides au joueur.
+            Ils peuvent également donner des objets au personnage incarné.
+            
+            Le joueur a la possibilité d'en créer ou de modifier ceux qui existent déjà. Ceux-ci sont placés sur la carte aux coordonnées indiquées par le joueur.\\
+            
+            En interagissant avec eux en appuyant sur la touche \bsc{Entrée}, un dialogue apparaît, coupé en plusieurs parties s'il est trop long. Si tel est le cas, il est possible de passer à la partie suivante en appuyant sur \bsc{Ctrl-Droite}. Pour fermer la fenêtre de dialogue et pour éviter de relancer celui-ci sans faire exprès, la touche \bsc{Ctrl-Droite} est utilisée.
+              
+        \subsection{Quêtes}
+            Les quêtes sont des objectifs donnés par des PNJs. Celles-ci peuvent être de différentes natures. Il est ainsi possible d'en obtenir ayant pour objectif de tuer des monstres, de collecter un certain nombre d'objets par exemple.\\
+            
+            À l'issu des quêtes, le personnage se voit récompensé. Il peut recevoir de l'expérience ou encore des objets.\\
+        
+        \subsection{Combats} 
+            Les combats prendront place dans, comme leur nom l'indique, les phases de combat. Ceux-ci se déroulent au tour par tour, à la manière de ceux dans \textit{Pokémon}. Le personnage contrôlé dans les phases d'explorations est le même que celui des phases de combat. C'est avec celui-ci que le joueur peut combattre.\\
+            
+            Le personnage est confronté à des monstres. Tous deux possèdent des caractéristiques leur étant propres. Ainsi, celui ayant l'initiative la plus élevée pourra commencer le combat.\\
+            D'autres caractéristiques sont également présents : force, agilité, chance et intelligence. Ces caractéristiques permettent de lancer des sorts plus puissants d'un certain type.\\
+                               
+            Les sorts sont en effet de plusieurs types : feu air, eau et terre. On peut ainsi axer son personnage vers un de ces éléments. Ce sont les sorts qui permettent d'infliger des dégats à l'adversaire ou bien de regagner de la vie.\\
+            On peut également mettre l'adversaire dans un état spécifique : \textit{empoisonné} par exemple. Ces divers états peuvent avoir différents effets, ils peuvent par exemple faire gagner de la vie à l'affecté chaque tour, diminuer sa puissance de frappe, etc.\\
+            
+            À l'issu de ces combats, le joueur est récompensé par de l'expérience. Cette expérience permet de faire progresser les caractéristiques du personnage ainsi que son niveau.\\
+
+            Le joueur a la possibilité de selectionner ses sorts, ses objets ou même de fuir en utilisant les touches directionnelles et en appuyant sur la touche \bsc{Entrée}.            
+        
+        \subsection{Objets et inventaire}
+            Pour stocker les objets acquéris au fil du jeu, il devient nécessaire de pouvoir les voir ainsi que leur quantité. Le objets peuvent en effet être acquis en quantité limité, l'inventaire lui aussi peut être limité en espace.\\
+            
+            Les objets présents sur la carte peuvent être ramassés via la touche \bsc{entrée}. Si ceux-ci n'ont pas d'image définie, une par défaut leur est attribuée, rendant l'objet en question "secret" avant son ramassage.\\
+            
+            L'inventaire est quant à lui accessible en appuyant sur la touche \bsc{Echap} puis en sélectionnant \textit{Inventaire} avec les touches directionnelles. Le joueur peut ici consulter les objets qu'il possède ainsi que leur quantité. Un description de ces objets peut être obtenu en appuyant sur la touche \bsc{H} et quitter en appuyant sur \bsc{Ctrl-Droite}.
+       
+        \subsection{Menu et options}
+            Le joueur a la possibilité d'accéder à un menu en appuyant sur la touche \bsc{Echap}. Celui-ci comprend plusieurs options : \textit{Monstres}, \textit{Inventaire}, \textit{Personnage}, \textit{Sauvegarde} et enfin \textit{Retour}. Pour les sélectionner, il suffit d'utiliser les touches directionnelles \bsc{Haut} et \bsc{Bas}.\\
+            
+            \begin{description}
+                \item[Monstres] permet de voir tous les monstres présents dans le jeu ainsi que leurs caractéristiques.
+                \item[Inventaire] permet comme expliquée précédemment de voir les objets possédés par le personnage incarné ainsi que leur nombre. Un description de ceux-ci peut-être obtenu s'il existe en appuyant sur la touche H.
+                \item[Personnage] permet de voir les caractéristiques de son personnage. Ainsi, on peut observer ses points d'agilité ou son niveau par exemple. Une image du personnage peut également être affichée si celle-ci existe. Le nom du personnage est aussi affiché.
+                \item[Sauvegarde] permet tout simplement, comme son nom l'indique, de sauvegarder le statut du jeu. Le joueur peut ainsi quitter le jeu et le reprendre plus tard s'il en a envie.
+                \item[Retour] permet juste de quitter le menu et donc de revenir au jeu, de pouvoir à nouveau déplacer son personnage. Il n'est cependant pas nécessaire de toujours passer par cette option, on peut en quitter cette interface en appuyant sur \bsc{Echap} également.
+            \end{description}
+           
+    \newpage
+	\section{Modifications}
+        \subsection{Introduction}
+            Le principe de base de chaque fonction du projet et comment l'utilisateur pouvait les utiliser ont été abordés dans les parties précédentes. Il est maintenant temps de voir plus en détail le fonctionnement de chacune de ces fonctions et comment l'utilisateur peut les modifier ou créer.\\
+            Notre projet se voulant le plus modulable possible, toutes les ressources du projet ou presque peuvent être modifer selon ses goûts. Ainsi il est possible de créer un jeu totalement différent, se reposant seulement sur une base commune.\\
+            Certains éléments peuvent être modifiés via un programme séparé du jeu. D'autres éléments ne peuvent être toutefois modifiés qu'à "la main" en connaissant la construction des fichiers de chaque élément.
+        
+        \subsection{Cartes}
+            Les cartes sont tout simplement un fichier texte. Les 4 premières lignes de ce fichier contiennent les cartes adjacentes à la carte. Ainsi l'utilisateur peut faire en sorte que la carte 2 soit en dessous de la carte 6, elle même à gauche de la 2, par exemple.\\
+            
+            Les autres lignes ont toutes la même fonction, elles sont responsabes du placement des textures ainsi que de leur statut.\\
+            Les textures sont placées dans un dossier à part et leur nom seul est à indiquer dans une ligne.\\
+            
+            L'utilisateur peut spécifier une zone dans laquelle sera répétée une certaine texture. Cette même texture est automatiquement redimensionnée à la taille d'une case : 30*30.\\
+            Chaque ligne contient également le statut d'une case, c'est à dire si celle-ci est traversable ou non. On peut de ce fait créer un sol pour une maison différent du sol par défaut.\\
+            Sur cette ligne s'ajoutent les coordonnées et la carte de destination si l'on souhaite que cette case soit téléporteuse.\\
+                      
+            Voici un exemple de ligne : \textit{0:330;30:360;arbre;1}\\
+            Cela signifie que des coordonnées 0;330 à 30;360, la texture \textit{arbre} sera placée et ne sera pas traversable.\\
+            Si les coordonnées entrées ne sont pas un multiple de 30, le programme adaptera ces coordonnées à la case en dessous.\\
+            
+            \newpage
+            Créer une carte de 400 cases se révèle toutefois compliqué à partir seulement d'un fichier texte. Cela devient vite fastidieux à moins d'avoir l'habitude de travailler avec des coordonnées pures et de pouvoir tout se représenter dans la tête.\\
+            C'est pourquoi un programme d'aide à la création et l'édition de carte est proposé.\\
+            Ce programme présente une carte vierge et toutes les images du dossier \textit{textures}. L'utilisateur peut via un \bsc{Clic-Gauche} selectionner une image et par la même touche la placer sur la carte à l'endroit souhaité. Via un \bsc{Clic-Droit}, il peut supprimer ces images à l'emplacement voulu de la carte.\\
+            
+            Des touches plus spéciales sont également présentes pour facilier la mise en place de téléporteurs et de cases traversables. Par défaut, toute case ne téléporte nulle part et n'est pas traversable.\\
+            Des masques de couleur verte permettent de rendre une case traversable via un \bsc{Clic-Gauche} sur celle-ci.\\
+            Pour les téléporteurs, des masques de couleur violette se mettent sur une case avec toujours un \bsc{Clic-Gauche}. Lors de la pose de celui-ci, une carte et des coordonnées sont demandées. Ces dernières peuvent être obtenues en éditant ou créant une carte, au survol d'une case, s'affichant dans la fenêtre.\\
+            L'utilisateur est invité à la fin en sauvegardant sa carte de renseigner les cartes adjacentes ainsi que le numéro de celle-ci. Les cartes suivent un ordre croissant de nombres en partant de 0.
+        
+        \subsection{PNJs, objets, }
+            Les PNJs ont eux aussi droit à leur propre fichier. Ainsi, le fichier texte d'un PNJ contiendra son nom complet, sa position, sa carte et également son dialogue.\\
+            Il en est de même pour les objets, à une différence près qui est que leur fichier peut contenir plusieurs positions et plusieurs cartes afin de ne pas avoir à recréer un fichier pour plusieurs objets.\\
+            Tout comme les cartes, il peut être difficile de placer des personnages et des objets. L'éditeur de carte permet ainsi à l'utilisateur de placer ces entités avec des boutons \bsc{Créer} par exemple. Après cette manipulation il est possible de renseigner toutes les caractéristiques de ces entités (nom, position, carte, effet, ...) et enfin de les placer sur la carte en édition via un \bsc{Clic-Gauche}. Comme pour les cartes, le \bsc{Clic-Droit} sert à les supprimer.        
+        
+\end{document}

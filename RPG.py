@@ -44,7 +44,7 @@ for i in os.listdir("pnj"): # i vaut le nom du pnj, "bidule.txt"
 liste_items = dict()
 
 for i in os.listdir("items"): # i vaut le nom du pnj, "bidule.txt"
-    if re.match("[0-9a-zA-Z_\-\.]+.txt", i):
+    if re.match("[0-9a-zA-Z_\-\.\ ]+.txt", i):
         liste_items[i.replace(".txt", "")] = Item(i.replace(".txt", "")) 
         liste_items[i.replace(".txt", "")].charger_item(liste_cartes)
 
@@ -100,6 +100,9 @@ while continuer == 1:
 
             if event.key == K_ESCAPE:
                 options(fenetre, liste_cartes, bentz, liste_pnjs, liste_items, inventaire)
-
+            
+            if event.key == K_i:
+                afficher_inventaire(fenetre, liste_cartes, bentz, liste_pnjs, liste_items, inventaire)
+            
         # if event.type == MOUSEMOTION: # Décommenter pour avoir la position de la souris.
             # print("position {},{}".format(event.pos[0],event.pos[1]))

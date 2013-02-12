@@ -352,6 +352,7 @@ class Joueur:
                     # print(val.nom)
                     inventaire[val.nom] +=1
                     val.position.remove([[perso.position_x + self.voir_x, perso.position_y + self.voir_y], perso.carte])
+                    liste_cartes[perso.carte].collisions.remove((perso.position_x + self.voir_x, perso.position_y + self.voir_y))
                     
                     liste_cartes[perso.carte].afficher_carte(fenetre)
                     for val in liste_pnjs.values():
@@ -460,8 +461,9 @@ def options(fenetre, liste_cartes, perso, liste_pnjs, liste_items, inventaire):
     curseur_font = pygame.font.Font(os.path.join("polices", "PKMNRSEU.FONT"), 24)
     # myfont = pygame.font.Font(os.path.join("polices", "PIXELADE.TTF"), 20)
     myfont = pygame.font.Font(os.path.join("polices", "Pokemon DPPt.ttf"), 24)
-
+	
     
+
     label_monstres =  myfont.render("Monstres", 1, (0,0,0))
     fenetre.blit(label_monstres, (560-75, 220+cst_y))
     
@@ -518,8 +520,11 @@ def options(fenetre, liste_cartes, perso, liste_pnjs, liste_items, inventaire):
                          
                 if event.key == K_RETURN:
                     if curseur == 1:
-                        print(inventaire)
-                    
+                        print(inventaire)                       
+                        afficher_inventaire(fenetre, liste_cartes, perso, liste_pnjs, liste_items, inventaire)
+                        continuer = 0
+                        
+                        
                     if curseur == 4:
                         liste_cartes[perso.carte].afficher_carte(fenetre)
                         for val in liste_pnjs.values():
@@ -530,3 +535,43 @@ def options(fenetre, liste_cartes, perso, liste_pnjs, liste_items, inventaire):
                         fenetre.blit(perso.orientation, (perso.position_x,perso.position_y))
                         pygame.display.flip()
                         continuer = 0
+                        
+def afficher_inventaire(fenetre, liste_cartes, perso, liste_pnjs, liste_items, inventaire):
+    image_inventaire = pygame.image.load(os.path.join("images", "inventaire.png"))
+    myfont = pygame.font.Font(os.path.join("polices", "Pokemon DPPt.ttf"), 24)
+    
+    fenetre.blit(image_inventaire, (0,0))
+    
+    i = 0
+    j = 0
+    for val in inventaire.keys():
+        y = 120+j*40
+        if y < 520 and inventaire[val] !=0:
+            fenetre.blit(myfont.render(val, 1, (0,0,0)), (230, 120+i*40))
+            fenetre.blit(myfont.render("x{0}".format(str(inventaire[val])), 1, (0,0,0)), (500, 120+i*40))
+            pygame.draw.line(fenetre, (0,0,0), (210,120+i*40+25), (550,120+i*40+25))
+            i += 1
+        
+        print(inventaire[val])
+        j += 1
+    pygame.display.flip()
+    
+    continuer = 1
+    while continuer:
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                quit()
+            if event.type == KEYDOWN:
+                if event.key == K_ESCAPE:
+                    continuer = 0
+                    liste_cartes[perso.carte].afficher_carte(fenetre)
+                    for val in liste_pnjs.values():
+                        if val.carte == perso.carte:
+                            fenetre.blit(val.image, (val.pos_x, val.pos_y))
+                    for i in liste_items:
+                        liste_items[i].afficher_item(fenetre, perso)
+                    fenetre.blit(perso.orientation, (perso.position_x,perso.position_y))
+                    pygame.display.flip()
+                
+
+                    
