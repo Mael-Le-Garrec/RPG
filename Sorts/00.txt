@@ -1,0 +1,5 @@
+name:Picote
+degat:5;10
+type:intelligence
+etat:-1
+cible:1

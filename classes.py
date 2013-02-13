@@ -519,11 +519,14 @@ def options(fenetre, liste_cartes, perso, liste_pnjs, liste_items, inventaire):
                         pygame.display.flip()
                          
                 if event.key == K_RETURN:
+                    if curseur == 0:
+                        print("LOL MONSTRES")
+                    
                     if curseur == 1:
                         print(inventaire)                       
                         afficher_inventaire(fenetre, liste_cartes, perso, liste_pnjs, liste_items, inventaire)
                         continuer = 0
-                        
+                       
                         
                     if curseur == 4:
                         liste_cartes[perso.carte].afficher_carte(fenetre)
@@ -552,17 +555,21 @@ def afficher_inventaire(fenetre, liste_cartes, perso, liste_pnjs, liste_items, i
             pygame.draw.line(fenetre, (0,0,0), (210,120+i*40+25), (550,120+i*40+25))
             i += 1
         
-        print(inventaire[val])
+        # print(inventaire[val])
         j += 1
+    
+    
+    
     pygame.display.flip()
     
     continuer = 1
+    
     while continuer:
         for event in pygame.event.get():
             if event.type == QUIT:
                 quit()
             if event.type == KEYDOWN:
-                if event.key == K_ESCAPE:
+                if event.key == K_ESCAPE or event.key == K_i:
                     continuer = 0
                     liste_cartes[perso.carte].afficher_carte(fenetre)
                     for val in liste_pnjs.values():

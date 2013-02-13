@@ -1,0 +1,5 @@
+name:Heal
+degat:-30;-25
+type:strenght
+etat:-1
+cible:0

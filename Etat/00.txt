@@ -1,0 +1,3 @@
+name:enflamai
+turn:4
+effect:-10

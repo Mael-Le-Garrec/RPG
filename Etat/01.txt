@@ -1,0 +1,3 @@
+name:enflama
+turn:2
+effect:-10

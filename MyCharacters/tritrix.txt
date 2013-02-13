@@ -1,0 +1,9 @@
+Nickname:tritrix
+ClanName:Tummy
+Lvl:13
+Exp:37684
+Vitality:0
+Intelligence:0
+Strenght:0
+Chance:0
+Agility:0
