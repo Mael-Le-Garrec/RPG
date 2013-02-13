@@ -1,0 +1,5 @@
+name:Flash
+degat:8;15
+type:intelligence
+etat:1
+cible:1

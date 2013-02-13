@@ -1,0 +1,9 @@
+Nickname:Beta
+ClanName:Tummy
+Lvl:6
+Exp:6746
+Vitality:0
+Intelligence:0
+Strenght:0
+Chance:0
+Agility:0

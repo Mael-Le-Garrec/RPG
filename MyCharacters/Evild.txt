@@ -1,0 +1,9 @@
+Nickname:Evild
+ClanName:Tummy
+Lvl:6
+Exp:6457
+Vitality:0
+Intelligence:0
+Strenght:0
+Chance:0
+Agility:0

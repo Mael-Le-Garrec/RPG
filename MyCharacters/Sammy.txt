@@ -1,0 +1,9 @@
+Nickname:Sammy
+ClanName:Tummy
+Lvl:3
+Exp:1128
+Vitality:0
+Intelligence:0
+Strenght:0
+Chance:0
+Agility:0

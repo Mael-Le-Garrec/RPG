@@ -6,6 +6,9 @@ import re
 import os
 import textwrap
 
+import GameFonctions
+import FightFonctions
+from random import choice
 
 # Initialisation Pygame
 # La fenetre fait 800*800 et le jeu 600*600
@@ -24,11 +27,11 @@ liste_cartes = list()
 # On lit le dossier "map" et on crée associe l'objet Carte à chaque indice qui correspond à son nom (Ainsi la carte 6 se trouvera à liste_cartes[6])
 for i in range(len(os.listdir("map"))):
     liste_cartes.append(Carte(i))
-    
+
     # Après avoir crée l'objet, on la charge (collisions, etc)
     liste_cartes[i].charger_carte()
 
-    
+
 liste_pnjs = dict()
 # On crée un dictionnaire contenant le nom du pnj et son objet
 # {'jacques.txt' : 'objet'}
@@ -36,27 +39,68 @@ liste_pnjs = dict()
 for i in os.listdir("pnj"): # i vaut le nom du pnj, "bidule.txt"
     if re.match("[0-9a-zA-Z_\-\.]+.txt", i):
         liste_pnjs[i] = PNJ(i)
-        
+
         # Après avoir crée l'objet, on charge le pnj (position/carte/dialogues...)
         liste_pnjs[i].charger_pnj(liste_cartes)
-        
+
 
 liste_items = dict()
 
 for i in os.listdir("items"): # i vaut le nom du pnj, "bidule.txt"
     if re.match("[0-9a-zA-Z_\-\.\ ]+.txt", i):
-        liste_items[i.replace(".txt", "")] = Item(i.replace(".txt", "")) 
+        liste_items[i.replace(".txt", "")] = Item(i.replace(".txt", ""))
         liste_items[i.replace(".txt", "")].charger_item(liste_cartes)
 
 inventaire = dict()
 for val in liste_items.keys():
-    inventaire[val.strip(".txt")] = liste_items[val].nombre     
-        
-# print(liste_items)   
+    inventaire[val.replace(".txt", "")] = liste_items[val].nombre
+
+# print(liste_items)
 # print(inventaire)
-   
-# On crée notre personnage        
+
+# On crée notre personnage
 bentz = Joueur()
+
+myfont = pygame.font.Font(os.path.join("polices", "Pokemon DPPt.ttf"), 24)
+
+
+
+# Chargement de tous les fichiers nécessaires
+GameFonctions.ClansInfo.Ini_Clans()
+GameFonctions.ClansInfo.OpenClansStats()
+
+fenetre.blit(pygame.image.load(os.path.join('images', 'clan.png')).convert_alpha(),(0,0))
+
+
+
+liste_characters = []
+for val in os.listdir("MyCharacters"):
+    liste_characters.append(val.replace(".txt", ""))
+
+
+# Affichage des persos en fenêtre graphique
+for i in range(len(liste_characters)):
+    fenetre.blit(myfont.render(liste_characters[i], 1, (0,0,0)), (50, 120+i*40))
+pygame.display.flip()
+
+
+GameFonctions.MyCharacters.Character1.Nickname=input("Entrer votre pseudo :")
+
+
+if GameFonctions.MyCharacters.SaveExist(GameFonctions.MyCharacters.Character1.Nickname)==True:
+    GameFonctions.MyCharacters.ReadSave(GameFonctions.MyCharacters.Character1.Nickname,GameFonctions.MyCharacters.Character1)
+else:
+    GameFonctions.MyCharacters.Character1.ClanName=input("Entrer votre clan :")
+    GameFonctions.MyCharacters.CreateSave(GameFonctions.MyCharacters.Character1)
+
+GameFonctions.MyCharacters.CreateSave(GameFonctions.MyCharacters.Character1)
+
+
+
+
+
+
+
 
 # On définit quels événements permettent de se déplacer
 cle_deplacement = [K_UP, K_DOWN, K_LEFT, K_RIGHT]
@@ -74,14 +118,14 @@ for val in liste_items.values():
     for val2 in val.position:
         if int(val2[1]) == bentz.carte:
             fenetre.blit(val.image, (int(val2[0][0]), int(val2[0][1])))
-        
+
 
 pygame.display.flip() # Un petit peu d'eau, faut rafraichir
 
 continuer = 1
 while continuer == 1:
     pygame.time.Clock().tick(300) # Faut un peu ralentir la boucle
-    
+
     # Si on clique sur la chtite croix pour quitter
     for event in pygame.event.get():
         if event.type == QUIT:
@@ -92,7 +136,7 @@ while continuer == 1:
             # Soit elle se trouve dans les clés de déplacement et on bouge le perso
             if event.key in cle_deplacement:
                 bentz.bouger_perso(event.key, fenetre, liste_cartes, bentz, liste_pnjs, liste_items);
-            
+
             # Soit c'est "Entrée" et on fait parler le personnage
             if event.key == K_RETURN:
                 bentz.parler_pnj(bentz, liste_pnjs, fenetre, liste_cartes, liste_items)
@@ -100,9 +144,18 @@ while continuer == 1:
 
             if event.key == K_ESCAPE:
                 options(fenetre, liste_cartes, bentz, liste_pnjs, liste_items, inventaire)
-            
+
             if event.key == K_i:
                 afficher_inventaire(fenetre, liste_cartes, bentz, liste_pnjs, liste_items, inventaire)
+
+            if event.key == K_g:
+                print(GameFonctions.MobsListe)
             
+            if event.key == K_f:
+                FightFonctions.Fight.StartFightMob(GameFonctions.MyCharacters.Character1)
+
+                GameFonctions.MyCharacters.CreateSave(GameFonctions.MyCharacters.Character1)
+
+
         # if event.type == MOUSEMOTION: # Décommenter pour avoir la position de la souris.
             # print("position {},{}".format(event.pos[0],event.pos[1]))

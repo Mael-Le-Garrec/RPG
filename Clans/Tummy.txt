@@ -1,0 +1,8 @@
+description:Aucune
+vitality:500
+intelligence:300
+strenght:100
+name:Tummy
+chance:100
+agility:100
+sort:0,01,03

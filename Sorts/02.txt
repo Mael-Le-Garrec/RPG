@@ -1,0 +1,5 @@
+name:Badaboum
+degat:25;30
+type:strenght
+etat:-1
+cible:1
