@@ -4,11 +4,9 @@ from pygame.locals import *
 from classes import *
 import re
 import os
-import textwrap
 
 import GameFonctions
 import FightFonctions
-from random import choice
 
 # Initialisation Pygame
 # La fenetre fait 800*800 et le jeu 600*600
@@ -61,7 +59,7 @@ for val in liste_items.keys():
 # On crée notre personnage
 bentz = Joueur()
 
-myfont = pygame.font.Font(os.path.join("polices", "Pokemon DPPt.ttf"), 24)
+
 
 
 
@@ -69,31 +67,13 @@ myfont = pygame.font.Font(os.path.join("polices", "Pokemon DPPt.ttf"), 24)
 GameFonctions.ClansInfo.Ini_Clans()
 GameFonctions.ClansInfo.OpenClansStats()
 
-fenetre.blit(pygame.image.load(os.path.join('images', 'clan.png')).convert_alpha(),(0,0))
-
-
-
-liste_characters = []
+liste_persos = []
 for val in os.listdir("MyCharacters"):
-    liste_characters.append(val.replace(".txt", ""))
+    liste_persos.append(val.replace(".txt", ""))
+
+selection_personnage(fenetre, liste_persos)
 
 
-# Affichage des persos en fenêtre graphique
-for i in range(len(liste_characters)):
-    fenetre.blit(myfont.render(liste_characters[i], 1, (0,0,0)), (50, 120+i*40))
-pygame.display.flip()
-
-
-GameFonctions.MyCharacters.Character1.Nickname=input("Entrer votre pseudo :")
-
-
-if GameFonctions.MyCharacters.SaveExist(GameFonctions.MyCharacters.Character1.Nickname)==True:
-    GameFonctions.MyCharacters.ReadSave(GameFonctions.MyCharacters.Character1.Nickname,GameFonctions.MyCharacters.Character1)
-else:
-    GameFonctions.MyCharacters.Character1.ClanName=input("Entrer votre clan :")
-    GameFonctions.MyCharacters.CreateSave(GameFonctions.MyCharacters.Character1)
-
-GameFonctions.MyCharacters.CreateSave(GameFonctions.MyCharacters.Character1)
 
 
 

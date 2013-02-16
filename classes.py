@@ -4,6 +4,9 @@ import pygame
 import textwrap
 import time
 from pygame.locals import *
+import GameFonctions
+import FightFonctions
+from pygame import gfxdraw
 
 # Classe de carte contenant son nom, les cartes adjacentes, les objets dessus, les collisions, les zones de tps.
 class Carte:
@@ -523,7 +526,7 @@ def options(fenetre, liste_cartes, perso, liste_pnjs, liste_items, inventaire):
                         print("LOL MONSTRES")
                     
                     if curseur == 1:
-                        print(inventaire)                       
+                        # print(inventaire)                       
                         afficher_inventaire(fenetre, liste_cartes, perso, liste_pnjs, liste_items, inventaire)
                         continuer = 0
                        
@@ -580,5 +583,94 @@ def afficher_inventaire(fenetre, liste_cartes, perso, liste_pnjs, liste_items, i
                     fenetre.blit(perso.orientation, (perso.position_x,perso.position_y))
                     pygame.display.flip()
                 
-
+def selection_personnage(fenetre, liste_persos):
+    cst_x1 = 300+100+20
+    cst_x2 = 300-100-20-10
+    cst_y = 300-10
                     
+    
+    myfont = pygame.font.Font(os.path.join("polices", "Pokemon DPPt.ttf"), 24)
+    fenetre.blit(pygame.image.load(os.path.join('images', 'clan.png')).convert_alpha(),(0,0))
+    
+    actuel = 0
+
+    pygame.draw.line(fenetre, (0,0,0), (200,200), (400,200), 2)
+    pygame.draw.line(fenetre, (0,0,0), (200,400), (400,400), 2)
+    pygame.draw.line(fenetre, (0,0,0), (200,200), (200,400), 2)
+    pygame.draw.line(fenetre, (0,0,0), (400,200), (400,400), 2)
+    
+    GameFonctions.MyCharacters.ReadSave(liste_persos[actuel],GameFonctions.MyCharacters.Character1)
+
+    fenetre.blit(myfont.render(str(GameFonctions.MyCharacters.Character1.Nickname), 1, (0,0,0)), (210, 210))
+    fenetre.blit(myfont.render("Clan : " + str(GameFonctions.MyCharacters.Character1.ClanName), 1, (0,0,0)), (210, 210+2*20))
+    fenetre.blit(myfont.render("Force : " + str(GameFonctions.MyCharacters.Character1.Strenght), 1, (0,0,0)), (210, 210+3*20))
+    fenetre.blit(myfont.render("Agilité : " + str(GameFonctions.MyCharacters.Character1.Agility), 1, (0,0,0)), (210, 210+4*20))
+    fenetre.blit(myfont.render("Chance : " + str(GameFonctions.MyCharacters.Character1.Chance), 1, (0,0,0)), (210, 210+5*20))
+    fenetre.blit(myfont.render("Intelligence : " + str(GameFonctions.MyCharacters.Character1.Intelligence), 1, (0,0,0)), (210, 210+6*20))
+    fenetre.blit(myfont.render("Vitalité : " + str(GameFonctions.MyCharacters.Character1.Vitality), 1, (0,0,0)), (210, 210+7*20))
+    fenetre.blit(myfont.render("Niveau : " + str(GameFonctions.MyCharacters.Character1.Lvl), 1, (0,0,0)), (210, 210+8*20))
+    
+    fenetre.blit(myfont.render("{0} / {1}".format(actuel+1, len(liste_persos)), 1, (0,0,0)), (280, 250+8*20))    
+    
+    pygame.gfxdraw.filled_trigon(fenetre, 0+cst_x1, 0+cst_y, 0+cst_x1, 20+cst_y, 10+cst_x1, 10+cst_y, (0,0,0))
+    
+    
+    pygame.display.flip()
+    
+    continuer = 1
+    while continuer:
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                quit()
+            if event.type == KEYDOWN:
+                if event.key == K_RIGHT:
+                    if actuel < len(liste_persos)-1 :
+                        actuel += 1
+                        
+                if event.key == K_LEFT:
+                    if actuel > 0:                
+                        actuel -= 1
+                        
+                
+                if event.key == K_LEFT or event.key == K_RIGHT:
+                    fenetre.blit(pygame.image.load(os.path.join('images', 'clan.png')).convert_alpha(),(0,0))
+                    
+                    pygame.draw.line(fenetre, (0,0,0), (200,200), (400,200), 2)
+                    pygame.draw.line(fenetre, (0,0,0), (200,400), (400,400), 2)
+                    pygame.draw.line(fenetre, (0,0,0), (200,200), (200,400), 2)
+                    pygame.draw.line(fenetre, (0,0,0), (400,200), (400,400), 2)
+                    
+                    GameFonctions.MyCharacters.ReadSave(liste_persos[actuel],GameFonctions.MyCharacters.Character1)
+
+                    fenetre.blit(myfont.render(str(GameFonctions.MyCharacters.Character1.Nickname), 1, (0,0,0)), (210, 210))
+                    fenetre.blit(myfont.render("Clan : " + str(GameFonctions.MyCharacters.Character1.ClanName), 1, (0,0,0)), (210, 210+2*20))
+                    fenetre.blit(myfont.render("Force : " + str(GameFonctions.MyCharacters.Character1.Strenght), 1, (0,0,0)), (210, 210+3*20))
+                    fenetre.blit(myfont.render("Agilité : " + str(GameFonctions.MyCharacters.Character1.Agility), 1, (0,0,0)), (210, 210+4*20))
+                    fenetre.blit(myfont.render("Chance : " + str(GameFonctions.MyCharacters.Character1.Chance), 1, (0,0,0)), (210, 210+5*20))
+                    fenetre.blit(myfont.render("Intelligence : " + str(GameFonctions.MyCharacters.Character1.Intelligence), 1, (0,0,0)), (210, 210+6*20))
+                    fenetre.blit(myfont.render("Vitalité : " + str(GameFonctions.MyCharacters.Character1.Vitality), 1, (0,0,0)), (210, 210+7*20))
+                    fenetre.blit(myfont.render("Niveau : " + str(GameFonctions.MyCharacters.Character1.Lvl), 1, (0,0,0)), (210, 210+8*20))
+                    
+                    fenetre.blit(myfont.render("{0} / {1}".format(actuel+1, len(liste_persos)), 1, (0,0,0)), (280, 250+8*20))        
+                    
+                    if actuel < len(liste_persos)-1:
+                        pygame.gfxdraw.filled_trigon(fenetre, 0+cst_x1, 0+cst_y, 0+cst_x1, 20+cst_y, 10+cst_x1, 10+cst_y, (0,0,0))
+                    if actuel > 0:
+                        # pygame.gfxdraw.filled_trigon(fenetre, 10, 0, 10, 20, 0, 10, (0,0,0))
+                        pygame.gfxdraw.filled_trigon(fenetre, 10+cst_x2, 0+cst_y, 10+cst_x2, 20+cst_y, 0+cst_x2, 10+cst_y, (0,0,0))
+                    
+                    pygame.display.flip()
+    
+                if event.key == K_RETURN:
+                    GameFonctions.MyCharacters.Character1.Nickname = liste_persos[actuel]
+                    continuer = 0
+            
+    # GameFonctions.MyCharacters.Character1.Nickname=input("Entrer votre pseudo :")
+
+    # if GameFonctions.MyCharacters.SaveExist(GameFonctions.MyCharacters.Character1.Nickname)==True:
+        # GameFonctions.MyCharacters.ReadSave(GameFonctions.MyCharacters.Character1.Nickname,GameFonctions.MyCharacters.Character1)
+    # else:
+        # GameFonctions.MyCharacters.Character1.ClanName=input("Entrer votre clan :")
+        # GameFonctions.MyCharacters.CreateSave(GameFonctions.MyCharacters.Character1)
+
+    # GameFonctions.MyCharacters.CreateSave(GameFonctions.MyCharacters.Character1)

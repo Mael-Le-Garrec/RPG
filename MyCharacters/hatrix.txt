@@ -1,7 +1,7 @@
 Nickname:hatrix
 ClanName:tummy
-Lvl:5
-Exp:4363
+Lvl:7
+Exp:7791
 Vitality:0
 Intelligence:0
 Strenght:0
