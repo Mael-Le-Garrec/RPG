@@ -1,16 +1,4 @@
-﻿#-------------------------------------------------------------------------------
-# Name:        module1
-# Purpose:
-#
-# Author:      haas
-#
-# Created:     22/01/2013
-# Copyright:   (c) haas 2013
-# Licence:     <your licence>
-#-------------------------------------------------------------------------------
-#!/usr/bin/env python
-
-from time import gmtime, strftime, localtime
+﻿from time import gmtime, strftime, localtime
 import threading
 import os
 
@@ -19,10 +7,10 @@ FullAccess=False
 class LogFile:
     def CreateFolderLog():
         """Créer le dossier log et un fichier log s'il n'existe pas"""
-        if os.path.exists(os.getcwd()+"\\Log"):
+        if os.path.exists("Log"):
             None
         else:
-            os.mkdir(os.getcwd()+"\\Log")
+            os.mkdir("Log")
     def Information(x,Niveau):
         """Ecris une information dans le fichier log
 
@@ -34,7 +22,7 @@ class LogFile:
             Niveau="[Attention] "
 
         LogFile.CreateFolderLog()
-        File = open(os.getcwd()+"\\Log\\log.txt", "a")
+        File = open(os.path.join("Log", "log.txt"), "a")
         File.write(strftime("[%d %b %Y] [%H:%M:%S]", localtime())+" "+ Niveau+ str(x) +"\n")
         File.close
 

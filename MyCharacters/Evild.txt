@@ -1,7 +1,7 @@
 Nickname:Evild
 ClanName:Tummy
-Lvl:6
-Exp:6559
+Lvl:7
+Exp:6942
 Vitality:0
 Intelligence:0
 Strenght:0

@@ -1,15 +1,4 @@
-﻿#-------------------------------------------------------------------------------
-# Name:        module1
-# Purpose:
-#
-# Author:      Commun
-#
-# Created:     28/11/2012
-# Copyright:   (c) Commun 2012
-# Licence:     <your licence>
-#-------------------------------------------------------------------------------
-#!/usr/bin/env python
-from random import randrange
+﻿from random import randrange
 import GameFonctions
 import Config
 import os
@@ -25,9 +14,9 @@ class Etat:
     def IniEtat():
          """Récupère les différents Etats"""
          EtatInfo=[]
-         AllEtat=os.listdir(os.getcwd()+"\\Etat")
+         AllEtat=os.listdir("Etat")
          for i in range (len(AllEtat)):
-            File = open(os.getcwd()+"\\Etat\\"+AllEtat[i], "r")
+            File = open(os.path.join("Etat", AllEtat[i]), "r")
             EtatInfo.append(File.readlines())
             for e in range(len(EtatInfo[i])):
                 EtatInfo[i][e]=EtatInfo[i][e].replace("\n","").lower().split(":")
@@ -47,31 +36,38 @@ class Etat:
             Degat=Etat.EtatCharacter1[2]
             if Character.HP+Degat>Character.TVitality:
                 Degat=0
+            elif Character.HP+Degat<0:
+                Degat=-Character.HP
             Character.HP=Character.HP+Degat
-            Etat.EtatCharacter1[1]=Etat.EtatCharacter1[1]-1
-            if Etat.EtatCharacter1[1]==0:
-                print("Player sort de l'état {}".format( Etat.EtatCharacter1[0]))
-                Etat.EtatCharacter1=["",0,0]
+            Etat.EtatCharacter1[2]=Degat
             if int(Etat.EtatCharacter1[2])<0:
                 print("Player perd {} à cause de {}".format(Etat.EtatCharacter1[2], Etat.EtatCharacter1[0]))
             else:
                 print("Player gagne {} grâce à {}".format(Etat.EtatCharacter1[2], Etat.EtatCharacter1[0]))
-
+            Etat.EtatCharacter1[1]=Etat.EtatCharacter1[1]-1
+            if Etat.EtatCharacter1[1]==0:
+                print("Player sort de l'état {}".format( Etat.EtatCharacter1[0]))
+                Etat.EtatCharacter1=["",0,0]
+ 
+ 
     def ActionMob(Mob):
         """Actionne l'état du monstre"""
         if Etat.EtatMob[1]!=0:
             Degat=Etat.EtatMob[2]
             if Mob.HP+Degat>Mob.TVitality:
                 Degat=0
+            elif Mob.HP+Degat<0:
+                 Degat=-Mob.HP
             Mob.HP=Mob.HP+Degat
-            Etat.EtatMob[1]=Etat.EtatMob[1]-1
-            if Etat.EtatMob[1]==0:
-                print("Mob sort de l'état {}".format( Etat.EtatMob[0]))
-                Etat.EtatMob=["",0,0]
+            Etat.EtatMob[2]=Degat
             if int(Etat.EtatMob[2])<0:
                 print("Mob perd {} à cause de {}".format(Etat.EtatMob[2], Etat.EtatMob[0]))
             else:
                 print("Mob gagne {} grâce à {}".format(Etat.EtatMob[2], Etat.EtatMob[0]))
+            Etat.EtatMob[1]=Etat.EtatMob[1]-1
+            if Etat.EtatMob[1]==0:
+                print("Mob sort de l'état {}".format( Etat.EtatMob[0]))
+                Etat.EtatMob=["",0,0]
 
 
 class Sort:
@@ -83,10 +79,10 @@ class Sort:
     def IniSort():
         SortInfo=[]
         """Initialise les différents sorts & vérifie si les fichiers d'information sont entier et sans erreur & récupère les infos des sorts"""
-        AllSort=os.listdir(os.getcwd()+"\\Sorts")
+        AllSort=os.listdir("Sorts")
 
         for i in range (len(AllSort)):
-            File = open(os.getcwd()+"\\Sorts\\"+AllSort[i], "r")
+            File = open(os.path.join("Sorts", AllSort[i]), "r")
             SortInfo.append(File.readlines())
             for e in range(len(SortInfo[i])):
                 SortInfo[i][e]=SortInfo[i][e].replace("\n","").lower().split(":")
@@ -146,12 +142,12 @@ class Fight:
                             print("Vous ne pouvez pas utiliser ce sort !")
                         else:
                             break
-
-
+ 
+ 
              Degat=Fight.Attaque(Character,SortID)
              if Sort.Cible[SortID]==1:
                 Degat=Fight.HP(Mob,Degat)
-
+ 
              else:
                 Degat=Fight.HP(GameFonctions.MyCharacters.Character1,Degat)
              if Sort.Etat[SortID]!=-1:
@@ -168,10 +164,12 @@ class Fight:
                     print("Joueur perd {}".format(Degat))
                  else:
                     print("Joueur gagne {}".format(-Degat))
-             if Mob.HP<=0:
-               print("\nPlayer Win")
-               Fight.EndFight(Character,Mob,Fight.FightStats.Turn)
-
+         if Mob.HP==0:
+           print("\nPlayer Win")
+           Fight.EndFight(Character,Mob,Fight.FightStats.Turn)
+         elif Character.HP==0:
+            print("\nMob Win")
+ 
     def MobTurn(Mob,Character):
         """Tour du monstre"""
         print("\nTour du mobs :")
@@ -188,20 +186,23 @@ class Fight:
             if Sort.Etat[MobAttaque]!=-1:
                 Etat.EtatCharacter1=[Etat.Name[Sort.Etat[MobAttaque]],Etat.Turn[Sort.Etat[MobAttaque]],Etat.Effect[Sort.Etat[MobAttaque]]]
                 print ("Player entre dans l'etat {}".format(Etat.Name[Sort.Etat[MobAttaque]]))
-
-            if Character.HP<=0:
-                print("\nMob Win")
+ 
+            if Sort.Cible[MobAttaque]==1:
+                if Degat >= 0:
+                    print ("Joueur perd {}".format(Degat))
+                else:
+                    print ("Joueur gagne {}".format(-Degat))
             else:
-                 if Sort.Cible[MobAttaque]==1:
-                    if Degat >= 0:
-                        print ("Joueur perd {}".format(Degat))
-                    else:
-                        print ("Joueur gagne {}".format(-Degat))
-                 else:
-                    if Degat >= 0:
-                        print("Mob perd {}".format(Degat))
-                    else:
-                        print("Mob gagne {}".format(-Degat))
+                if Degat >= 0:
+                    print("Mob perd {}".format(Degat))
+                else:
+                    print("Mob gagne {}".format(-Degat))
+ 
+        if Character.HP==0:
+            print("\nMob Win")
+        elif Mob.HP==0:
+           print("\nPlayer Win")
+           Fight.EndFight(Character,Mob,Fight.FightStats.Turn)
 
     def MobCombat(Character,Mob):
         """Gestion des combat contre montres"""
@@ -271,9 +272,3 @@ class Fight:
         #Calcul de l'xp
         XP=GameFonctions.Exp.CalcXP(Character,Mob,Turn)
         GameFonctions.Exp.LvlUp(Character,Mob,XP)
-
-
-
-
-
-

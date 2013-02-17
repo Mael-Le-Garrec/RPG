@@ -1,7 +1,7 @@
 Nickname:Dominique
 ClanName:Tummy
-Lvl:1
-Exp:0
+Lvl:5
+Exp:3478
 Vitality:0
 Intelligence:0
 Strenght:0

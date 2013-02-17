@@ -1,15 +1,4 @@
-﻿#-------------------------------------------------------------------------------
-# Name:        module1
-# Purpose:
-#
-# Author:      Commun
-#
-# Created:     29/10/2012
-# Copyright:   (c) Commun 2012
-# Licence:     <your licence>
-#-------------------------------------------------------------------------------
-#!/usr/bin/env python
-import os
+﻿import os
 import Config
 from time import localtime, strftime
 from random import choice
@@ -23,14 +12,14 @@ class ClansInfo:
         """Initialise les différents clans & vérifie si les fichiers d'information sont entier et sans erreur"""
         global Clans
         #Récupère le nom de chaque fichier
-        ClansL=os.listdir(os.getcwd()+"\\Clans")
+        ClansL=os.listdir("Clans")
         #Revoir la gestion des fichiers.
         for i in range (len(ClansL)):
             #Supprime l'extension des noms
             ClansL[i]=ClansL[i].replace(".txt","")
 
             #Ouvre un fichier
-            File = open(os.getcwd()+"\\Clans\\"+ClansL[i]+".txt", "r")
+            File = open(os.path.join("Clans", ClansL[i] + ".txt"), "r")
             #Lis les lignes du fichier
             TestFileClan=File.readlines()
             File.close
@@ -49,7 +38,7 @@ class ClansInfo:
 
         for i in range (len(Clans)):
             #Ouvre un fichier
-            File = open(os.getcwd()+"\\Clans\\"+Clans[i]+".txt", "r")
+            File = open(os.path.join("Clans", Clans[i] + ".txt"), "r")
             #Lis les lignes du fichier et les ajoutes dans une liste
             ClansStats.append(File.readlines())
             #Supprime le retour à la ligne de chaque ellement de la liste, le met en minuscule et le coupe quand il trouve un ":"
@@ -64,7 +53,7 @@ class ClansInfo:
 class MyCharacters:
     def SaveExist(NickName):
             """Vérifie si la save existe"""
-            if os.path.exists(os.getcwd()+"\\MyCharacters\\"+str(NickName)+".txt"):
+            if os.path.exists(os.path.join("MyCharacters", str(NickName) + ".txt")):
                 Config.LogFile.Information("Le fichier de sauvegarde " + str(NickName) + " n'existe pas.",0)
                 Config.LogFile.Information("Le fichier de sauvegarde " + str(NickName) + " a été créer.",0)
                 return True
@@ -74,10 +63,10 @@ class MyCharacters:
     def CreateSave(Character):
         """Créer la save du personnage"""
         try:
-            File = open(os.getcwd()+"\\MyCharacters\\"+Character.Nickname+".txt", "w+")
+            File = open(os.path.join("MyCharacters", Character.Nickname + ".txt"), "w+")
         except:
-            os.mkdir(os.getcwd()+"\\MyCharacters\\")
-            File = open(os.getcwd()+"\\MyCharacters\\"+Character.Nickname+".txt", "w+")
+            os.mkdir("MyCharacters")
+            File = open(os.path.join("MyCharacters", Character.Nickname + ".txt"), "w+")
 
         File.write("Nickname:"+Character.Nickname+"\n")
         File.write("ClanName:"+Character.ClanName+"\n")
@@ -92,7 +81,7 @@ class MyCharacters:
 
     def ReadSave(Nickname,Character):
         """Lis la sauvegarde du personnage"""
-        File = open(os.getcwd()+"\\MyCharacters\\"+str(Nickname)+".txt", "r")
+        File = open(os.path.join("MyCharacters", str(Nickname) + ".txt"), "r")
         SaveInfo=File.readlines()
         File.close
         for i in range (len(SaveInfo)):
@@ -201,10 +190,10 @@ class Mobs:
     def IniMobs():
         del MobsListe[:]
         """Initialise les différents sorts & vérifie si les fichiers d'information sont entier et sans erreur & récupère les infos des sorts"""
-        Mobs=os.listdir(os.getcwd()+"\\Mobs")
+        Mobs=os.listdir("Mobs")
          
         for i in range (len(Mobs)):           
-            File = open(os.getcwd()+"\\Mobs\\"+Mobs[i], "r")
+            File = open(os.path.join("Mobs", Mobs[i]), "r")
             MobsListe.append(File.readlines())
             
             for e in range(len(MobsListe[i])):
@@ -276,4 +265,3 @@ class Exp:
                 Character.Exp=Character.Exp+MobExp
                 print("Lvl actuel : "+str(Character.Lvl))
                 print("Prochain niveau dans : "+ str(Exp.EXPNeed(Character.Lvl)-Character.Exp) + "xp")
-
