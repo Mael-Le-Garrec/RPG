@@ -1,4 +1,4 @@
-description:Aucune
+description:Un clan vraiment génial qui déboite du poney, je le recommande vivement ! Beaucoup d'intelligence, une bonne vitalité... Ce clan est vraiment bon ! Il est également doté de beaucoup de sorts, c'est le meilleur choix que l'on puisse faire.
 vitality:500
 intelligence:300
 strenght:100

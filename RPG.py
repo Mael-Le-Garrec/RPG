@@ -14,7 +14,7 @@ import FightFonctions
 pygame.init()
 titre = 'Un super RPG'
 pygame.key.set_repeat(1, 200)
-fenetre = pygame.display.set_mode((600,600), RESIZABLE)
+fenetre = pygame.display.set_mode((600,600))
 pygame.display.set_caption(titre)
 
 # fenetre.blit(pygame.image.load(os.path.join("images", "fond.png")), (0,0))
@@ -116,7 +116,9 @@ while continuer == 1:
             # Soit elle se trouve dans les clés de déplacement et on bouge le perso
             if event.key in cle_deplacement:
                 bentz.bouger_perso(event.key, fenetre, liste_cartes, bentz, liste_pnjs, liste_items);
-
+                print(GameFonctions.MyCharacters.Character1.Nickname)
+                print(GameFonctions.MyCharacters.Character1.ClanName)
+                
             # Soit c'est "Entrée" et on fait parler le personnage
             if event.key == K_RETURN:
                 bentz.parler_pnj(bentz, liste_pnjs, fenetre, liste_cartes, liste_items)
