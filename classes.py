@@ -617,6 +617,13 @@ def selection_personnage(fenetre, liste_persos):
                         afficher_personnage(fenetre, liste_persos, actuel)
                     else:
                         GameFonctions.MyCharacters.Character1.Nickname = nouveau
+                        GameFonctions.MyCharacters.Character1.Lvl = 1
+                        GameFonctions.MyCharacters.Character1.Exp = 0
+                        GameFonctions.MyCharacters.Character1.Vitality = 0
+                        GameFonctions.MyCharacters.Character1.Intelligence = 0
+                        GameFonctions.MyCharacters.Character1.Strenght = 0
+                        GameFonctions.MyCharacters.Character1.Chance = 0
+                        GameFonctions.MyCharacters.Character1.Agility = 0
                         GameFonctions.MyCharacters.CreateSave(GameFonctions.MyCharacters.Character1)
                         continuer = 0
                     
