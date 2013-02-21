@@ -1,7 +1,7 @@
 Nickname:Alpha
 ClanName:Tummy
 Lvl:3
-Exp:1141
+Exp:1243
 Vitality:0
 Intelligence:0
 Strenght:0

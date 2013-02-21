@@ -4,6 +4,8 @@ from pygame.locals import *
 from classes import *
 import re
 import os
+from pprint import pprint
+
 
 import GameFonctions
 import FightFonctions
@@ -116,8 +118,6 @@ while continuer == 1:
             # Soit elle se trouve dans les clés de déplacement et on bouge le perso
             if event.key in cle_deplacement:
                 bentz.bouger_perso(event.key, fenetre, liste_cartes, bentz, liste_pnjs, liste_items);
-                print(GameFonctions.MyCharacters.Character1.Nickname)
-                print(GameFonctions.MyCharacters.Character1.ClanName)
                 
             # Soit c'est "Entrée" et on fait parler le personnage
             if event.key == K_RETURN:
@@ -128,10 +128,13 @@ while continuer == 1:
                 options(fenetre, liste_cartes, bentz, liste_pnjs, liste_items, inventaire)
 
             if event.key == K_i:
+                # pprint(inventaire)
                 afficher_inventaire(fenetre, liste_cartes, bentz, liste_pnjs, liste_items, inventaire)
 
             if event.key == K_g:
-                print(GameFonctions.MobsListe)
+                # print(GameFonctions.MobsListe)
+                pprint(dict(vars(GameFonctions.MyCharacters.Character1)))
+            
             
             if event.key == K_f:
                 FightFonctions.Fight.StartFightMob(GameFonctions.MyCharacters.Character1)

@@ -1,7 +1,7 @@
-Nickname:Beta
-ClanName:Tummy
-Lvl:6
-Exp:6797
+Nickname:max
+ClanName:Zor
+Lvl:3
+Exp:1141
 Vitality:0
 Intelligence:0
 Strenght:0

@@ -552,17 +552,33 @@ def afficher_inventaire(fenetre, liste_cartes, perso, liste_pnjs, liste_items, i
     
     fenetre.blit(image_inventaire, (0,0))
     
-    i = 0
-    j = 0
-    for val in inventaire.keys():
-        y = 120+j*40
-        if y < 520 and inventaire[val] !=0:
-            fenetre.blit(myfont.render(val, 1, (0,0,0)), (230, 120+i*40))
-            fenetre.blit(myfont.render("x{0}".format(str(inventaire[val])), 1, (0,0,0)), (500, 120+i*40))
-            pygame.draw.line(fenetre, (0,0,0), (210,120+i*40+25), (550,120+i*40+25))
-            i += 1
-        j += 1
+    milieu = int((600-190-10)/2 + 190)
+    
+    #x1, y1, x2, y2, x3, y3
+    # pygame.gfxdraw.filled_trigon(fenetre, milieu, 100, milieu-10, 110, milieu+10, 110, (0,0,0)) #haut
 
+    # pygame.gfxdraw.filled_trigon(fenetre, milieu, 550, milieu-10, 540, milieu+10, 540, (0,0,0)) #bas
+    
+    #gauche:190
+    #droite:10    
+    
+    nb_obj = 0
+    i = 0
+    for val in sorted(inventaire, key=lambda item: (int(item) if item.isdigit() else float('inf'), item)):
+        y = 130+i*40
+        if y < 520 and inventaire[val] !=0:
+            fenetre.blit(myfont.render(val, 1, (0,0,0)), (230, 130+i*40))
+            fenetre.blit(myfont.render("x{0}".format(str(inventaire[val])), 1, (0,0,0)), (500, 130+i*40))
+            pygame.draw.line(fenetre, (0,0,0), (210,130+i*40+25), (550,130+i*40+25))
+            i += 1
+        if inventaire[val] != 0:
+            nb_obj +=1
+    
+    if nb_obj > 10:
+        pygame.gfxdraw.filled_trigon(fenetre, milieu, 550, milieu-10, 540, milieu+10, 540, (0,0,0))
+    
+    nb_actuel = 10
+    
     pygame.display.flip()
     
     continuer = 1
@@ -571,7 +587,39 @@ def afficher_inventaire(fenetre, liste_cartes, perso, liste_pnjs, liste_items, i
         for event in pygame.event.get():
             if event.type == QUIT:
                 quit()
+                
+                
             if event.type == KEYDOWN:
+                if event.key == K_DOWN:
+                    if nb_actuel < nb_obj:
+                        nb_actuel += 1
+                        
+                
+                if event.key == K_UP:
+                    if nb_actuel > 10:
+                        nb_actuel -= 1
+
+                
+                if event.key == K_UP or event.key == K_DOWN:
+                    fenetre.blit(image_inventaire, (0,0))
+                    i = 0
+                    
+                    for val in sorted(inventaire, key=lambda item: (int(item) if item.isdigit() else float('inf'), item))[(nb_actuel - 10):]:
+                        y = 130+i*40
+                        if y < 520 and inventaire[val] !=0:
+                            fenetre.blit(myfont.render(val, 1, (0,0,0)), (230, 130+i*40))
+                            fenetre.blit(myfont.render("x{0}".format(str(inventaire[val])), 1, (0,0,0)), (500, 130+i*40))
+                            pygame.draw.line(fenetre, (0,0,0), (210,130+i*40+25), (550,130+i*40+25))
+                            i += 1
+                                
+                    if nb_actuel > 10:
+                            pygame.gfxdraw.filled_trigon(fenetre, milieu, 100, milieu-10, 110, milieu+10, 110, (0,0,0)) #haut
+                    if nb_actuel < nb_obj:
+                            pygame.gfxdraw.filled_trigon(fenetre, milieu, 550, milieu-10, 540, milieu+10, 540, (0,0,0)) #bas
+                    
+                    pygame.display.flip()
+
+                    
                 if event.key == K_ESCAPE or event.key == K_i:
                     continuer = 0
                     liste_cartes[perso.carte].afficher_carte(fenetre)
@@ -796,7 +844,6 @@ def description_clan(fenetre, clan):
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
                     continuer = 0
-
                     
 def pygame_input(fenetre, actuel, liste_persos):
     myfont = pygame.font.Font(os.path.join("polices", "Pokemon DPPt.ttf"), 24)
@@ -846,6 +893,7 @@ def pygame_input(fenetre, actuel, liste_persos):
                  
                 if event.key == K_RETURN and len(pseudo) > 2 and pseudo not in liste_persos:
                     return pseudo
+
 # GameFonctions.MyCharacters.Character1.Nickname=input("Entrer votre pseudo :")
 
 # if GameFonctions.MyCharacters.SaveExist(GameFonctions.MyCharacters.Character1.Nickname)==True:
