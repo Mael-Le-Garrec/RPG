@@ -257,82 +257,7 @@ class Joueur:
                if perso.position_x + self.voir_x == val.pos_x and perso.position_y + self.voir_y == val.pos_y:
                     # Alors on affiche le dialogue
                     # On découpe le dialogue en plusieurs listes pour ne pas déborder de l'écran
-                    dialogue_wrap = textwrap.wrap(val.dialogues, 60)
-                    
-                    # On définit la police d'écriture
-                    myfont = pygame.font.Font(os.path.join("polices", "Pokemon DPPt.ttf"), 24)
-                    
-                    # On place le cadre
-                    fenetre.blit(self.fond_dial, (0,500))
-                    
-                    # On place le nom du personnage
-                    # label_nom =  myfont.render("{0}:".format(val.nom_entier), 1, (0,0,0))
-                    # fenetre.blit(label_nom, (40, 500))
-                    
-                    coeff = 0
-                    # On parcourt la liste de dialogue
-                    for i in range(len(dialogue_wrap)):
-                        continuer = 1
-                        
-                        # Si on a affiché 3 lignes de texte et que ce n'est pas la première
-                        if i % 3 == 0 and i != 0:
-                            # On la remet à 0, on commence une nouvelle "page"
-                            coeff = 0
-                            
-                            # On entre dans une boucle qui ne se finit que quand on a appuyé sur ctrl
-                            while continuer:
-                                pygame.time.Clock().tick(300)
-                                for event in pygame.event.get():
-                                    if event.type == QUIT:
-                                        quit()
-                                    if event.type == KEYDOWN:
-                                        if event.key == K_RCTRL:
-                                            # Ainsi, on affiche un fond noir et denouveau le nom du personnage
-                                            # On arrête aussi la boucle
-                                            fenetre.blit(self.fond_dial, (0,500))
-                                            continuer = 0
-                         
-                        # print("i:", i)
-                        
-                        # Si on se trouve sur la dernière ligne, on affiche 'blabla [...]"
-                        if  (i+1) % 3 == 0 and i !=0 and (i+1) != len(dialogue_wrap):
-                            label = myfont.render("{0} ...".format(dialogue_wrap[i]), 1, (0,0,0))
-                        # Sinon sur la première (sauf à i=0), on affiche "[...] blabla"
-                        elif i % 3 == 0 and i != 0:
-                            label = myfont.render("... {0}".format(dialogue_wrap[i]), 1, (0,0,0))
-                        # Sinon c'est une ligne normale et on affiche juste le texte
-                        elif i == 0:
-                            # label = myfont.render("{0} : {1}".format(val.nom_entier, dialogue_wrap[i]), 1, (0,0,0))
-                            label = myfont.render("{0}".format(dialogue_wrap[i]), 1, (0,0,0))
-                        else:
-                            label = myfont.render(dialogue_wrap[i], 1, (0,0,0))
-                            
-                        # Et on affiche enfin ce texte
-                        fenetre.blit(label, (40, 520+coeff*20))
-                        
-                        # On incrémente cette variable, pour savoir à quelle ligne (sur les 3) on se trouve
-                        coeff += 1
-
-                        pygame.display.flip() # On raffraichi le tout, il fait chaud !
-                        
-                    continuer = 1
-                    while continuer:
-                        pygame.time.Clock().tick(300)
-                        for event in pygame.event.get():
-                            if event.type == QUIT:
-                                quit()
-                            if event.type == KEYDOWN:
-                                if event.key == K_RCTRL:
-                                    continuer = 0
-                                    liste_cartes[perso.carte].afficher_carte(fenetre)
-                                    for val in liste_pnjs.values():
-                                        if val.carte == perso.carte:
-                                            fenetre.blit(val.image, (val.pos_x, val.pos_y))
-                                    for i in liste_items:
-                                        liste_items[i].afficher_item(fenetre, perso)
-                                    fenetre.blit(perso.orientation, (perso.position_x,perso.position_y))
-                                    pygame.display.flip()
-                                    continuer = 0
+                    fenetre_dialogue(fenetre, val.dialogues, liste_cartes, perso, liste_pnjs, liste_items)
                                                     
     def prendre_item(self, inventaire, liste_items, perso, liste_cartes, liste_pnjs, fenetre):
         self.voir_x = 0
@@ -346,29 +271,23 @@ class Joueur:
             self.voir_x = -30
         else:
             self.voir_x = 30
-        
+                
         # Position item : [[x, y, carte],[x, y, carte]] etc
-        
         for val in liste_items.values():
             if perso.carte in val.carte :
                 # print([[perso.position_x + self.voir_x, perso.position_y + self.voir_y], perso.carte])
                 # print(val.position)
                 # print(val.nom)
+                
+                dialogue = "Vous venez de ramasser *{0}*. Il sera affiché sous le nom *{1}*".format(val.nom_entier, val.nom)
+                
                 if [[perso.position_x + self.voir_x, perso.position_y + self.voir_y], perso.carte] in val.position:
-                    # print(val.nom)
                     inventaire[val.nom] +=1
                     val.position.remove([[perso.position_x + self.voir_x, perso.position_y + self.voir_y], perso.carte])
                     liste_cartes[perso.carte].collisions.remove((perso.position_x + self.voir_x, perso.position_y + self.voir_y))
                     
-                    liste_cartes[perso.carte].afficher_carte(fenetre)
-                    for val in liste_pnjs.values():
-                        if val.carte == perso.carte:
-                            fenetre.blit(val.image, (val.pos_x, val.pos_y))
-                    for i in liste_items:
-                        liste_items[i].afficher_item(fenetre, perso)
-                    fenetre.blit(perso.orientation, (perso.position_x,perso.position_y))
-                    pygame.display.flip()
-    
+                    fenetre_dialogue(fenetre, dialogue, liste_cartes, perso, liste_pnjs, liste_items)
+
 # Classe des Personnages Non Joueurs (PNJs)
 class PNJ:
     def __init__(self, nom):
@@ -546,6 +465,78 @@ def options(fenetre, liste_cartes, perso, liste_pnjs, liste_items, inventaire):
                         pygame.display.flip()
                         continuer = 0
                         
+def fenetre_dialogue(fenetre, dialogue, liste_cartes, perso, liste_pnjs, liste_items):
+    myfont = pygame.font.Font(os.path.join("polices", "Pokemon DPPt.ttf"), 24)
+    dialogue_wrap = textwrap.wrap(dialogue,60)
+    fond_dial = pygame.image.load(os.path.join('images', 'fond_dialogue.png')).convert_alpha()
+    
+    fenetre.blit(fond_dial, (0,500))
+    
+    coeff = 0
+    # On parcourt la liste de dialogue
+    for i in range(len(dialogue_wrap)):
+        continuer = 1
+        
+        # Si on a affiché 3 lignes de texte et que ce n'est pas la première
+        if i % 3 == 0 and i != 0:
+            # On la remet à 0, on commence une nouvelle "page"
+            coeff = 0
+            
+            # On entre dans une boucle qui ne se finit que quand on a appuyé sur ctrl
+            while continuer:
+                pygame.time.Clock().tick(300)
+                for event in pygame.event.get():
+                    if event.type == QUIT:
+                        quit()
+                    if event.type == KEYDOWN:
+                        if event.key == K_RCTRL:
+                            # Ainsi, on affiche un fond noir et denouveau le nom du personnage
+                            # On arrête aussi la boucle
+                            fenetre.blit(fond_dial, (0,500))
+                            continuer = 0
+         
+        # print("i:", i)
+        
+        # Si on se trouve sur la dernière ligne, on affiche 'blabla [...]"
+        if  (i+1) % 3 == 0 and i !=0 and (i+1) != len(dialogue_wrap):
+            label = myfont.render("{0} ...".format(dialogue_wrap[i]), 1, (0,0,0))
+        # Sinon sur la première (sauf à i=0), on affiche "[...] blabla"
+        elif i % 3 == 0 and i != 0:
+            label = myfont.render("... {0}".format(dialogue_wrap[i]), 1, (0,0,0))
+        # Sinon c'est une ligne normale et on affiche juste le texte
+        elif i == 0:
+            # label = myfont.render("{0} : {1}".format(val.nom_entier, dialogue_wrap[i]), 1, (0,0,0))
+            label = myfont.render("{0}".format(dialogue_wrap[i]), 1, (0,0,0))
+        else:
+            label = myfont.render(dialogue_wrap[i], 1, (0,0,0))
+            
+        # Et on affiche enfin ce texte
+        fenetre.blit(label, (40, 520+coeff*20))
+        
+        # On incrémente cette variable, pour savoir à quelle ligne (sur les 3) on se trouve
+        coeff += 1
+
+        pygame.display.flip()
+    
+    continuer = 1
+    while continuer:
+        pygame.time.Clock().tick(300)
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                quit()
+            if event.type == KEYDOWN:
+                if event.key == K_RCTRL:
+                    continuer = 0
+
+                    liste_cartes[perso.carte].afficher_carte(fenetre)
+                    for val in liste_pnjs.values():
+                        if val.carte == perso.carte:
+                            fenetre.blit(val.image, (val.pos_x, val.pos_y))
+                    for i in liste_items:
+                        liste_items[i].afficher_item(fenetre, perso)
+                    fenetre.blit(perso.orientation, (perso.position_x,perso.position_y))
+                    pygame.display.flip()
+                            
 def afficher_inventaire(fenetre, liste_cartes, perso, liste_pnjs, liste_items, inventaire):
     image_inventaire = pygame.image.load(os.path.join("images", "inventaire.png"))
     myfont = pygame.font.Font(os.path.join("polices", "Pokemon DPPt.ttf"), 24)
