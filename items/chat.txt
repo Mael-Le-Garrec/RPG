@@ -1,5 +1,5 @@
-Potion de vie
+Chat perdu
 0
-vie
+quete
 30:30;0
 330:390;2

@@ -279,7 +279,7 @@ class Joueur:
                 # print(val.position)
                 # print(val.nom)
                 
-                dialogue = "Vous venez de ramasser *{0}*. Il sera affiché sous le nom *{1}*".format(val.nom_entier, val.nom)
+                dialogue = "Vous venez de ramasser l'objet «{0}». Il sera affiché sous le nom «{1}»".format(val.nom_entier, val.nom)
                 
                 if [[perso.position_x + self.voir_x, perso.position_y + self.voir_y], perso.carte] in val.position:
                     inventaire[val.nom] +=1
@@ -350,6 +350,7 @@ class Item:
         for i in range(len(self.contenu)):
             self.nom_entier = self.contenu[0].strip()
             self.nombre = int(self.contenu[1].strip())
+            self.categorie = self.contenu[2].strip()
         
             if re.match("^[0-9]*:[0-9]*;[0-9]*$", self.contenu[i]):
                 self.ligne.append(self.contenu[i].strip())
@@ -466,8 +467,10 @@ def options(fenetre, liste_cartes, perso, liste_pnjs, liste_items, inventaire):
                         continuer = 0
                         
 def fenetre_dialogue(fenetre, dialogue, liste_cartes, perso, liste_pnjs, liste_items):
-    myfont = pygame.font.Font(os.path.join("polices", "Pokemon DPPt.ttf"), 24)
-    dialogue_wrap = textwrap.wrap(dialogue,60)
+    myfont = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 14)
+    # myfont = pygame.font.Font(os.path.join("polices", "Pokemon DPPt.ttf"), 24)
+    # myfont = pygame.font.SysFont("arial", 20)
+    dialogue_wrap = textwrap.wrap(dialogue,65)
     fond_dial = pygame.image.load(os.path.join('images', 'fond_dialogue.png')).convert_alpha()
     
     fenetre.blit(fond_dial, (0,500))
@@ -499,10 +502,11 @@ def fenetre_dialogue(fenetre, dialogue, liste_cartes, perso, liste_pnjs, liste_i
         
         # Si on se trouve sur la dernière ligne, on affiche 'blabla [...]"
         if  (i+1) % 3 == 0 and i !=0 and (i+1) != len(dialogue_wrap):
-            label = myfont.render("{0} ...".format(dialogue_wrap[i]), 1, (0,0,0))
+            # fenetre.blit()
+            label = myfont.render("{0} …".format(dialogue_wrap[i]), 1, (0,0,0))
         # Sinon sur la première (sauf à i=0), on affiche "[...] blabla"
         elif i % 3 == 0 and i != 0:
-            label = myfont.render("... {0}".format(dialogue_wrap[i]), 1, (0,0,0))
+            label = myfont.render("… {0}".format(dialogue_wrap[i]), 1, (0,0,0))
         # Sinon c'est une ligne normale et on affiche juste le texte
         elif i == 0:
             # label = myfont.render("{0} : {1}".format(val.nom_entier, dialogue_wrap[i]), 1, (0,0,0))
@@ -539,39 +543,40 @@ def fenetre_dialogue(fenetre, dialogue, liste_cartes, perso, liste_pnjs, liste_i
                             
 def afficher_inventaire(fenetre, liste_cartes, perso, liste_pnjs, liste_items, inventaire):
     image_inventaire = pygame.image.load(os.path.join("images", "inventaire.png"))
-    myfont = pygame.font.Font(os.path.join("polices", "Pokemon DPPt.ttf"), 24)
+    myfont = pygame.font.Font(os.path.join("polices", "Pokemon DPPt.ttf"), 25)
     
     fenetre.blit(image_inventaire, (0,0))
     
     milieu = int((600-190-10)/2 + 190)
     
-    #x1, y1, x2, y2, x3, y3
-    # pygame.gfxdraw.filled_trigon(fenetre, milieu, 100, milieu-10, 110, milieu+10, 110, (0,0,0)) #haut
-
-    # pygame.gfxdraw.filled_trigon(fenetre, milieu, 550, milieu-10, 540, milieu+10, 540, (0,0,0)) #bas
+    taille = myfont.render("INVENTAIRE", 1, (0,0,0)).get_rect().width
+    fenetre.blit(myfont.render("INVENTAIRE", 1, (0,0,0)), ((600-422-37)/2-taille/2+37, 80))  
+    pygame.draw.line(fenetre, (0,0,0), ((600-422-37)/2-taille/2+37, 100), ((600-422-37)/2-taille/2+37+taille,100))
     
-    #gauche:190
-    #droite:10    
+    categories = []
+    j = 0
+    for i in liste_items.keys():       
+        if liste_items[i].categorie.upper() not in categories:
+            categories.append(liste_items[i].categorie.upper())
+        
+            taille = myfont.render(liste_items[i].categorie.upper(), 1, (0,0,0)).get_rect().width
+            fenetre.blit(myfont.render(liste_items[i].categorie.upper(), 1, (0,0,0)), ((600-422-37)/2-taille/2+37, 140+j*50))
+       
+            j += 1
     
-    nb_obj = 0
-    i = 0
-    for val in sorted(inventaire, key=lambda item: (int(item) if item.isdigit() else float('inf'), item)):
-        y = 130+i*40
-        if y < 520 and inventaire[val] !=0:
-            fenetre.blit(myfont.render(val, 1, (0,0,0)), (230, 130+i*40))
-            fenetre.blit(myfont.render("x{0}".format(str(inventaire[val])), 1, (0,0,0)), (500, 130+i*40))
-            pygame.draw.line(fenetre, (0,0,0), (210,130+i*40+25), (550,130+i*40+25))
-            i += 1
-        if inventaire[val] != 0:
-            nb_obj +=1
+    categorie_actuelle = categories[0]
+    cat = 0
     
-    if nb_obj > 10:
-        pygame.gfxdraw.filled_trigon(fenetre, milieu, 550, milieu-10, 540, milieu+10, 540, (0,0,0))
+    taille = myfont.render(categorie_actuelle, 1, (0,0,0)).get_rect().width
+    fenetre.blit(myfont.render(categorie_actuelle, 1, (0,0,0)), (milieu-taille/2, 60))  
     
     nb_actuel = 10
+    tab = 0
     
+    nb_obj = afficher_categorie(fenetre, categorie_actuelle, tab, inventaire, nb_actuel, liste_items, categories)   
+       
     pygame.display.flip()
-    
+        
     continuer = 1
     while continuer:
         pygame.time.Clock().tick(300)
@@ -579,38 +584,40 @@ def afficher_inventaire(fenetre, liste_cartes, perso, liste_pnjs, liste_items, i
             if event.type == QUIT:
                 quit()
                 
-                
             if event.type == KEYDOWN:
-                if event.key == K_DOWN:
-                    if nb_actuel < nb_obj:
-                        nb_actuel += 1
-                        
+                if event.key == K_TAB:
+                    tab = not(tab)
                 
-                if event.key == K_UP:
-                    if nb_actuel > 10:
-                        nb_actuel -= 1
-
+                if event.key == K_RIGHT:
+                    if cat < len(categories)-1:
+                        cat += 1
+                    else:
+                        cat = 0
+                    nb_actuel = 10
+                    categorie_actuelle = categories[cat]
+                    nb_obj = afficher_categorie(fenetre, categorie_actuelle, tab, inventaire, nb_actuel, liste_items, categories)
+                    
+                if event.key == K_LEFT:
+                    if cat > 0:
+                        cat -= 1
+                    else:
+                        cat = len(categories)-1
+                    nb_actuel = 10
+                    categorie_actuelle = categories[cat]                
+                    nb_obj = afficher_categorie(fenetre, categorie_actuelle, tab, inventaire, nb_actuel, liste_items, categories)
                 
                 if event.key == K_UP or event.key == K_DOWN:
-                    fenetre.blit(image_inventaire, (0,0))
-                    i = 0
-                    
-                    for val in sorted(inventaire, key=lambda item: (int(item) if item.isdigit() else float('inf'), item))[(nb_actuel - 10):]:
-                        y = 130+i*40
-                        if y < 520 and inventaire[val] !=0:
-                            fenetre.blit(myfont.render(val, 1, (0,0,0)), (230, 130+i*40))
-                            fenetre.blit(myfont.render("x{0}".format(str(inventaire[val])), 1, (0,0,0)), (500, 130+i*40))
-                            pygame.draw.line(fenetre, (0,0,0), (210,130+i*40+25), (550,130+i*40+25))
-                            i += 1
+                    if event.key == K_UP:
+                        if tab == 0:
+                            if nb_actuel > 10:
+                                nb_actuel -= 1
+                    else:
+                        if tab == 0:
+                            if nb_actuel < nb_obj:
+                                nb_actuel += 1    
                                 
-                    if nb_actuel > 10:
-                            pygame.gfxdraw.filled_trigon(fenetre, milieu, 100, milieu-10, 110, milieu+10, 110, (0,0,0)) #haut
-                    if nb_actuel < nb_obj:
-                            pygame.gfxdraw.filled_trigon(fenetre, milieu, 550, milieu-10, 540, milieu+10, 540, (0,0,0)) #bas
-                    
-                    pygame.display.flip()
-
-                    
+                    nb_obj = afficher_categorie(fenetre, categorie_actuelle, tab, inventaire, nb_actuel, liste_items, categories)
+                        
                 if event.key == K_ESCAPE or event.key == K_i:
                     continuer = 0
                     liste_cartes[perso.carte].afficher_carte(fenetre)
@@ -622,6 +629,53 @@ def afficher_inventaire(fenetre, liste_cartes, perso, liste_pnjs, liste_items, i
                     fenetre.blit(perso.orientation, (perso.position_x,perso.position_y))
                     pygame.display.flip()
                 
+def afficher_categorie(fenetre, categorie_actuelle, tab, inventaire, nb_actuel, liste_items, categories):
+    image_inventaire = pygame.image.load(os.path.join("images", "inventaire.png"))
+    myfont = pygame.font.Font(os.path.join("polices", "Pokemon DPPt.ttf"), 25)
+    
+    milieu = int((600-190-10)/2 + 190)
+    
+    nb_obj = 0
+    if tab == 0:
+        fenetre.blit(image_inventaire, (0,0))
+        i = 0
+        
+        taille = myfont.render(categorie_actuelle, 1, (0,0,0)).get_rect().width
+        fenetre.blit(myfont.render(categorie_actuelle, 1, (0,0,0)), (milieu-taille/2, 60))
+        
+        gauche = math.floor(milieu - taille/2)-50
+        droite = math.floor(milieu + taille/2)-2+50
+        
+        pygame.gfxdraw.filled_trigon(fenetre, droite, 60, droite, 60+20, droite+10, 60+10, (0,0,0)) # droite
+        pygame.gfxdraw.filled_trigon(fenetre, gauche, 60, gauche, 20+60, gauche-10, 10+60, (0,0,0)) # gauche
+        
+        for val in sorted(inventaire, key=lambda item: (int(item) if item.isdigit() else float('inf'), item))[(nb_actuel - 10):]:
+            if liste_items[val].categorie.upper() == categorie_actuelle:
+                y = 130+i*40
+                if y < 520 and inventaire[val] !=0:
+                    fenetre.blit(myfont.render(val, 1, (0,0,0)), (230, 130+i*40))
+                    fenetre.blit(myfont.render("x{0}".format(str(inventaire[val])), 1, (0,0,0)), (500, 130+i*40))
+                    pygame.draw.line(fenetre, (0,0,0), (210,130+i*40+25), (550,130+i*40+25))
+                    i += 1
+                if inventaire[val] != 0:
+                    nb_obj +=1    
+                    
+        if nb_actuel > 10:
+                pygame.gfxdraw.filled_trigon(fenetre, milieu, 100, milieu-10, 110, milieu+10, 110, (0,0,0)) #haut
+        if nb_actuel < nb_obj:
+                pygame.gfxdraw.filled_trigon(fenetre, milieu, 550, milieu-10, 540, milieu+10, 540, (0,0,0)) #bas
+        
+        
+        taille = myfont.render("INVENTAIRE", 1, (0,0,0)).get_rect().width
+        fenetre.blit(myfont.render("INVENTAIRE", 1, (0,0,0)), ((600-422-37)/2-taille/2+37, 80))
+        pygame.draw.line(fenetre, (0,0,0), ((600-422-37)/2-taille/2+37, 100), ((600-422-37)/2-taille/2+37+taille,100))
+        for i in range(len(categories)):                                              
+            taille = myfont.render(categories[i].upper(), 1, (0,0,0)).get_rect().width
+            fenetre.blit(myfont.render(categories[i].upper(), 1, (0,0,0)), ((600-422-37)/2-taille/2+37, 140+i*50))
+        
+        pygame.display.flip()
+        return nb_obj
+        
 def selection_personnage(fenetre, liste_persos):
     actuel = 0
     
