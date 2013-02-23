@@ -574,7 +574,7 @@ def afficher_inventaire(fenetre, liste_cartes, perso, liste_pnjs, liste_items, i
     tab = 0
     
     nb_obj = afficher_categorie(fenetre, categorie_actuelle, tab, inventaire, nb_actuel, liste_items, categories)   
-       
+               
     pygame.display.flip()
         
     continuer = 1
@@ -611,7 +611,7 @@ def afficher_inventaire(fenetre, liste_cartes, perso, liste_pnjs, liste_items, i
                         if tab == 0:
                             if nb_actuel > 10:
                                 nb_actuel -= 1
-                    else:
+                    elif event.key == K_DOWN:
                         if tab == 0:
                             if nb_actuel < nb_obj:
                                 nb_actuel += 1    
@@ -649,17 +649,25 @@ def afficher_categorie(fenetre, categorie_actuelle, tab, inventaire, nb_actuel, 
         pygame.gfxdraw.filled_trigon(fenetre, droite, 60, droite, 60+20, droite+10, 60+10, (0,0,0)) # droite
         pygame.gfxdraw.filled_trigon(fenetre, gauche, 60, gauche, 20+60, gauche-10, 10+60, (0,0,0)) # gauche
         
+        for val in sorted(inventaire, key=lambda item: (int(item) if item.isdigit() else float('inf'), item)):
+            if liste_items[val].categorie.upper() == categorie_actuelle:
+                if inventaire[val] != 0:
+                    nb_obj +=1 
+        
         for val in sorted(inventaire, key=lambda item: (int(item) if item.isdigit() else float('inf'), item))[(nb_actuel - 10):]:
             if liste_items[val].categorie.upper() == categorie_actuelle:
+                # print("{0} : {1} : {3} // {2}".format(val, liste_items[val].categorie.upper(), categorie_actuelle, inventaire[val]))
+            
                 y = 130+i*40
                 if y < 520 and inventaire[val] !=0:
                     fenetre.blit(myfont.render(val, 1, (0,0,0)), (230, 130+i*40))
                     fenetre.blit(myfont.render("x{0}".format(str(inventaire[val])), 1, (0,0,0)), (500, 130+i*40))
                     pygame.draw.line(fenetre, (0,0,0), (210,130+i*40+25), (550,130+i*40+25))
                     i += 1
-                if inventaire[val] != 0:
-                    nb_obj +=1    
-                    
+        
+        # print(nb_actuel)
+        # print(nb_obj)
+        
         if nb_actuel > 10:
                 pygame.gfxdraw.filled_trigon(fenetre, milieu, 100, milieu-10, 110, milieu+10, 110, (0,0,0)) #haut
         if nb_actuel < nb_obj:
