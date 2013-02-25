@@ -8,6 +8,7 @@ import GameFonctions
 import FightFonctions
 from pygame import gfxdraw
 import math
+from pprint import pprint
 
 # Classe de carte contenant son nom, les cartes adjacentes, les objets dessus, les collisions, les zones de tps.
 class Carte:
@@ -570,7 +571,7 @@ def afficher_inventaire(fenetre, liste_cartes, perso, liste_pnjs, liste_items, i
     taille = myfont.render(categorie_actuelle, 1, (0,0,0)).get_rect().width
     fenetre.blit(myfont.render(categorie_actuelle, 1, (0,0,0)), (milieu-taille/2, 60))  
     
-    nb_actuel = 10
+    nb_actuel = 0
     tab = 0
     
     nb_obj = afficher_categorie(fenetre, categorie_actuelle, tab, inventaire, nb_actuel, liste_items, categories)   
@@ -593,7 +594,7 @@ def afficher_inventaire(fenetre, liste_cartes, perso, liste_pnjs, liste_items, i
                         cat += 1
                     else:
                         cat = 0
-                    nb_actuel = 10
+                    nb_actuel = 0
                     categorie_actuelle = categories[cat]
                     nb_obj = afficher_categorie(fenetre, categorie_actuelle, tab, inventaire, nb_actuel, liste_items, categories)
                     
@@ -602,18 +603,18 @@ def afficher_inventaire(fenetre, liste_cartes, perso, liste_pnjs, liste_items, i
                         cat -= 1
                     else:
                         cat = len(categories)-1
-                    nb_actuel = 10
+                    nb_actuel = 0
                     categorie_actuelle = categories[cat]                
                     nb_obj = afficher_categorie(fenetre, categorie_actuelle, tab, inventaire, nb_actuel, liste_items, categories)
                 
                 if event.key == K_UP or event.key == K_DOWN:
                     if event.key == K_UP:
                         if tab == 0:
-                            if nb_actuel > 10:
+                            if nb_actuel > 0:
                                 nb_actuel -= 1
                     elif event.key == K_DOWN:
                         if tab == 0:
-                            if nb_actuel < nb_obj:
+                            if nb_actuel < nb_obj - 1:
                                 nb_actuel += 1    
                                 
                     nb_obj = afficher_categorie(fenetre, categorie_actuelle, tab, inventaire, nb_actuel, liste_items, categories)
@@ -652,9 +653,17 @@ def afficher_categorie(fenetre, categorie_actuelle, tab, inventaire, nb_actuel, 
         for val in sorted(inventaire, key=lambda item: (int(item) if item.isdigit() else float('inf'), item)):
             if liste_items[val].categorie.upper() == categorie_actuelle:
                 if inventaire[val] != 0:
-                    nb_obj +=1 
+                    nb_obj +=1
         
-        for val in sorted(inventaire, key=lambda item: (int(item) if item.isdigit() else float('inf'), item))[(nb_actuel - 10):]:
+        if nb_actuel < 10 - 1 :
+            page = 0
+            nombre = nb_actuel
+        else:
+            page = nb_actuel - (10 - 1)
+            nombre = 10 - 1
+        
+        liste_cat = []
+        for val in sorted(inventaire, key=lambda item: (int(item) if item.isdigit() else float('inf'), item))[(page):]:
             if liste_items[val].categorie.upper() == categorie_actuelle:
                 # print("{0} : {1} : {3} // {2}".format(val, liste_items[val].categorie.upper(), categorie_actuelle, inventaire[val]))
             
@@ -664,15 +673,17 @@ def afficher_categorie(fenetre, categorie_actuelle, tab, inventaire, nb_actuel, 
                     fenetre.blit(myfont.render("x{0}".format(str(inventaire[val])), 1, (0,0,0)), (500, 130+i*40))
                     pygame.draw.line(fenetre, (0,0,0), (210,130+i*40+25), (550,130+i*40+25))
                     i += 1
+                    liste_cat.append(val)                    
         
-        # print(nb_actuel)
-        # print(nb_obj)
+        if len(liste_cat) > 0:
+            objet_actuel = liste_cat[nb_actuel]
+            print(objet_actuel)
+            fenetre.blit(myfont.render("ICI".format(str(inventaire[val])), 1, (0,0,0)), (400, 130+nombre*40))
         
         if nb_actuel > 10:
                 pygame.gfxdraw.filled_trigon(fenetre, milieu, 100, milieu-10, 110, milieu+10, 110, (0,0,0)) #haut
-        if nb_actuel < nb_obj:
+        if nb_actuel < nb_obj-1 and nb_obj > 10:
                 pygame.gfxdraw.filled_trigon(fenetre, milieu, 550, milieu-10, 540, milieu+10, 540, (0,0,0)) #bas
-        
         
         taille = myfont.render("INVENTAIRE", 1, (0,0,0)).get_rect().width
         fenetre.blit(myfont.render("INVENTAIRE", 1, (0,0,0)), ((600-422-37)/2-taille/2+37, 80))
