@@ -676,8 +676,8 @@ def afficher_categorie(fenetre, categorie_actuelle, tab, inventaire, nb_actuel, 
                     liste_cat.append(val)                    
         
         if len(liste_cat) > 0:
-            objet_actuel = liste_cat[nb_actuel]
-            print(objet_actuel)
+            objet_actuel = liste_cat[nb_actuel-page]
+            print("{0} : {1}".format(objet_actuel, inventaire[objet_actuel]))
             fenetre.blit(myfont.render("ICI".format(str(inventaire[val])), 1, (0,0,0)), (400, 130+nombre*40))
         
         if nb_actuel > 10:
