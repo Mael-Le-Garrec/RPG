@@ -132,15 +132,18 @@ class MyCharacters:
 
 
     class CharacterStatsCalc:
-        def CalcTotalStatsCharacter(Character):
+        def CalcTotalStatsCharacter(Character, vie_initiale, vie):
             """Calcul du total des caractéristique"""
             for i in range (len(ClansStats)):
                     for j in range (len(ClansStats[i])):
                         if Character.ClanName.lower()==ClansStats[i][j][1].lower():
                              for e in range (len(ClansStats[i])):
                                 if "vitality"==ClansStats[i][e][0].lower():
-                                    Character.TVitality=Character.Vitality+int(ClansStats[i][e][1])
-                                    Character.HP = Character.TVitality
+                                    # Character.TVitality=Character.Vitality+int(ClansStats[i][e][1])
+                                    # Character.HP = Character.TVitality
+                                    Character.TVitality = vie_initiale
+                                    Character.HP = vie
+                                    
                                     if Character.TVitality==0:
                                         Config.LogFile.Information("Le fichier clan " + Clans[i] + " est corrompu",1)
                                 elif "intelligence"==ClansStats[i][e][0].lower():

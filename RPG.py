@@ -61,10 +61,6 @@ for val in liste_items.keys():
 # On crée notre personnage
 bentz = Joueur()
 
-
-
-
-
 # Chargement de tous les fichiers nécessaires
 GameFonctions.ClansInfo.Ini_Clans()
 GameFonctions.ClansInfo.OpenClansStats()
@@ -74,15 +70,6 @@ for val in os.listdir("MyCharacters"):
     liste_persos.append(val.replace(".txt", ""))
 
 selection_personnage(fenetre, liste_persos)
-
-
-
-
-
-
-
-
-
 
 # On définit quels événements permettent de se déplacer
 cle_deplacement = [K_UP, K_DOWN, K_LEFT, K_RIGHT]
@@ -100,6 +87,16 @@ for val in liste_items.values():
     for val2 in val.position:
         if int(val2[1]) == bentz.carte:
             fenetre.blit(val.image, (int(val2[0][0]), int(val2[0][1])))
+
+            
+vitality = int(GameFonctions.MyCharacters.Character1.Vitality)
+clan_vitality = int(stats_clan(GameFonctions.MyCharacters.Character1.ClanName)["vitality"] )
+if vitality > 0:
+    vie_initiale = clan_vitality + vitality
+else:
+    vie_initiale = clan_vitality   
+       
+vie = clan_vitality + vitality
 
 
 pygame.display.flip() # Un petit peu d'eau, faut rafraichir
@@ -133,12 +130,16 @@ while continuer == 1:
 
             if event.key == K_g:
                 # print(GameFonctions.MobsListe)
-                pprint(dict(vars(GameFonctions.MyCharacters.Character1)))
-            
+                # pprint(dict(vars(GameFonctions.MyCharacters.Character1)))
+                print(vie_initiale)
+                print(vie)
             
             if event.key == K_f:
-                FightFonctions.Fight.StartFightMob(GameFonctions.MyCharacters.Character1)
-
+                clan_vie = int(stats_clan(GameFonctions.MyCharacters.Character1.ClanName)["vitality"])   
+                
+                vie = FightFonctions.Fight.StartFightMob(GameFonctions.MyCharacters.Character1, vie_initiale, vie)
+                GameFonctions.MyCharacters.Character1.Vitality = vie - clan_vie
+                
                 GameFonctions.MyCharacters.CreateSave(GameFonctions.MyCharacters.Character1)
 
 
