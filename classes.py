@@ -723,7 +723,7 @@ def selection_personnage(fenetre, liste_persos):
                     continuer = 0
             
                 if event.unicode == "a" or event.unicode == "A":
-                    nouveau = selection_clan(fenetre, liste_persos)
+                    nouveau, clan = selection_clan(fenetre, liste_persos)
                     
                     if nouveau == 0:
                         afficher_personnage(fenetre, liste_persos, actuel)
@@ -736,6 +736,7 @@ def selection_personnage(fenetre, liste_persos):
                         GameFonctions.MyCharacters.Character1.Strenght = 0
                         GameFonctions.MyCharacters.Character1.Chance = 0
                         GameFonctions.MyCharacters.Character1.Agility = 0
+                        GameFonctions.MyCharacters.Character1.HP = int(stats_clan(clan)["vitality"])
                         GameFonctions.MyCharacters.CreateSave(GameFonctions.MyCharacters.Character1)
                         continuer = 0
                     
@@ -772,7 +773,7 @@ def selection_clan(fenetre, liste_persos):
                     
                     if var != 0:
                         GameFonctions.MyCharacters.Character1.ClanName = GameFonctions.Clans[actuel]
-                        return var
+                        return var, GameFonctions.MyCharacters.Character1.ClanName
                     else:
                         afficher_clan(fenetre, actuel)
                     
@@ -867,7 +868,7 @@ def stats_clan(clan):
         if re.match("^chance:", contenu[i]):
             stats["chance"] = contenu[i].split(":")[1]    
         if re.match("^agility:", contenu[i]):
-            stats["agility"] = contenu[i].split(":")[1]      
+            stats["agility"] = contenu[i].split(":")[1]  
         
     return stats
 

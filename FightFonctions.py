@@ -111,8 +111,8 @@ class Sort:
 class Fight:
     class FightStats:
         Turn=0
-    def StartFightMob(Character, vie_initiale, vie):
-        GameFonctions.MyCharacters.CharacterStatsCalc.CalcTotalStatsCharacter(Character, vie_initiale, vie)
+    def StartFightMob(Character):
+        GameFonctions.MyCharacters.CharacterStatsCalc.CalcTotalStatsCharacter(Character)
         Sort.IniSort()
         Etat.IniEtat()
         GameFonctions.Mobs.IniMobs()
@@ -124,10 +124,8 @@ class Fight:
         Mob=int(input("Entrer l'id de notre mob :"))
         #Calcul les stats du mobs
         GameFonctions.Mobs.MobStats(GameFonctions.MobsListe[Mob])
-        vie = Fight.MobCombat(GameFonctions.MyCharacters.Character1,GameFonctions.Mobs)
-        return vie
-        
-        
+        Fight.MobCombat(GameFonctions.MyCharacters.Character1,GameFonctions.Mobs)
+
     def Player1Turn(Character,Mob):
          """Tour du joueur"""
          print("Tour du Joueur :")
@@ -237,9 +235,7 @@ class Fight:
                      Fight.MobTurn(Mob,Character)
             Fight.FightStats.Turn=Fight.FightStats.Turn+1
             print("==============================\n")
-        
-        return Character.HP
-            
+
     def Attaque(Character, NbrSort):
         """Calcul des dégat à infligée"""
 
