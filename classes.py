@@ -625,7 +625,7 @@ def afficher_inventaire(fenetre, liste_cartes, perso, liste_pnjs, liste_items, i
                     
                 if event.key == K_RETURN:
                     if tab == 0 and objet_actuel:
-                        action_objet(fenetre, objet_actuel, inventaire)
+                        nb_actuel = action_objet(fenetre, objet_actuel, inventaire, nb_actuel, nb_obj)
                         nb_obj, objet_actuel = afficher_categorie(fenetre, categorie_actuelle, tab, inventaire, nb_actuel, liste_items, categories)    
                 
                         
@@ -640,7 +640,7 @@ def afficher_inventaire(fenetre, liste_cartes, perso, liste_pnjs, liste_items, i
                     fenetre.blit(perso.orientation, (perso.position_x,perso.position_y))
                     pygame.display.flip()
 
-def action_objet(fenetre, objet_actuel, inventaire):  
+def action_objet(fenetre, objet_actuel, inventaire, nb_actuel, nb_obj):  
     fond = pygame.image.load(os.path.join("images", "choix_inventaire.png")) # 149 * 93
     myfont = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 14)
     
@@ -695,10 +695,16 @@ def action_objet(fenetre, objet_actuel, inventaire):
     
     # if choix == 0: # Utiliser objet
         #utiliser
-            
+
     if choix == 1: # Jeter objet
-        inventaire[objet_actuel] -= 1     
-                    
+        inventaire[objet_actuel] -= 1
+        if inventaire[objet_actuel] == 0 and nb_actuel + 1 == nb_obj:
+            return nb_actuel - 1
+        else: return nb_actuel
+        
+        
+    else: return nb_actuel
+    
 def afficher_categorie(fenetre, categorie_actuelle, tab, inventaire, nb_actuel, liste_items, categories):
     image_inventaire = pygame.image.load(os.path.join("images", "inventaire.png"))
     myfont = pygame.font.Font(os.path.join("polices", "Pokemon DPPt.ttf"), 25)
