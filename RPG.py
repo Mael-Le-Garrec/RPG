@@ -5,6 +5,7 @@ from classes import *
 import re
 import os
 from pprint import pprint
+import sqlite3
 
 
 import GameFonctions
@@ -33,15 +34,10 @@ for i in range(len(os.listdir("map"))):
 
 
 liste_pnjs = dict()
-# On crée un dictionnaire contenant le nom du pnj et son objet
-# {'jacques.txt' : 'objet'}
 
-for i in os.listdir("pnj"): # i vaut le nom du pnj, "bidule.txt"
-    if re.match("[0-9a-zA-Z_\-\.]+.txt", i):
-        liste_pnjs[i] = PNJ(i)
-
-        # Après avoir crée l'objet, on charge le pnj (position/carte/dialogues...)
-        liste_pnjs[i].charger_pnj(liste_cartes)
+liste_pnjs = creer_liste_pnj()
+for i in liste_pnjs.keys():
+    liste_pnjs[i].charger_pnj(liste_cartes)
 
 
 liste_items = dict()

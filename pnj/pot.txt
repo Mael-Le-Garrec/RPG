@@ -1,4 +1,0 @@
-Un Pot
-90;90
-0
-Bonjour ! Comment allez vous ?

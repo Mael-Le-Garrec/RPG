@@ -9,6 +9,7 @@ import FightFonctions
 from pygame import gfxdraw
 import math
 from pprint import pprint
+import sqlite3
 
 # Classe de carte contenant son nom, les cartes adjacentes, les objets dessus, les collisions, les zones de tps.
 class Carte:
@@ -289,40 +290,57 @@ class Joueur:
                     
                     fenetre_dialogue(fenetre, dialogue, liste_cartes, perso, liste_pnjs, liste_items)
 
+                    
+def creer_liste_pnj():
+    conn = sqlite3.connect(os.path.join('pnj','PNJs.db'))
+    c = conn.cursor()
+    c.execute("SELECT nom FROM pnj")
+    pnjs = c.fetchall()
+
+    liste = dict()
+    for val in pnjs:
+        liste[val[0]] = PNJ(val[0])
+
+    conn.close()
+    
+    return liste
+                    
 # Classe des Personnages Non Joueurs (PNJs)
 class PNJ:
     def __init__(self, nom):
         # Leur nom est "bidule.txt", et on vire ".txt"
         # On initialise également leur carte, position, dialogue
-        self.nom = nom.replace(".txt", "")
+        self.nom = nom
         self.pos_x = int()
         self.pos_y = int()
         self.carte = int()
         self.dialogues = str()
 
     def charger_pnj(self, liste_cartes):
-        # On charge l'image du PNJ
-        self.image = pygame.image.load(os.path.join('pnj', 'images', '{0}.png'.format(self.nom))).convert_alpha()
+        conn = sqlite3.connect(os.path.join('pnj','PNJs.db'))
+        c = conn.cursor()
+        c.execute("SELECT * FROM pnj WHERE nom = '{0}'".format(self.nom))
+        reponse = c.fetchall()[0]
+        conn.close()
         
-        # On lit son fichier
-        self.fichier = open(os.path.join('pnj', '{0}.txt'.format(self.nom)), "r")
+        self.nom_entier = reponse[1]
+        self.image = pygame.image.load(os.path.join('pnj', 'images', '{0}'.format(reponse[4]))).convert_alpha()
         
-        # On crée une liste contenant chaque ligne
-        self.contenu = self.fichier.readlines()
-        self.fichier.close()
-        
-        # Chaque ligne a son important, 1 ère : nom entier du personnage, 2è : position, 3e : carte, 4e : dialogue 
-        self.position = self.contenu[1].split(";")
-        
-        self.nom_entier = self.contenu[0].strip()
-        self.dialogues = self.contenu[3].strip()
-        self.carte = int(self.contenu[2])
+        self.position = reponse[2].split(";")
         self.pos_x = int(self.position[0])
         self.pos_y = int(self.position[1])
         
-        # On ajoute le personnage dans la liste des collisions
+        self.carte = int(reponse[3])
+        
+        self.dialogue_avant = reponse[5]
+        self.dialogue_apres = reponse[6]
+        
+        self.dialogues = self.dialogue_avant
+        
         liste_cartes[self.carte].collisions.append((self.pos_x, self.pos_y))
         
+        # nom, nom_entier text, position text, carte real, image text, dialogue_avant text, dialogue_apres text
+                
         
     def afficher_personnage(self, fenetre):
         # On affiche simplement le personnage
@@ -385,29 +403,34 @@ def options(fenetre, liste_cartes, perso, liste_pnjs, liste_items, inventaire):
     fenetre.blit(pygame.image.load(os.path.join("images", "options.png")), (600-160,0))
     
     # myfont = pygame.font.SysFont("Helvetica", 20)
-    curseur_font = pygame.font.Font(os.path.join("polices", "PKMNRSEU.FONT"), 24)
+    curseur_font = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 14)
     # myfont = pygame.font.Font(os.path.join("polices", "PIXELADE.TTF"), 20)
-    myfont = pygame.font.Font(os.path.join("polices", "Pokemon DPPt.ttf"), 24)
+    myfont = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 14)
+    # myfont = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 14)
 	
     
 
     label_monstres =  myfont.render("Monstres", 1, (0,0,0))
-    fenetre.blit(label_monstres, (560-75, 220+cst_y))
+    fenetre.blit(label_monstres, (560-80, 220+cst_y))
     
     label_inventaire =  myfont.render("Inventaire", 1, (0,0,0))
-    fenetre.blit(label_inventaire, (560-75, 260+cst_y)) 
+    fenetre.blit(label_inventaire, (560-80, 260+cst_y)) 
     
     label_personnage =  myfont.render("Personnage", 1, (0,0,0))
-    fenetre.blit(label_personnage, (560-75, 300+cst_y)) 
+    fenetre.blit(label_personnage, (560-80, 300+cst_y)) 
     
     label_sauvegarder =  myfont.render("Sauvegarder", 1, (0,0,0))
-    fenetre.blit(label_sauvegarder, (560-75, 340+cst_y)) 
+    fenetre.blit(label_sauvegarder, (560-80, 340+cst_y)) 
     
     label_retour =  myfont.render("Retour", 1, (0,0,0))
-    fenetre.blit(label_retour, (560-75, 380+cst_y))
+    fenetre.blit(label_retour, (560-80, 380+cst_y))
     
-    label_retour =  curseur_font.render(">>", 1, (0,0,0))
-    fenetre.blit(label_retour, (curseur_x+cst_c, curseur_y)) 
+    # label_curseur =  curseur_font.render(">>", 1, (0,0,0))
+    # fenetre.blit(label_curseur, (curseur_x+cst_c, curseur_y))
+    
+    x = curseur_x + cst_c
+    y = curseur_y + 3
+    pygame.gfxdraw.filled_trigon(fenetre, 0+x, 0+y, 0+x, 10+y, 5+x, 5+y, (0,0,0)) 
     
     pygame.display.flip()
     
@@ -435,7 +458,10 @@ def options(fenetre, liste_cartes, perso, liste_pnjs, liste_items, inventaire):
                         curseur += 1
                         fenetre.blit(pygame.image.load(os.path.join("images", "blanc_curseur.png")), (curseur_x+cst,curseur_y))
                         curseur_y += 40
-                        fenetre.blit(label_retour, (curseur_x+cst_c, curseur_y))
+                        
+                        x = curseur_x + cst_c
+                        y = curseur_y + 3
+                        pygame.gfxdraw.filled_trigon(fenetre, 0+x, 0+y, 0+x, 10+y, 5+x, 5+y, (0,0,0)) 
                         pygame.display.flip()
                         
                 if event.key == K_UP:
@@ -443,7 +469,10 @@ def options(fenetre, liste_cartes, perso, liste_pnjs, liste_items, inventaire):
                         curseur -= 1
                         fenetre.blit(pygame.image.load(os.path.join("images", "blanc_curseur.png")), (curseur_x+cst,curseur_y))
                         curseur_y -= 40
-                        fenetre.blit(label_retour, (curseur_x+cst_c, curseur_y))
+                        
+                        x = curseur_x + cst_c
+                        y = curseur_y + 3
+                        pygame.gfxdraw.filled_trigon(fenetre, 0+x, 0+y, 0+x, 10+y, 5+x, 5+y, (0,0,0))
                         pygame.display.flip()
                          
                 if event.key == K_RETURN:
@@ -469,9 +498,7 @@ def options(fenetre, liste_cartes, perso, liste_pnjs, liste_items, inventaire):
                         
 def fenetre_dialogue(fenetre, dialogue, liste_cartes, perso, liste_pnjs, liste_items):
     myfont = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 14)
-    # myfont = pygame.font.Font(os.path.join("polices", "Pokemon DPPt.ttf"), 24)
-    # myfont = pygame.font.SysFont("arial", 20)
-    dialogue_wrap = textwrap.wrap(dialogue,65)
+    dialogue_wrap = textwrap.wrap(dialogue.replace("%{0}%", GameFonctions.MyCharacters.Character1.Nickname),65)
     fond_dial = pygame.image.load(os.path.join('images', 'fond_dialogue.png')).convert_alpha()
     
     fenetre.blit(fond_dial, (0,500))
@@ -544,7 +571,7 @@ def fenetre_dialogue(fenetre, dialogue, liste_cartes, perso, liste_pnjs, liste_i
                             
 def afficher_inventaire(fenetre, liste_cartes, perso, liste_pnjs, liste_items, inventaire):
     image_inventaire = pygame.image.load(os.path.join("images", "inventaire.png"))
-    myfont = pygame.font.Font(os.path.join("polices", "Pokemon DPPt.ttf"), 25)
+    myfont = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 16)
     
     fenetre.blit(image_inventaire, (0,0))
     
@@ -707,7 +734,7 @@ def action_objet(fenetre, objet_actuel, inventaire, nb_actuel, nb_obj):
     
 def afficher_categorie(fenetre, categorie_actuelle, tab, inventaire, nb_actuel, liste_items, categories):
     image_inventaire = pygame.image.load(os.path.join("images", "inventaire.png"))
-    myfont = pygame.font.Font(os.path.join("polices", "Pokemon DPPt.ttf"), 25)
+    myfont = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 16)
     
     milieu = int((600-190-10)/2 + 190)
     
@@ -760,7 +787,8 @@ def afficher_categorie(fenetre, categorie_actuelle, tab, inventaire, nb_actuel, 
         pygame.gfxdraw.filled_trigon(fenetre, 200, y, 200, y+10, 200+5, y+5, (0,0,0))
     else:
         objet_actuel = None
-    
+        taille = myfont.render("Vide", 1, (0,0,0)).get_rect().width
+        fenetre.blit(myfont.render("Vide", 1, (0,0,0)), (milieu-taille/2,200))
     
     if nb_actuel > 10:
             pygame.gfxdraw.filled_trigon(fenetre, milieu, 100, milieu-10, 110, milieu+10, 110, (0,0,0)) #haut
@@ -869,7 +897,7 @@ def afficher_personnage(fenetre, liste_persos, actuel):
     cst_x1 = 300+100+20
     cst_x2 = 300-100-20-10
     cst_y = 300-10
-    myfont = pygame.font.Font(os.path.join("polices", "Pokemon DPPt.ttf"), 24)
+    myfont = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 14)
     
     fenetre.blit(pygame.image.load(os.path.join('images', 'clan.png')).convert_alpha(),(0,0))
     
@@ -900,7 +928,7 @@ def afficher_personnage(fenetre, liste_persos, actuel):
     pygame.display.flip()
                     
 def afficher_clan(fenetre, actuel):
-    myfont = pygame.font.Font(os.path.join("polices", "Pokemon DPPt.ttf"), 24)
+    myfont = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 14)
     
     cst_x1 = 300+100+20
     cst_x2 = 300-100-20-10
@@ -959,7 +987,7 @@ def description_clan(fenetre, clan):
     description = stats_clan(clan)["description"].strip()
     name = stats_clan(clan)["name"].strip()
     
-    myfont = pygame.font.Font(os.path.join("polices", "Pokemon DPPt.ttf"), 24)
+    myfont = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 14)
     fenetre.blit(pygame.image.load(os.path.join('images', 'clan.png')).convert_alpha(),(0,0))
 
     description = textwrap.wrap(description, 40)
@@ -994,7 +1022,7 @@ def description_clan(fenetre, clan):
                     continuer = 0
                     
 def pygame_input(fenetre, actuel, liste_persos):
-    myfont = pygame.font.Font(os.path.join("polices", "Pokemon DPPt.ttf"), 24)
+    myfont = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 14)
     
     taille = myfont.render("Nom :", 1, (0,0,0)).get_rect().width
     fenetre.blit(myfont.render("Nom :", 1, (0,0,0)), (300-taille/2, 100))
