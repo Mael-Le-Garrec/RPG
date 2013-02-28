@@ -294,23 +294,23 @@ class Joueur:
 def creer_liste_pnj():
     conn = sqlite3.connect(os.path.join('pnj','PNJs.db'))
     c = conn.cursor()
-    c.execute("SELECT nom FROM pnj")
+    c.execute("SELECT id FROM pnj")
     pnjs = c.fetchall()
 
     liste = dict()
-    for val in pnjs:
-        liste[val[0]] = PNJ(val[0])
-
+    for i in range(len(pnjs)):
+        liste[i] = PNJ((pnjs[i])[0])
+        # 0 : PNJ(1)
+        # 1 : PNJ(2) etc
     conn.close()
     
     return liste
                     
 # Classe des Personnages Non Joueurs (PNJs)
 class PNJ:
-    def __init__(self, nom):
-        # Leur nom est "bidule.txt", et on vire ".txt"
-        # On initialise également leur carte, position, dialogue
-        self.nom = nom
+    def __init__(self, id):
+        self.nom = str()
+        self.id = id
         self.pos_x = int()
         self.pos_y = int()
         self.carte = int()
@@ -319,23 +319,24 @@ class PNJ:
     def charger_pnj(self, liste_cartes):
         conn = sqlite3.connect(os.path.join('pnj','PNJs.db'))
         c = conn.cursor()
-        c.execute("SELECT * FROM pnj WHERE nom = '{0}'".format(self.nom))
+        c.execute("SELECT * FROM pnj WHERE id = ?", (self.id,))
         reponse = c.fetchall()[0]
         conn.close()
+        # id, nom, nom_entier, position, carte, image, dialogue
         
-        self.nom_entier = reponse[1]
-        self.image = pygame.image.load(os.path.join('pnj', 'images', '{0}'.format(reponse[4]))).convert_alpha()
+        self.nom = reponse[1]
+        self.nom_entier = reponse[2]
+        self.image = pygame.image.load(os.path.join('pnj', 'images', '{0}'.format(reponse[5]))).convert_alpha()
         
-        self.position = reponse[2].split(";")
+        self.position = reponse[3].split(";")
         self.pos_x = int(self.position[0])
         self.pos_y = int(self.position[1])
         
-        self.carte = int(reponse[3])
+        self.carte = int(reponse[4])
         
-        self.dialogue_avant = reponse[5]
-        self.dialogue_apres = reponse[6]
+        self.dialogues = reponse[6]
         
-        self.dialogues = self.dialogue_avant
+        print("{0} : {1}".format(self.id, self.nom))
         
         liste_cartes[self.carte].collisions.append((self.pos_x, self.pos_y))
         
