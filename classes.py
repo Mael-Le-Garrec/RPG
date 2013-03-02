@@ -236,7 +236,7 @@ class Joueur:
         fenetre.blit(self.orientation, (self.position_x,self.position_y))
         pygame.display.flip() # Et on raffraichi tout ça
      
-    def parler_pnj(self, perso, liste_pnjs, fenetre, liste_cartes, liste_items):
+    def parler_pnj(self, perso, liste_pnjs, fenetre, liste_cartes, liste_items, liste_quetes, inventaire):
         # On définit deux varibles contenant la distance séparant le personnage du bloc qu'il voit
         self.voir_x = 0
         self.voir_y = 0
@@ -259,8 +259,9 @@ class Joueur:
                if perso.position_x + self.voir_x == val.pos_x and perso.position_y + self.voir_y == val.pos_y:
                     # Alors on affiche le dialogue
                     # On découpe le dialogue en plusieurs listes pour ne pas déborder de l'écran
-                    fenetre_dialogue(fenetre, val.dialogues, liste_cartes, perso, liste_pnjs, liste_items)
-                                                    
+                    faire_quete(val, liste_quetes, inventaire)
+                    choisir_dialogue(val, fenetre, liste_cartes, perso, liste_pnjs, liste_items, liste_quetes)
+                                             
     def prendre_item(self, inventaire, liste_items, perso, liste_cartes, liste_pnjs, fenetre):
         self.voir_x = 0
         self.voir_y = 0
@@ -290,6 +291,58 @@ class Joueur:
                     
                     fenetre_dialogue(fenetre, dialogue, liste_cartes, perso, liste_pnjs, liste_items)
 
+class Sauvegarde:
+    quetes = list()
+    
+    def charger_quete():
+        conn = sqlite3.connect(os.path.join('sauvegarde','sauvegarde.db'))
+        c = conn.cursor()
+        c.execute("SELECT * FROM quetes")
+        quetes = c.fetchall() #id, quete, avancement
+        return quetes
+            
+    
+  
+def choisir_dialogue(pnj, fenetre, liste_cartes, perso, liste_pnjs, liste_items, liste_quetes):
+    conn = sqlite3.connect(os.path.join('quete','quetes.db'))
+    c = conn.cursor()
+    c.execute("SELECT * FROM dialogues WHERE personnage = ?", (pnj.id,))
+    dialogues = c.fetchall() # contient tous les dialogues du pnj en fonction des quêtes
+    # [i]: 0:id, 1:pnj, 2:quete, 3:avancement, 4:dialogue
+    
+    # sauvegarde = list(Sauvegarde.charger_quete()) # quetes sauvegardées
+    liste = list()
+    for i in range(len(liste_quetes)):
+        # print(liste_quetes[i+1].objectif)
+        for j in range(len(liste_quetes[i+1].objectif)):
+            liste.append((liste_quetes[i+1].objectif[j]['id'], liste_quetes[i+1].objectif[j]['quete'], liste_quetes[i+1].objectif[j]['avancement']))
+    
+    sauvegarde = liste
+    
+    for i in range(len(sauvegarde)):
+        for j in range(len(liste_quetes)):
+            for k in range(len(liste_quetes[j+1].objectif)):
+                if liste_quetes[j+1].objectif[k]['quete'] == sauvegarde[i][1]: #si c'est la même quête
+                    sauvegarde[i] = list(sauvegarde[i])
+                    sauvegarde[i][2] = liste_quetes[j+1].actuel
+    
+    print(sauvegarde) #id, quete, avancement
+    
+    liste_dial = list()
+    for i in range(len(dialogues)):
+        for j in range(len(sauvegarde)):
+            if dialogues[i][2] == sauvegarde[j][1] and dialogues[i][3] == sauvegarde[j][2]: #si même quête et même avancement
+                if dialogues[i][4] not in liste_dial:
+                    liste_dial.append(dialogues[i][4])
+    
+    # print(liste_dial)
+    
+    if len(liste_dial) > 0:
+        for i in liste_dial:
+            dialogue = "QUETE : " + i
+            fenetre_dialogue(fenetre, dialogue, liste_cartes, perso, liste_pnjs, liste_items)
+    else:
+        fenetre_dialogue(fenetre, pnj.dialogues, liste_cartes, perso, liste_pnjs, liste_items)
                     
 def creer_liste_pnj():
     conn = sqlite3.connect(os.path.join('pnj','PNJs.db'))
@@ -299,7 +352,7 @@ def creer_liste_pnj():
 
     liste = dict()
     for i in range(len(pnjs)):
-        liste[i] = PNJ((pnjs[i])[0])
+        liste[i+1] = PNJ((pnjs[i])[0])
         # 0 : PNJ(1)
         # 1 : PNJ(2) etc
     conn.close()
@@ -336,7 +389,7 @@ class PNJ:
         
         self.dialogues = reponse[6]
         
-        print("{0} : {1}".format(self.id, self.nom))
+        # print("{0} : {1}".format(self.id, self.nom))
         
         liste_cartes[self.carte].collisions.append((self.pos_x, self.pos_y))
         
@@ -393,7 +446,93 @@ class Item:
             if int(val[1]) == perso.carte:
                 fenetre.blit(self.image, (int(val[0][0]), int(val[0][1])))
     
+    
+def creer_liste_quetes():
+    conn = sqlite3.connect(os.path.join('quete','quetes.db'))
+    c = conn.cursor()
+    c.execute("SELECT * FROM quetes")
+    quetes = c.fetchall()
+
+    liste = dict()
+    for i in range(len(quetes)):
+        liste[i+1] = Quete((quetes[i])[0], (quetes[i])[1])
+    conn.close()
+    
+    return liste
+
+def faire_quete(pnj, liste_quetes, inventaire):
+    objets_requis = list()
+    xp_requis = 0
+
+    for i in range(len(liste_quetes)):
+        for j in range(len(liste_quetes[i+1].objectif)):
+            if liste_quetes[i+1].objectif[j]['personnage'] == pnj.id: # Si c'est bien le bon PNJ pour l'avancement
+                if liste_quetes[i+1].objectif[j]['avancement'] == liste_quetes[i+1].actuel + 1:
+                    # print(liste_quetes[i+1].objectif[j]['requis'])
+                    requis = liste_quetes[i+1].objectif[j]['requis'].split(",")
+                    for i in range(len(requis)):
+                        if requis[i].split(":")[0] == "item":
+                            if requis[i].split(":")[1] in inventaire: #si l'objet existe bel et bien
+                                objets_requis.append(requis[i].split(":")[1])
+                        elif requis[i].split(":")[0] == "xp":
+                            xp_requis = requis[i].split(":")[1]
+    
+    # reussi = 0
+    # for i in range(len(objets_requis)):
+        # if inventaire[objets_requis[i]] > 0 and GameFonctions.MyCharacters.Character1.Exp > xp_requis:
+            # print("tu peux continuer la quête !")
+            # reussi = 1
+    reussi = 0      
+    for i in range(len(liste_quetes)):
+        for j in range(len(liste_quetes[i+1].objectif)):
+            if liste_quetes[i+1].objectif[j]['personnage'] == pnj.id: # Si c'est bien le bon PNJ pour l'avancement
+                for k in range(len(objets_requis)):
+                    if inventaire[objets_requis[k]] > 0 and GameFonctions.MyCharacters.Character1.Exp > xp_requis:
+                        reussi = 1
+                        numero_quete = i+1
+
+    if reussi:
+        liste_quetes[numero_quete].actuel += 1         
+        print("tu peux continuer la quête !")
+    
+class Quete:
+    def __init__(self, id, nom):
+        self.nom = nom
+        self.id = id
+        self.nombre = int()
+        self.actuel = int()
+        self.objectif = list()
         
+    def charger_quete(self):
+        conn = sqlite3.connect(os.path.join('quete','quetes.db'))
+        c = conn.cursor()
+        
+        c.execute("SELECT COUNT(*) FROM objectifs WHERE quete=?", (self.id,))
+        self.nombre = c.fetchone()[0]
+
+        c.execute("SELECT * FROM objectifs WHERE quete=?", (self.id,))
+        reponse = c.fetchall()
+        
+        
+        for i in reponse:
+            self.objectif.append({'id':i[0], 'quete':i[1], 'personnage':i[2], 'objectif':i[3], 'avancement':i[4], 'requis':i[5], 'recompense':i[6]})
+       
+        conn = sqlite3.connect(os.path.join('sauvegarde','sauvegarde.db'))
+        c = conn.cursor()
+        c.execute("SELECT avancement FROM quetes WHERE quete=?", (self.id,))
+        try:
+            self.actuel = c.fetchone()[0]
+        except:
+            self.actuel = 0
+        print(self.actuel)
+        
+        # print(self.nom)
+        # print(self.id)
+        # print(self.nombre)
+        # print(self.actuel)
+        # print(self.objectif)
+       
+    
 def options(fenetre, liste_cartes, perso, liste_pnjs, liste_items, inventaire):
     curseur_x = 520-100
     curseur_y = 220-150
@@ -782,7 +921,7 @@ def afficher_categorie(fenetre, categorie_actuelle, tab, inventaire, nb_actuel, 
     
     if len(liste_cat) > 0:
         objet_actuel = liste_cat[nb_actuel-page]
-        print("{0} : {1}".format(objet_actuel, inventaire[objet_actuel]))
+        # print("{0} : {1}".format(objet_actuel, inventaire[objet_actuel]))
         y = 130+nombre*40+5
         # fenetre.blit(myfont.render("ICI".format(str(inventaire[val])), 1, (0,0,0)), (400, 130+nombre*40))
         pygame.gfxdraw.filled_trigon(fenetre, 200, y, 200, y+10, 200+5, y+5, (0,0,0))
@@ -877,7 +1016,7 @@ def selection_clan(fenetre, liste_persos):
                 
                 if event.key == K_ESCAPE:
                     continuer = 0
-                    return 0
+                    return 0, 0
                 
                 if event.key == K_RETURN: # DEMANDER NOM PERSO !!!
                     # continuer = 0
@@ -968,19 +1107,19 @@ def stats_clan(clan):
     
     for i in range(len(contenu)):
         if re.match("^name:", contenu[i]):
-            stats["name"] = contenu[i].split(":")[1]
+            stats["name"] = contenu[i].split(":")[1].strip()
         if re.match("^description:", contenu[i]):
-            stats["description"] = contenu[i].split(":")[1]   
+            stats["description"] = contenu[i].split(":")[1].strip()
         if re.match("^vitality:", contenu[i]):
-            stats["vitality"] = contenu[i].split(":")[1]    
+            stats["vitality"] = contenu[i].split(":")[1].strip()
         if re.match("^intelligence:", contenu[i]):
-            stats["intelligence"] = contenu[i].split(":")[1]    
+            stats["intelligence"] = contenu[i].split(":")[1].strip()
         if re.match("^strenght:", contenu[i]):
-            stats["strenght"] = contenu[i].split(":")[1]    
+            stats["strenght"] = contenu[i].split(":")[1].strip()
         if re.match("^chance:", contenu[i]):
-            stats["chance"] = contenu[i].split(":")[1]    
+            stats["chance"] = contenu[i].split(":")[1].strip()
         if re.match("^agility:", contenu[i]):
-            stats["agility"] = contenu[i].split(":")[1]  
+            stats["agility"] = contenu[i].split(":")[1].strip()
         
     return stats
 
@@ -1070,13 +1209,3 @@ def pygame_input(fenetre, actuel, liste_persos):
                  
                 if event.key == K_RETURN and len(pseudo) > 2 and pseudo not in liste_persos:
                     return pseudo
-
-# GameFonctions.MyCharacters.Character1.Nickname=input("Entrer votre pseudo :")
-
-# if GameFonctions.MyCharacters.SaveExist(GameFonctions.MyCharacters.Character1.Nickname)==True:
-    # GameFonctions.MyCharacters.ReadSave(GameFonctions.MyCharacters.Character1.Nickname,GameFonctions.MyCharacters.Character1)
-# else:
-    # GameFonctions.MyCharacters.Character1.ClanName=input("Entrer votre clan :")
-    # GameFonctions.MyCharacters.CreateSave(GameFonctions.MyCharacters.Character1)
-
-# GameFonctions.MyCharacters.CreateSave(GameFonctions.MyCharacters.Character1)

@@ -33,7 +33,9 @@ for i in range(len(os.listdir("map"))):
     liste_cartes[i].charger_carte()
 
 
-liste_pnjs = dict()
+liste_quetes = creer_liste_quetes()
+for i in liste_quetes.keys():
+    liste_quetes[i].charger_quete()
 
 liste_pnjs = creer_liste_pnj()
 for i in liste_pnjs.keys():
@@ -41,7 +43,6 @@ for i in liste_pnjs.keys():
 
 
 liste_items = dict()
-
 for i in os.listdir("items"): # i vaut le nom du pnj, "bidule.txt"
     if re.match("[0-9a-zA-Z_\-\.\ ]+.txt", i):
         liste_items[i.replace(".txt", "")] = Item(i.replace(".txt", ""))
@@ -56,10 +57,6 @@ for val in liste_items.keys():
 
 # On crée notre personnage
 bentz = Joueur()
-
-
-
-
 
 # Chargement de tous les fichiers nécessaires
 GameFonctions.ClansInfo.Ini_Clans()
@@ -117,7 +114,7 @@ while continuer == 1:
                 
             # Soit c'est "Entrée" et on fait parler le personnage
             if event.key == K_RETURN:
-                bentz.parler_pnj(bentz, liste_pnjs, fenetre, liste_cartes, liste_items)
+                bentz.parler_pnj(bentz, liste_pnjs, fenetre, liste_cartes, liste_items, liste_quetes, inventaire)
                 bentz.prendre_item(inventaire, liste_items, bentz, liste_cartes, liste_pnjs, fenetre)
 
             if event.key == K_ESCAPE:
