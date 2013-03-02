@@ -290,18 +290,6 @@ class Joueur:
                     liste_cartes[perso.carte].collisions.remove((perso.position_x + self.voir_x, perso.position_y + self.voir_y))
                     
                     fenetre_dialogue(fenetre, dialogue, liste_cartes, perso, liste_pnjs, liste_items)
-
-class Sauvegarde:
-    quetes = list()
-    
-    def charger_quete():
-        conn = sqlite3.connect(os.path.join('sauvegarde','sauvegarde.db'))
-        c = conn.cursor()
-        c.execute("SELECT * FROM quetes")
-        quetes = c.fetchall() #id, quete, avancement
-        return quetes
-            
-    
   
 def choisir_dialogue(pnj, fenetre, liste_cartes, perso, liste_pnjs, liste_items, liste_quetes):
     conn = sqlite3.connect(os.path.join('quete','quetes.db'))
@@ -461,7 +449,7 @@ def creer_liste_quetes():
     return liste
 
 def faire_quete(pnj, liste_quetes, inventaire):
-    objets_requis = list()
+    objets_requis = dict()
     xp_requis = 0
 
     for i in range(len(liste_quetes)):
@@ -470,24 +458,29 @@ def faire_quete(pnj, liste_quetes, inventaire):
                 if liste_quetes[i+1].objectif[j]['avancement'] == liste_quetes[i+1].actuel + 1:
                     # print(liste_quetes[i+1].objectif[j]['requis'])
                     requis = liste_quetes[i+1].objectif[j]['requis'].split(",")
-                    for i in range(len(requis)):
-                        if requis[i].split(":")[0] == "item":
-                            if requis[i].split(":")[1] in inventaire: #si l'objet existe bel et bien
-                                objets_requis.append(requis[i].split(":")[1])
-                        elif requis[i].split(":")[0] == "xp":
-                            xp_requis = requis[i].split(":")[1]
+                    for k in range(len(requis)):
+                        if requis[k].split(":")[0] == "item":
+                            if requis[k].split(":")[1] in inventaire: #si l'objet existe bel et bien
+                                if requis[k].split(":")[1] in objets_requis:
+                                    objets_requis[requis[k].split(":")[1]] += 1
+                                else:
+                                    objets_requis[requis[k].split(":")[1]] = 1
+                        elif requis[k].split(":")[0] == "xp":
+                            xp_requis = int(requis[k].split(":")[1])
     
     # reussi = 0
     # for i in range(len(objets_requis)):
         # if inventaire[objets_requis[i]] > 0 and GameFonctions.MyCharacters.Character1.Exp > xp_requis:
             # print("tu peux continuer la quête !")
             # reussi = 1
+    print(objets_requis)
+    
     reussi = 0      
     for i in range(len(liste_quetes)):
         for j in range(len(liste_quetes[i+1].objectif)):
             if liste_quetes[i+1].objectif[j]['personnage'] == pnj.id: # Si c'est bien le bon PNJ pour l'avancement
-                for k in range(len(objets_requis)):
-                    if inventaire[objets_requis[k]] > 0 and GameFonctions.MyCharacters.Character1.Exp > xp_requis:
+                for key in objets_requis.keys():
+                    if inventaire[key] >= objets_requis[key] and GameFonctions.MyCharacters.Character1.Exp >= xp_requis:
                         reussi = 1
                         numero_quete = i+1
 
