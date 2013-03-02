@@ -70,7 +70,7 @@ selection_personnage(fenetre, liste_persos)
 
 
 
-
+Quete.charger_quete_en_cours()
 
 
 
@@ -127,7 +127,8 @@ while continuer == 1:
             if event.key == K_g:
                 # print(GameFonctions.MobsListe)
                 # pprint(dict(vars(GameFonctions.MyCharacters.Character1)))
-                print(GameFonctions.MyCharacters.Character1.HP)
+                # print(GameFonctions.MyCharacters.Character1.HP)
+                print(Quete.en_cours)
             
             
             if event.key == K_f:

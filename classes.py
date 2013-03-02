@@ -314,7 +314,7 @@ def choisir_dialogue(pnj, fenetre, liste_cartes, perso, liste_pnjs, liste_items,
                     sauvegarde[i] = list(sauvegarde[i])
                     sauvegarde[i][2] = liste_quetes[j+1].actuel
     
-    print(sauvegarde) #id, quete, avancement
+    # print(sauvegarde) #id, quete, avancement
     
     liste_dial = list()
     for i in range(len(dialogues)):
@@ -433,8 +433,7 @@ class Item:
         for val in self.position:
             if int(val[1]) == perso.carte:
                 fenetre.blit(self.image, (int(val[0][0]), int(val[0][1])))
-    
-    
+
 def creer_liste_quetes():
     conn = sqlite3.connect(os.path.join('quete','quetes.db'))
     c = conn.cursor()
@@ -473,22 +472,41 @@ def faire_quete(pnj, liste_quetes, inventaire):
         # if inventaire[objets_requis[i]] > 0 and GameFonctions.MyCharacters.Character1.Exp > xp_requis:
             # print("tu peux continuer la quête !")
             # reussi = 1
-    print(objets_requis)
+    # print(objets_requis) 
     
     reussi = 0      
     for i in range(len(liste_quetes)):
         for j in range(len(liste_quetes[i+1].objectif)):
             if liste_quetes[i+1].objectif[j]['personnage'] == pnj.id: # Si c'est bien le bon PNJ pour l'avancement
-                for key in objets_requis.keys():
-                    if inventaire[key] >= objets_requis[key] and GameFonctions.MyCharacters.Character1.Exp >= xp_requis:
-                        reussi = 1
-                        numero_quete = i+1
-
+                if liste_quetes[i+1].actuel + 1 == liste_quetes[i+1].objectif[j]['avancement']:
+                    if liste_quetes[i+1].id in Quete.en_cours:
+                        for key in objets_requis.keys():
+                            if inventaire[key] >= objets_requis[key] and GameFonctions.MyCharacters.Character1.Exp >= xp_requis:
+                                reussi = 1
+                                numero_quete = i+1
+  
+                    else:
+                        # if liste_quetes[i+1].id not in Quete.en_cours:
+                        Quete.en_cours.append((liste_quetes[i+1].id))
+    
+                            
     if reussi:
         liste_quetes[numero_quete].actuel += 1         
         print("tu peux continuer la quête !")
     
 class Quete:
+    en_cours = list()
+
+    def charger_quete_en_cours():
+        en_cours = list()
+        conn = sqlite3.connect(os.path.join('sauvegarde','sauvegarde.db'))
+        c = conn.cursor()
+        c.execute("SELECT * FROM quetes")
+        reponse = c.fetchall()
+        for i in reponse:
+            en_cours.append(i[1])
+        print(en_cours)
+    
     def __init__(self, id, nom):
         self.nom = nom
         self.id = id
@@ -517,7 +535,7 @@ class Quete:
             self.actuel = c.fetchone()[0]
         except:
             self.actuel = 0
-        print(self.actuel)
+        # print(self.actuel)
         
         # print(self.nom)
         # print(self.id)
@@ -1175,7 +1193,7 @@ def pygame_input(fenetre, actuel, liste_persos):
                 if event.key == K_ESCAPE:
                     continuer = 0
                     return 0
-                    
+                 
                 if event.unicode in caracteres and len(pseudo) < 15:
                     afficher_clan(fenetre, actuel)
                     
@@ -1188,7 +1206,19 @@ def pygame_input(fenetre, actuel, liste_persos):
                     
                     pygame.display.flip()
                     
-                if event.scancode == 14:
+                elif event.unicode in caracteres.upper() and len(pseudo) < 15:
+                    afficher_clan(fenetre, actuel)
+                    
+                    taille = myfont.render("Nom :", 1, (0,0,0)).get_rect().width
+                    fenetre.blit(myfont.render("Nom :", 1, (0,0,0)), (300-taille/2, 100))
+                    
+                    pseudo = "{0}{1}".format(pseudo, event.unicode.upper())
+                    taille = myfont.render(pseudo, 1, (0,0,0)).get_rect().width
+                    fenetre.blit(myfont.render(pseudo, 1, (0,0,0)), (300-taille/2, 120))
+                    
+                    pygame.display.flip()    
+                    
+                elif event.scancode == 14:
                     pseudo = pseudo[0:-1] #start:stop:step
                     afficher_clan(fenetre, actuel)
 
@@ -1200,5 +1230,5 @@ def pygame_input(fenetre, actuel, liste_persos):
                     
                     pygame.display.flip()
                  
-                if event.key == K_RETURN and len(pseudo) > 2 and pseudo not in liste_persos:
+                elif event.key == K_RETURN and len(pseudo) > 2 and pseudo not in liste_persos:
                     return pseudo
