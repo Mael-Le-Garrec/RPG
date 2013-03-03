@@ -319,9 +319,11 @@ def choisir_dialogue(pnj, fenetre, liste_cartes, perso, liste_pnjs, liste_items,
     liste_dial = list()
     for i in range(len(dialogues)):
         for j in range(len(sauvegarde)):
-            if dialogues[i][2] == sauvegarde[j][1] and dialogues[i][3] == sauvegarde[j][2]: #si même quête et même avancement
+            if dialogues[i][2] == sauvegarde[j][1] and dialogues[i][3] == sauvegarde[j][2] and liste_quetes[sauvegarde[j][1]].finie < 2: #si même quête et même avancement
                 if dialogues[i][4] not in liste_dial:
                     liste_dial.append(dialogues[i][4])
+                if liste_quetes[sauvegarde[j][1]].finie == 1:
+                    liste_quetes[sauvegarde[j][1]].finie = 2
     
     # print(liste_dial)
     
@@ -456,17 +458,22 @@ def faire_quete(pnj, liste_quetes, inventaire):
             if liste_quetes[i+1].objectif[j]['personnage'] == pnj.id: # Si c'est bien le bon PNJ pour l'avancement
                 if liste_quetes[i+1].objectif[j]['avancement'] == liste_quetes[i+1].actuel + 1:
                     # print(liste_quetes[i+1].objectif[j]['requis'])
-                    requis = liste_quetes[i+1].objectif[j]['requis'].split(",")
-                    for k in range(len(requis)):
-                        if requis[k].split(":")[0] == "item":
-                            if requis[k].split(":")[1] in inventaire: #si l'objet existe bel et bien
-                                if requis[k].split(":")[1] in objets_requis:
-                                    objets_requis[requis[k].split(":")[1]] += 1
-                                else:
-                                    objets_requis[requis[k].split(":")[1]] = 1
-                        elif requis[k].split(":")[0] == "xp":
-                            xp_requis = int(requis[k].split(":")[1])
-    
+                    if liste_quetes[i+1].objectif[j]['requis']:
+                        requis = liste_quetes[i+1].objectif[j]['requis'].split(",")
+                        print(requis)
+                        for k in range(len(requis)):
+                            if requis[k].split(":")[0] == "item":
+                                if requis[k].split(":")[1] in inventaire: #si l'objet existe bel et bien
+                                    if requis[k].split(":")[1] in objets_requis:
+                                        objets_requis[requis[k].split(":")[1]] += 1
+                                    else:
+                                        objets_requis[requis[k].split(":")[1]] = 1
+                            elif requis[k].split(":")[0] == "xp":
+                                xp_requis = int(requis[k].split(":")[1])
+                    else:
+                        objets_requis = None
+                    
+                    
     # reussi = 0
     # for i in range(len(objets_requis)):
         # if inventaire[objets_requis[i]] > 0 and GameFonctions.MyCharacters.Character1.Exp > xp_requis:
@@ -488,14 +495,21 @@ def faire_quete(pnj, liste_quetes, inventaire):
                     else:
                         # if liste_quetes[i+1].id not in Quete.en_cours:
                         Quete.en_cours.append((liste_quetes[i+1].id))
-    
+                        
+                elif liste_quetes[i+1].objectif[j]['avancement'] == 0:
+                    if liste_quetes[i+1].id not in Quete.en_cours:
+                        Quete.en_cours.append((liste_quetes[i+1].id))
                             
     if reussi:
         liste_quetes[numero_quete].actuel += 1         
         print("tu peux continuer la quête !")
     
+        if liste_quetes[numero_quete].actuel == liste_quetes[numero_quete].nombre:
+            liste_quetes[numero_quete].finie = 1
+    
 class Quete:
     en_cours = list()
+    finie = 0
 
     def charger_quete_en_cours():
         en_cours = list()
@@ -505,7 +519,7 @@ class Quete:
         reponse = c.fetchall()
         for i in reponse:
             en_cours.append(i[1])
-        print(en_cours)
+        # print(en_cours)
     
     def __init__(self, id, nom):
         self.nom = nom

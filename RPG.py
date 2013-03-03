@@ -130,6 +130,10 @@ while continuer == 1:
                 # print(GameFonctions.MyCharacters.Character1.HP)
                 print(Quete.en_cours)
             
+            if event.key == K_h:
+                for i in liste_quetes.values():
+                    print(i.actuel)
+            
             
             if event.key == K_f:
                 FightFonctions.Fight.StartFightMob(GameFonctions.MyCharacters.Character1)

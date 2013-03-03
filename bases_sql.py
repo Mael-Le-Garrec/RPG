@@ -63,7 +63,7 @@ dialogue = "Salut sava ? Va me chercher des disques stp"
 c.execute("INSERT INTO dialogues(personnage, quete, avancement, dialogue) VALUES (7,2,0, ?)", (dialogue,))
 
 dialogue = "T'es trop un ouf mec, cimer pour le disque, c'est du m.pokora sa dechir"
-c.execute("INSERT INTO dialogues(personnage, quete, avancement, dialogue) VALUES (7,2,1, ?)", (dialogue,))
+c.execute("INSERT INTO dialogues(personnage, quete, avancement, dialogue) VALUES (6,2,1, ?)", (dialogue,))
 
 ###########################
 
@@ -97,9 +97,14 @@ recompense = "xp:+500"
 c.execute("INSERT INTO objectifs(quete, personnage, objectif, avancement, requis, recompense) VALUES (1,1,?,2,?,?)", (objectif, requis, recompense))
 
 objectif = "Trouver des disques"
+requis = ""
+recompense = ""
+c.execute("INSERT INTO objectifs(quete, personnage, objectif, avancement, requis, recompense) VALUES (2,7,?,0,?,?)", (objectif, requis, recompense))
+
+objectif = "Trouver des disques"
 requis = "item:disque"
 recompense = "xp:+500"
-c.execute("INSERT INTO objectifs(quete, personnage, objectif, avancement, requis, recompense) VALUES (2,7,?,1,?,?)", (objectif, requis, recompense))
+c.execute("INSERT INTO objectifs(quete, personnage, objectif, avancement, requis, recompense) VALUES (2,6,?,1,?,?)", (objectif, requis, recompense))
 #########################
 
 conn.commit()
@@ -113,7 +118,7 @@ c = conn.cursor()
 ######################### Quetes en cours
 c.execute("DROP TABLE IF EXISTS quetes")
 c.execute('CREATE TABLE quetes (id integer primary key, quete integer, avancement integer)')
-c.execute("INSERT INTO quetes (quete, avancement) VALUES (1,1)")
+# c.execute("INSERT INTO quetes (quete, avancement) VALUES (1,1)")
 # c.execute("INSERT INTO quetes (quete, avancement) VALUES (2,0)")
 #########################
 
