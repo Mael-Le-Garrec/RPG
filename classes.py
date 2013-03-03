@@ -319,13 +319,13 @@ def choisir_dialogue(pnj, fenetre, liste_cartes, perso, liste_pnjs, liste_items,
     liste_dial = list()
     for i in range(len(dialogues)):
         for j in range(len(sauvegarde)):
-            if dialogues[i][2] == sauvegarde[j][1] and dialogues[i][3] == sauvegarde[j][2] and liste_quetes[sauvegarde[j][1]].finie < 2: #si même quête et même avancement
+            if dialogues[i][2] == sauvegarde[j][1] and dialogues[i][3] == sauvegarde[j][2] and liste_quetes[sauvegarde[j][1]].finie < 2: #si même quête et même avancement et quete pas finie
                 if dialogues[i][4] not in liste_dial:
                     liste_dial.append(dialogues[i][4])
                 if liste_quetes[sauvegarde[j][1]].finie == 1:
                     liste_quetes[sauvegarde[j][1]].finie = 2
-    
-    # print(liste_dial)
+                    Quete.en_cours.remove(liste_quetes[sauvegarde[j][1]].id)
+                    Quete.quetes_finies.append(liste_quetes[sauvegarde[j][1]].id)
     
     if len(liste_dial) > 0:
         for i in liste_dial:
@@ -460,7 +460,6 @@ def faire_quete(pnj, liste_quetes, inventaire):
                     # print(liste_quetes[i+1].objectif[j]['requis'])
                     if liste_quetes[i+1].objectif[j]['requis']:
                         requis = liste_quetes[i+1].objectif[j]['requis'].split(",")
-                        print(requis)
                         for k in range(len(requis)):
                             if requis[k].split(":")[0] == "item":
                                 if requis[k].split(":")[1] in inventaire: #si l'objet existe bel et bien
@@ -472,15 +471,7 @@ def faire_quete(pnj, liste_quetes, inventaire):
                                 xp_requis = int(requis[k].split(":")[1])
                     else:
                         objets_requis = None
-                    
-                    
-    # reussi = 0
-    # for i in range(len(objets_requis)):
-        # if inventaire[objets_requis[i]] > 0 and GameFonctions.MyCharacters.Character1.Exp > xp_requis:
-            # print("tu peux continuer la quête !")
-            # reussi = 1
-    # print(objets_requis) 
-    
+                        
     reussi = 0      
     for i in range(len(liste_quetes)):
         for j in range(len(liste_quetes[i+1].objectif)):
@@ -490,15 +481,14 @@ def faire_quete(pnj, liste_quetes, inventaire):
                         for key in objets_requis.keys():
                             if inventaire[key] >= objets_requis[key] and GameFonctions.MyCharacters.Character1.Exp >= xp_requis:
                                 reussi = 1
-                                numero_quete = i+1
-  
-                    else:
-                        # if liste_quetes[i+1].id not in Quete.en_cours:
-                        Quete.en_cours.append((liste_quetes[i+1].id))
-                        
-                elif liste_quetes[i+1].objectif[j]['avancement'] == 0:
-                    if liste_quetes[i+1].id not in Quete.en_cours:
-                        Quete.en_cours.append((liste_quetes[i+1].id))
+                                numero_quete = i+1                        
+
+                if (liste_quetes[i+1].objectif[j]['avancement'] == liste_quetes[i+1].minimum) and liste_quetes[i+1].actuel == 0:
+                    if liste_quetes[i+1].objectif[j]['personnage'] == pnj.id:
+                        # print(liste_quetes[i+1].objectif[j]['personnage'])
+                        # print(pnj.id)
+                        if liste_quetes[i+1].id not in Quete.en_cours:
+                            Quete.en_cours.append((liste_quetes[i+1].id))
                             
     if reussi:
         liste_quetes[numero_quete].actuel += 1         
@@ -506,10 +496,12 @@ def faire_quete(pnj, liste_quetes, inventaire):
     
         if liste_quetes[numero_quete].actuel == liste_quetes[numero_quete].nombre:
             liste_quetes[numero_quete].finie = 1
-    
+                
 class Quete:
     en_cours = list()
+    quetes_finies = list()
     finie = 0
+    minimum = 0
 
     def charger_quete_en_cours():
         en_cours = list()
@@ -532,8 +524,11 @@ class Quete:
         conn = sqlite3.connect(os.path.join('quete','quetes.db'))
         c = conn.cursor()
         
-        c.execute("SELECT COUNT(*) FROM objectifs WHERE quete=?", (self.id,))
+        c.execute("SELECT MAX(avancement) FROM objectifs WHERE quete=?", (self.id,))
         self.nombre = c.fetchone()[0]
+        
+        c.execute("SELECT MIN(avancement) FROM objectifs WHERE quete=?", (self.id,))
+        self.minimum = c.fetchone()[0]
 
         c.execute("SELECT * FROM objectifs WHERE quete=?", (self.id,))
         reponse = c.fetchall()

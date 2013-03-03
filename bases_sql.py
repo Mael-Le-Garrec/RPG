@@ -59,10 +59,10 @@ c.execute("INSERT INTO dialogues(personnage, quete, avancement, dialogue) VALUES
 dialogue = "Merci pour l'armoire :))"
 c.execute("INSERT INTO dialogues(personnage, quete, avancement, dialogue) VALUES (1,1,2, ?)", (dialogue,))
 
-dialogue = "Salut sava ? Va me chercher des disques stp"
+dialogue = "Bonjour ! Pourriez-vous s'il vous plaît aller donner un disque à la personne se trouvant dans cette maison ? Il vous en serra reconnaissant !"
 c.execute("INSERT INTO dialogues(personnage, quete, avancement, dialogue) VALUES (7,2,0, ?)", (dialogue,))
 
-dialogue = "T'es trop un ouf mec, cimer pour le disque, c'est du m.pokora sa dechir"
+dialogue = "Merci mon brâve pour ce disque !"
 c.execute("INSERT INTO dialogues(personnage, quete, avancement, dialogue) VALUES (6,2,1, ?)", (dialogue,))
 
 ###########################
@@ -95,6 +95,7 @@ objectif = "Trouver une armoire"
 requis = "item:armoire"
 recompense = "xp:+500"
 c.execute("INSERT INTO objectifs(quete, personnage, objectif, avancement, requis, recompense) VALUES (1,1,?,2,?,?)", (objectif, requis, recompense))
+
 
 objectif = "Trouver des disques"
 requis = ""

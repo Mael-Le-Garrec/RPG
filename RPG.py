@@ -123,16 +123,11 @@ while continuer == 1:
             if event.key == K_i:
                 # pprint(inventaire)
                 afficher_inventaire(fenetre, liste_cartes, bentz, liste_pnjs, liste_items, inventaire)
-
-            if event.key == K_g:
-                # print(GameFonctions.MobsListe)
-                # pprint(dict(vars(GameFonctions.MyCharacters.Character1)))
-                # print(GameFonctions.MyCharacters.Character1.HP)
-                print(Quete.en_cours)
             
             if event.key == K_h:
-                for i in liste_quetes.values():
-                    print(i.actuel)
+                print("Quêtes en cours : {0}".format(Quete.en_cours))
+                print("Quêtes finies : {0}".format(Quete.quetes_finies))
+                print("\n")
             
             
             if event.key == K_f:
