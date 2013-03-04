@@ -14,11 +14,11 @@ dialogues = "Bonjour mon cher %{0}% ! Je me prénomme Maxime, comment allez vous
 c.execute("INSERT INTO pnj(nom, nom_entier, position, carte, image, dialogue) VALUES ('Maxime','Maxime le mangeur de fraises','270;90',0, 'manoir.png', ?)", (dialogues,)) # Réutilisation d'une image
 
 
-dialogue = "Moi c'est Henry, ça va ?"
-c.execute("INSERT INTO pnj(nom, nom_entier, position, carte, image, dialogue) VALUES ('Henry','Henry le bûcheron','300;90',0, 'bonhomme.png', ?)", (dialogue,)) # Réutilisation d'une image
+dialogue = "Bonjour, j'aime les noix de coco."
+c.execute("INSERT INTO pnj(nom, nom_entier, position, carte, image, dialogue) VALUES ('Henry','Henry le bûcheron','300;90',1, 'bonhomme.png', ?)", (dialogue,)) # Réutilisation d'une image
 
 
-dialogue = "Bonjour et bienvenu dans mon Manôär ! Prennez le temps de visiter ma modeste demeure."
+dialogue = "Bonjour et bienvenu dans mon Manôär ! Prennez le temps de visiter ma modeste demeure. Admirez également ma collection d'armoires."
 c.execute("INSERT INTO pnj(nom, nom_entier, position, carte, image, dialogue) VALUES ('Manoir','Manoir Man','240;270',6, 'manoir.png', ?)", (dialogue,))
 
 
@@ -34,8 +34,14 @@ dialogue = "Que faites-vous dans ma maison ?! Partez d'ici de suite ! On est pas
 c.execute("INSERT INTO pnj(nom, nom_entier, position, carte, image, dialogue) VALUES ('homme_maison','Un type aigri','270;240',3, 'homme_maison.png', ?)", (dialogue,))
 
 
-dialogue = "Bonjour, pouvez vous m'aider à retrouver mon chat ? Il est tout ce que j'ai dans la vie ! Bouhouhouhouuuuu.... J'aimerais tant pouvoir le retrouver, ce chat est vraiment génial, nous avons passé tellement de bon moments ensemble ! Par exemple, un jour, à EuropaPark, je l'ai caressé et il a ronronné !! Si c'est pas mignon ça... Il a même voulu me griffer une fois ! Mais je l'ai esquivé et nous sommes tous les deux ressortis plus forts de cette aventure. Nous nous sommes en effet réconciliés et nous nous aimons fortement ! Je ne pense vraiment pas qu'il ait pris la fuite, il a juste dû se perdre. Ou pire ! Il est peut-être en ce moment même en train de se faire torturer par un malfrat qui veut une rançon ! Tout cela pendant que vous, vous me regardez atterré de cette manière... Allez me le chercher que diable !"
-c.execute("INSERT INTO pnj(nom, nom_entier, position, carte, image, dialogue) VALUES ('Bonhomme','Un home seul','330;420',0, 'bonhomme.png', ?)", (dialogue,))
+dialogue = "salut, ça boum ?"
+c.execute("INSERT INTO pnj(nom, nom_entier, position, carte, image, dialogue) VALUES ('CocoMan','homme Coco','330;420',0, 'bonhomme.png', ?)", (dialogue,))
+
+# dialogue = "Les noix de coco, c'est vraiment le top du top !"
+# c.execute("INSERT INTO pnj(nom, nom_entier, position, carte, image, dialogue) VALUES ('Bonhomme','Un home seul','330;420',0, 'bonhomme.png', ?)", (dialogue,))
+
+dialogue = "Les fleurs, c'est mon dada."
+c.execute("INSERT INTO pnj(nom, nom_entier, position, carte, image, dialogue) VALUES ('BITEmAN','lhomme bite','360;390',0, 'manoir.png', ?)", (dialogue,))
 
 conn.commit()
 conn.close()
@@ -50,20 +56,44 @@ c = conn.cursor()
 c.execute("DROP TABLE IF EXISTS dialogues")
 c.execute('CREATE TABLE dialogues (id integer primary key, personnage integer, quete integer, avancement integer, dialogue text)') #personnage, quete : id
 
-dialogue = "Pouvez-vous aller me chercher mon chat s'il vous plaît ?"
+dialogue = "Bonjour, pouvez vous m'aider à retrouver mon chat ? Il est tout ce que j'ai dans la vie ! Bouhouhouhouuuuu.... J'aimerais tant pouvoir le retrouver, ce chat est vraiment génial, nous avons passé tellement de bon moments ensemble ! Par exemple, un jour, à EuropaPark, je l'ai caressé et il a ronronné !! Si c'est pas mignon ça... Il a même voulu me griffer une fois ! Mais je l'ai esquivé et nous sommes tous les deux ressortis plus forts de cette aventure. Nous nous sommes en effet réconciliés et nous nous aimons fortement ! Je ne pense vraiment pas qu'il ait pris la fuite, il a juste dû se perdre. Ou pire ! Il est peut-être en ce moment même en train de se faire torturer par un malfrat qui veut une rançon ! Tout cela pendant que vous, vous me regardez atterré de cette manière... Allez me le chercher que diable !"
 c.execute("INSERT INTO dialogues(personnage, quete, avancement, dialogue) VALUES (1,1,0, ?)", (dialogue,))
 
-dialogue = "Merci beaucoup pour mon chat ! Une armoire now ??"
+dialogue = "Merci beaucoup pour mon chat ! Pourriez vous me chercher une armoire maintenant pour l'y placer ? J'aimerais beaucoup pouvoir l'admirer derrière une jolie vitrine ! J'ai entendu dire qu'une riche personne en possédait beaucoup dans un manoir luxueux à l'ouest..."
 c.execute("INSERT INTO dialogues(personnage, quete, avancement, dialogue) VALUES (1,1,1, ?)", (dialogue,))
 
-dialogue = "Merci pour l'armoire :))"
+dialogue = "Vous êtes bien aimable ! Cette armoire est vraiment bonne, de la bonne qualité !"
 c.execute("INSERT INTO dialogues(personnage, quete, avancement, dialogue) VALUES (1,1,2, ?)", (dialogue,))
 
 dialogue = "Bonjour ! Pourriez-vous s'il vous plaît aller donner un disque à la personne se trouvant dans cette maison ? Il vous en serra reconnaissant !"
 c.execute("INSERT INTO dialogues(personnage, quete, avancement, dialogue) VALUES (7,2,0, ?)", (dialogue,))
 
-dialogue = "Merci mon brâve pour ce disque !"
+dialogue = "Merci mon brâve pour ce disque ! Cela fait depuis longtemps maintenant que je cherche cet album rare de Fatal Bazooka... Mais maintenant, je peux l'écouter, le regarder, le sentir, et même le goûter, tout ça, grâce à vous nôble étranger ! Merci mille fois !"
 c.execute("INSERT INTO dialogues(personnage, quete, avancement, dialogue) VALUES (6,2,1, ?)", (dialogue,))
+
+
+dialogue = "Bonjour, vous avez peut-être remarqué que je suis déguisé en pot de fleurs ? Non ? Regardez mieux ! Soit, je cherche à parfaire mon déguisement, et pour ce faire, il me faudrait des fleurs. J'en ai besoin de trois, merci, on se revoit plus tard."
+c.execute("INSERT INTO dialogues(personnage, quete, avancement, dialogue) VALUES (4,3,0, ?)", (dialogue,))
+
+dialogue = "Maintenant, je suis un vrai pot de fleurs !"
+c.execute("INSERT INTO dialogues(personnage, quete, avancement, dialogue) VALUES (4,3,1, ?)", (dialogue,))
+
+
+dialogue = "Je suis un grand admirateur de noix de coco, pourriez vous m'en rapporter deux s'il vous plait ? Alleeeeeeeeez !"
+c.execute("INSERT INTO dialogues(personnage, quete, avancement, dialogue) VALUES (2,4,0, ?)", (dialogue,))
+
+dialogue = "C'est cool de m'avoir rapporté ces noix, mais sans un poêle à bois, comment vais-je les cuire ?"
+c.execute("INSERT INTO dialogues(personnage, quete, avancement, dialogue) VALUES (2,4,1, ?)", (dialogue,))
+
+dialogue = "Youpi, des noix de coco poêlées au poêle à bois ! C'est cool !"
+c.execute("INSERT INTO dialogues(personnage, quete, avancement, dialogue) VALUES (2,4,2, ?)", (dialogue,))
+
+
+dialogue = "J'aime beaucoup les fleurs ! Pour pouvoir en observer autant que je veux, j'aimerais un Jardiland. Pensez vous que vous pourriez m'en obtenir un ? D'après ce que j'ai lu dans des articles, un Jardiland ressemblerait à un buisson avec des fleurs."
+c.execute("INSERT INTO dialogues(personnage, quete, avancement, dialogue) VALUES (8,5,0, ?)", (dialogue,))
+
+dialogue = "Vous avez fait de moi un homme heureux ! Merci beaucoup pour ce Jardiland si dûrement acquis par vos soins."
+c.execute("INSERT INTO dialogues(personnage, quete, avancement, dialogue) VALUES (8,5,1, ?)", (dialogue,))
 
 ###########################
 
@@ -76,6 +106,16 @@ nom = "Aider le monsieur"
 c.execute("INSERT INTO quetes(nom) VALUES (?)", (nom,))
 
 nom = "Chercher des disques"
+c.execute("INSERT INTO quetes(nom) VALUES (?)", (nom,))
+
+nom = "Ramener des fleurs"
+c.execute("INSERT INTO quetes(nom) VALUES (?)", (nom,))
+
+nom = "Trouver des noix de coco"
+c.execute("INSERT INTO quetes(nom) VALUES (?)", (nom,)) 
+
+
+nom = "jardiland"
 c.execute("INSERT INTO quetes(nom) VALUES (?)", (nom,)) 
 #########################
 
@@ -106,6 +146,28 @@ objectif = "Trouver des disques"
 requis = "item:disque"
 recompense = "xp:+500"
 c.execute("INSERT INTO objectifs(quete, personnage, objectif, avancement, requis, recompense) VALUES (2,6,?,1,?,?)", (objectif, requis, recompense))
+
+
+objectif = "Ramener des fleurs"
+requis = "item:fleurs,item:fleurs,item:fleurs"
+recompense = "xp:+500"
+c.execute("INSERT INTO objectifs(quete, personnage, objectif, avancement, requis, recompense) VALUES (3,4,?,1,?,?)", (objectif, requis, recompense))
+
+objectif = "Ramener des noix de coco"
+requis = "item:noix de coco,item:noix de coco"
+recompense = "xp:+500"
+c.execute("INSERT INTO objectifs(quete, personnage, objectif, avancement, requis, recompense) VALUES (4,2,?,1,?,?)", (objectif, requis, recompense))
+
+objectif = "Ramener un poêle"
+requis = "item:poele"
+recompense = "xp:+500"
+c.execute("INSERT INTO objectifs(quete, personnage, objectif, avancement, requis, recompense) VALUES (4,2,?,2,?,?)", (objectif, requis, recompense))
+
+
+objectif = "Ramener un jardiland"
+requis = "item:jardiland"
+recompense = "xp:+500"
+c.execute("INSERT INTO objectifs(quete, personnage, objectif, avancement, requis, recompense) VALUES (5,8,?,1,?,?)", (objectif, requis, recompense))
 #########################
 
 conn.commit()

@@ -551,7 +551,14 @@ class Quete:
         # print(self.nombre)
         # print(self.actuel)
         # print(self.objectif)
-       
+
+class Listes:
+    liste_persos = list()
+    liste_quetes = list()
+    liste_items = list()
+    liste_pnjs = list()
+    liste_cartes = list()
+    
     
 def options(fenetre, liste_cartes, perso, liste_pnjs, liste_items, inventaire):
     curseur_x = 520-100
