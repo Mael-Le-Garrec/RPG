@@ -49,23 +49,35 @@ class Carte:
         # self.coords[i][3] => 0 si la zone est traversable, 1 sinon
         # self.coords[i][4] => vers quelle position la zone téléporte
         # self.coords[i][5] => vers quelle carte la zone téléporte
+        # self.coords[i][6] => objet requis pour prendre le téléporteur
                 
         # coords[i][1][0] - coords[i][0][0] = nb de repets d'un bloc en x
         # coords[i][1][1] - coords[i][0][1] = nb de repets d'un bloc en y
          
-        # Si la ligne ressemble à ça 570:120;600:150;arbre;1
+        # Si la ligne ressemble à ça 570:120;600:150;arbre;1...
         for i in range(len(self.lignes)):
-            if re.match("^[0-9]*:[0-9]*;[0-9]*:[0-9]*;[a-zA-Z0-9_]*;(1|0)", self.lignes[i]):
+            if re.match("^[0-9]+:[0-9]+;[0-9]+:[0-9]+;[a-zA-Z0-9_]+;(1|0)$", self.lignes[i]):
                 self.coords.append(self.lignes[i]) # Si oui, on ajoute la ligne dans la liste des coordonnées
                 self.coords[-1] = self.coords[-1].rstrip().split(";") # On split la dernière entrée au niveau des  ; pour diviser la chaine
                 self.coords[-1][0] = self.coords[-1][0].split(":") # On split le : du premier point (x:y)
                 self.coords[-1][1] = self.coords[-1][1].split(":") # Puis du second
                 
-                # Si la ligne contient également des informations de téléportation, on l'ajoute en splittant les coordonnées
-                if re.match("[0-9]*:[0-9]*;[0-9]*:[0-9]*;[a-zA-Z0-9_]*;(0|1);[0-9]*:[0-9]*;[0-9]*$", self.lignes[i]):
-                    self.coords[-1][4] = self.coords[-1][4].split(":")
-
-
+            # Si la ligne contient également des informations de téléportation, on l'ajoute en splittant les coordonnées
+            elif re.match("[0-9]+:[0-9]+;[0-9]+:[0-9]+;[a-zA-Z0-9_]+;(0|1);[0-9]+:[0-9]+;[0-9]+$", self.lignes[i]):
+                self.coords.append(self.lignes[i]) # Si oui, on ajoute la ligne dans la liste des coordonnées
+                self.coords[-1] = self.coords[-1].rstrip().split(";") # On split la dernière entrée au niveau des  ; pour diviser la chaine
+                self.coords[-1][0] = self.coords[-1][0].split(":") # On split le : du premier point (x:y)
+                self.coords[-1][1] = self.coords[-1][1].split(":") # Puis du second
+                self.coords[-1][4] = self.coords[-1][4].split(":") # Ajout des coordonnées de téléportation
+                
+            elif re.match("[0-9]+:[0-9]+;[0-9]+:[0-9]+;[a-zA-Z0-9_]+;(0|1);[0-9]+:[0-9]+;[0-9]+;[0-9a-zA-Z ]+$", self.lignes[i]):
+                self.coords.append(self.lignes[i]) # Si oui, on ajoute la ligne dans la liste des coordonnées
+                self.coords[-1] = self.coords[-1].rstrip().split(";") # On split la dernière entrée au niveau des  ; pour diviser la chaine
+                self.coords[-1][0] = self.coords[-1][0].split(":") # On split le : du premier point (x:y)
+                self.coords[-1][1] = self.coords[-1][1].split(":") # Puis du second
+                self.coords[-1][4] = self.coords[-1][4].split(":") # Ajout des coordonnées de téléportation
+                
+                
         # On ajoute pour chaque clé ayant le nom de de la texture son image chargée
         # Du genre : {'pot_de_fleur' : 'objet'}
         
@@ -98,11 +110,12 @@ class Carte:
                     # print("Point de coordonnées : {0};{1}".format(int(self.coords[i][0][0]) + j * 30, int(self.coords[i][0][1]) + k * 30))
                     
                     # On essaye (il peut ne pas y avoir de tp) de mettre dans la liste des tps chaque bloc de la zone
-                    try:
-                        self.tp.append([int(self.coords[i][5]), (int(self.coords[i][0][0]) + j * 30, int(self.coords[i][0][1]) + k * 30), (int(self.coords[i][4][0]), int(self.coords[i][4][1]))])
-                    except:
-                        pass
-
+                    if len(self.coords[i]) > 5: # 4 ou 5, c'est pareil
+                        # self.tp.append([int(self.coords[i][5]), (int(self.coords[i][0][0]) + j * 30, int(self.coords[i][0][1]) + k * 30), (int(self.coords[i][4][0]), int(self.coords[i][4][1]))])
+                        if len(self.coords[i]) > 6:
+                            self.tp.append([int(self.coords[i][5]), (int(self.coords[i][0][0]) + j * 30, int(self.coords[i][0][1]) + k * 30), (int(self.coords[i][4][0]), int(self.coords[i][4][1])), self.coords[i][6]])
+                        else:
+                            self.tp.append([int(self.coords[i][5]), (int(self.coords[i][0][0]) + j * 30, int(self.coords[i][0][1]) + k * 30), (int(self.coords[i][4][0]), int(self.coords[i][4][1]))])
                         
     def afficher_carte(self, fenetre):
         # On réaffiche le fond
@@ -128,6 +141,8 @@ class Joueur:
     # On place le joueur au centre de la Joueur.carte (en attendant les sauvegardes de pos)
     position_x = 300
     position_y = 300
+    ancienne_y = 300
+    ancienne_x = 300
     
     # On définit la Joueur.carte du joueur comme étant la première (en attendant les sauvegardes toujours)
     carte = 0        
@@ -137,7 +152,7 @@ class Joueur:
     
         
 
-    def bouger_perso(key, fenetre):
+    def bouger_perso(key, fenetre, inventaire):
         '''Cette fonction sert à bouger le personnage en fonction de la touche pressée (up/down/left/right)'''
         # On prend en paramères la touche envoyée, la surface pygame, la liste des Joueur.cartes et pnjs pour pouvoir les afficher et le personnage
         
@@ -150,6 +165,8 @@ class Joueur:
                 if (Joueur.position_x, Joueur.position_y+30) not in Listes.liste_cartes[Joueur.carte].collisions:
                     # Si on a pas atteint la limite de la Joueur.carte, on avance tranquillou
                     if Joueur.position_y < (600-30):
+                        Joueur.ancienne_y = Joueur.position_y
+                        Joueur.ancienne_x = Joueur.position_x
                         Joueur.position_y += 30
                     # Sinon on change de Joueur.carte
                     else:
@@ -171,6 +188,8 @@ class Joueur:
                 Joueur.orientation = Joueur.perso_h
                 if (Joueur.position_x, Joueur.position_y-30) not in Listes.liste_cartes[Joueur.carte].collisions:
                     if Joueur.position_y > 0:
+                        Joueur.ancienne_y = Joueur.position_y
+                        Joueur.ancienne_x = Joueur.position_x
                         Joueur.position_y -= 30
                     else:
                         Listes.liste_cartes[int(Listes.liste_cartes[Joueur.carte].directions['haut'])].afficher_carte(fenetre)
@@ -185,6 +204,8 @@ class Joueur:
                 Joueur.orientation = Joueur.perso_g
                 if (Joueur.position_x-30, Joueur.position_y) not in Listes.liste_cartes[Joueur.carte].collisions:                  
                     if Joueur.position_x > 0:
+                        Joueur.ancienne_y = Joueur.position_y
+                        Joueur.ancienne_x = Joueur.position_x
                         Joueur.position_x -= 30
                     else:
                         Listes.liste_cartes[int(Listes.liste_cartes[Joueur.carte].directions["gauche"])].afficher_carte(fenetre)
@@ -199,6 +220,8 @@ class Joueur:
                 Joueur.orientation = Joueur.perso_d
                 if (Joueur.position_x+30, Joueur.position_y) not in Listes.liste_cartes[Joueur.carte].collisions:
                     if Joueur.position_x < (600-30):
+                        Joueur.ancienne_y = Joueur.position_y
+                        Joueur.ancienne_x = Joueur.position_x
                         Joueur.position_x += 30
                     else:
                         Listes.liste_cartes[int(Listes.liste_cartes[Joueur.carte].directions["droite"])].afficher_carte(fenetre)
@@ -210,17 +233,29 @@ class Joueur:
        
         
         # Système de téléportation (pour entrer dans une maison par exemple)
-        # On définit une variable contenant la Joueur.carte actuelle du personnage pour parcourir la boucle
+        # On définit une variable contenant la carte actuelle du personnage pour parcourir la boucle
         Joueur.carte_actuelle = Listes.liste_cartes[Joueur.carte]
         
         # On parcourt la liste des blocs de téléportation présents dans la Joueur.carte
         for i in range(len(Joueur.carte_actuelle.tp)):
             # Si on se trouve sur une case contenant une téléporation, on change la position du personnage ainsi que sa Joueur.carte
             if Joueur.carte_actuelle.tp[i][1] == (Joueur.position_x, Joueur.position_y):
-                Joueur.position_x = Listes.liste_cartes[Joueur.carte].tp[i][2][0]
-                Joueur.position_y = Listes.liste_cartes[Joueur.carte].tp[i][2][1]
-                Joueur.carte = Listes.liste_cartes[Joueur.carte].tp[i][0]
-                    
+                if len(Joueur.carte_actuelle.tp[i]) == 4:
+                    if Joueur.carte_actuelle.tp[i][3] in inventaire:
+                        if inventaire[Joueur.carte_actuelle.tp[i][3]] > 0:
+                            Joueur.position_x = Listes.liste_cartes[Joueur.carte].tp[i][2][0]
+                            Joueur.position_y = Listes.liste_cartes[Joueur.carte].tp[i][2][1]
+                            Joueur.carte = Listes.liste_cartes[Joueur.carte].tp[i][0]
+                        else:
+                            Joueur.position_y = Joueur.ancienne_y
+                            Joueur.position_x = Joueur.ancienne_x
+                            fenetre_dialogue(fenetre, "Vous devez posséder l'objet « {0} » pour pouvoir passer.".format(Joueur.carte_actuelle.tp[i][3]))
+                else:
+                    Joueur.position_x = Listes.liste_cartes[Joueur.carte].tp[i][2][0]
+                    Joueur.position_y = Listes.liste_cartes[Joueur.carte].tp[i][2][1]
+                    Joueur.carte = Listes.liste_cartes[Joueur.carte].tp[i][0]
+        # print(Joueur.carte)    
+           
         
         # On affiche la Joueur.carte 
         Listes.liste_cartes[Joueur.carte].afficher_carte(fenetre)

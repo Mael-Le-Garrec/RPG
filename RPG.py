@@ -110,7 +110,7 @@ while continuer == 1:
         if event.type == KEYDOWN:
             # Soit elle se trouve dans les clés de déplacement et on bouge le perso
             if event.key in cle_deplacement:
-                Joueur.bouger_perso(event.key, fenetre);
+                Joueur.bouger_perso(event.key, fenetre, inventaire);
                 
             # Soit c'est "Entrée" et on fait parler le personnage
             if event.key == K_RETURN:
