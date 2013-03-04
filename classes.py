@@ -112,186 +112,187 @@ class Carte:
         for i in range(len(self.bloc)):
             fenetre.blit(self.bloc[i][2], (self.bloc[i][0], self.bloc[i][1]))
                     
+
+                    
+def creer_images_perso():
+    Joueur.perso = pygame.image.load(os.path.join('images', 'fatman_down.png')).convert_alpha()
+    Joueur.perso_d = pygame.image.load(os.path.join('images', 'fatman_right.png')).convert_alpha()
+    Joueur.perso_b = pygame.image.load(os.path.join('images', 'fatman_down.png')).convert_alpha()
+    Joueur.perso_g = pygame.image.load(os.path.join('images', 'fatman_left.png')).convert_alpha()
+    Joueur.perso_h = pygame.image.load(os.path.join('images', 'fatman_up.png')).convert_alpha()
+    Joueur.fond_dial = pygame.image.load(os.path.join('images', 'fond_dialogue.png')).convert_alpha()
+    Joueur.orientation = Joueur.perso_b
+
 # Classe du personnage à jouer
 class Joueur:
-    def __init__(self):
-        # On place le joueur au centre de la carte (en attendant les sauvegardes de pos)
-        self.position_x = 300
-        self.position_y = 300
-        
-        # On définit la carte du joueur comme étant la première (en attendant les sauvegardes toujours)
-        self.carte = 0        
-        
-        # On charge chaque orientation du personnage
-        self.perso = pygame.image.load(os.path.join('images', 'fatman_down.png')).convert_alpha()
-        self.perso_d = pygame.image.load(os.path.join('images', 'fatman_right.png')).convert_alpha()
-        self.perso_b = pygame.image.load(os.path.join('images', 'fatman_down.png')).convert_alpha()
-        self.perso_g = pygame.image.load(os.path.join('images', 'fatman_left.png')).convert_alpha()
-        self.perso_h = pygame.image.load(os.path.join('images', 'fatman_up.png')).convert_alpha()
-        
-        # On charge le fond noir servant à recouvrir les dialogues
-        self.fond_dial = pygame.image.load(os.path.join('images', 'fond_dialogue.png')).convert_alpha()
-        
-        # On met l'objet contenant l'orientation "bas" dans la varibable orientation, qu'on affichera
-        self.orientation = self.perso_b
+    # On place le joueur au centre de la Joueur.carte (en attendant les sauvegardes de pos)
+    position_x = 300
+    position_y = 300
+    
+    # On définit la Joueur.carte du joueur comme étant la première (en attendant les sauvegardes toujours)
+    carte = 0        
+    # On charge le fond noir servant à recouvrir les dialogues
+    
+    # On met l'objet contenant l'Joueur.orientation "bas" dans la varibable Joueur.orientation, qu'on affichera
+    
         
 
-    def bouger_perso(self, key, fenetre, liste_cartes, perso, liste_pnjs, liste_items):
+    def bouger_perso(key, fenetre):
         '''Cette fonction sert à bouger le personnage en fonction de la touche pressée (up/down/left/right)'''
-        # On prend en paramères la touche envoyée, la surface pygame, la liste des cartes et pnjs pour pouvoir les afficher et le personnage
+        # On prend en paramères la touche envoyée, la surface pygame, la liste des Joueur.cartes et pnjs pour pouvoir les afficher et le personnage
         
         if key == K_DOWN:
-            # Si l'orientation actuelle est la même que celle du bas, on peut avancer
-            if self.perso_b == self.orientation:
-                self.orientation = self.perso_b
+            # Si l'Joueur.orientation actuelle est la même que celle du bas, on peut avancer
+            if Joueur.perso_b == Joueur.orientation:
+                Joueur.orientation = Joueur.perso_b
                 
                 # Si la position où l'on veut aller n'est pas dans la liste des collisions, on peut avancer
-                if (self.position_x, self.position_y+30) not in liste_cartes[perso.carte].collisions:
-                    # Si on a pas atteint la limite de la carte, on avance tranquillou
-                    if self.position_y < (600-30):
-                        self.position_y += 30
-                    # Sinon on change de carte
+                if (Joueur.position_x, Joueur.position_y+30) not in Listes.liste_cartes[Joueur.carte].collisions:
+                    # Si on a pas atteint la limite de la Joueur.carte, on avance tranquillou
+                    if Joueur.position_y < (600-30):
+                        Joueur.position_y += 30
+                    # Sinon on change de Joueur.carte
                     else:
-                        # perso.carte = numéro de carte
-                        # directions = dictionnaire des directions de la carte
+                        # Joueur.carte = numéro de Joueur.carte
+                        # directions = dictionnaire des directions de la Joueur.carte
                         # Comme on passe d'en bas à en haut, y vaut 150
-                        liste_cartes[int(liste_cartes[perso.carte].directions["bas"])].afficher_carte(fenetre)
-                        perso.carte = int(liste_cartes[perso.carte].directions["bas"])
-                        perso.position_y = 0
+                        Listes.liste_cartes[int(Listes.liste_cartes[Joueur.carte].directions["bas"])].afficher_carte(fenetre)
+                        Joueur.carte = int(Listes.liste_cartes[Joueur.carte].directions["bas"])
+                        Joueur.position_y = 0
                         
-            # Si l'orientation n'est pas la même que celle du bas, on tourne le personnage
+            # Si l'Joueur.orientation n'est pas la même que celle du bas, on tourne le personnage
             else:
-                self.orientation = self.perso_b
+                Joueur.orientation = Joueur.perso_b
                 
 
         # Pour les autres événements, regarder plus haut...
         elif key == K_UP:
-            if self.perso_h == self.orientation:
-                self.orientation = self.perso_h
-                if (self.position_x, self.position_y-30) not in liste_cartes[perso.carte].collisions:
-                    if self.position_y > 0:
-                        self.position_y -= 30
+            if Joueur.perso_h == Joueur.orientation:
+                Joueur.orientation = Joueur.perso_h
+                if (Joueur.position_x, Joueur.position_y-30) not in Listes.liste_cartes[Joueur.carte].collisions:
+                    if Joueur.position_y > 0:
+                        Joueur.position_y -= 30
                     else:
-                        liste_cartes[int(liste_cartes[perso.carte].directions['haut'])].afficher_carte(fenetre)
-                        perso.carte = int(liste_cartes[perso.carte].directions['haut'])
-                        perso.position_y = 600-30    
+                        Listes.liste_cartes[int(Listes.liste_cartes[Joueur.carte].directions['haut'])].afficher_carte(fenetre)
+                        Joueur.carte = int(Listes.liste_cartes[Joueur.carte].directions['haut'])
+                        Joueur.position_y = 600-30    
             else:
-                self.orientation = self.perso_h
+                Joueur.orientation = Joueur.perso_h
                 
 
         elif key == K_LEFT:
-            if self.perso_g == self.orientation:
-                self.orientation = self.perso_g
-                if (self.position_x-30, self.position_y) not in liste_cartes[perso.carte].collisions:                  
-                    if self.position_x > 0:
-                        self.position_x -= 30
+            if Joueur.perso_g == Joueur.orientation:
+                Joueur.orientation = Joueur.perso_g
+                if (Joueur.position_x-30, Joueur.position_y) not in Listes.liste_cartes[Joueur.carte].collisions:                  
+                    if Joueur.position_x > 0:
+                        Joueur.position_x -= 30
                     else:
-                        liste_cartes[int(liste_cartes[perso.carte].directions["gauche"])].afficher_carte(fenetre)
-                        perso.carte = int(liste_cartes[perso.carte].directions["gauche"])
-                        perso.position_x = 600-30
+                        Listes.liste_cartes[int(Listes.liste_cartes[Joueur.carte].directions["gauche"])].afficher_carte(fenetre)
+                        Joueur.carte = int(Listes.liste_cartes[Joueur.carte].directions["gauche"])
+                        Joueur.position_x = 600-30
             else:
-                self.orientation = self.perso_g
+                Joueur.orientation = Joueur.perso_g
                 
                     
         elif key == K_RIGHT:
-            if self.perso_d == self.orientation:
-                self.orientation = self.perso_d
-                if (self.position_x+30, self.position_y) not in liste_cartes[perso.carte].collisions:
-                    if self.position_x < (600-30):
-                        self.position_x += 30
+            if Joueur.perso_d == Joueur.orientation:
+                Joueur.orientation = Joueur.perso_d
+                if (Joueur.position_x+30, Joueur.position_y) not in Listes.liste_cartes[Joueur.carte].collisions:
+                    if Joueur.position_x < (600-30):
+                        Joueur.position_x += 30
                     else:
-                        liste_cartes[int(liste_cartes[perso.carte].directions["droite"])].afficher_carte(fenetre)
-                        perso.carte = int(liste_cartes[perso.carte].directions["droite"])
-                        perso.position_x = 0
+                        Listes.liste_cartes[int(Listes.liste_cartes[Joueur.carte].directions["droite"])].afficher_carte(fenetre)
+                        Joueur.carte = int(Listes.liste_cartes[Joueur.carte].directions["droite"])
+                        Joueur.position_x = 0
             else:
-                self.orientation = self.perso_d        
+                Joueur.orientation = Joueur.perso_d        
 
        
         
         # Système de téléportation (pour entrer dans une maison par exemple)
-        # On définit une variable contenant la carte actuelle du personnage pour parcourir la boucle
-        carte_actuelle = liste_cartes[perso.carte]
+        # On définit une variable contenant la Joueur.carte actuelle du personnage pour parcourir la boucle
+        Joueur.carte_actuelle = Listes.liste_cartes[Joueur.carte]
         
-        # On parcourt la liste des blocs de téléportation présents dans la carte
-        for i in range(len(carte_actuelle.tp)):
-            # Si on se trouve sur une case contenant une téléporation, on change la position du personnage ainsi que sa carte
-            if carte_actuelle.tp[i][1] == (self.position_x, self.position_y):
-                self.position_x = liste_cartes[perso.carte].tp[i][2][0]
-                self.position_y = liste_cartes[perso.carte].tp[i][2][1]
-                perso.carte = liste_cartes[perso.carte].tp[i][0]
+        # On parcourt la liste des blocs de téléportation présents dans la Joueur.carte
+        for i in range(len(Joueur.carte_actuelle.tp)):
+            # Si on se trouve sur une case contenant une téléporation, on change la position du personnage ainsi que sa Joueur.carte
+            if Joueur.carte_actuelle.tp[i][1] == (Joueur.position_x, Joueur.position_y):
+                Joueur.position_x = Listes.liste_cartes[Joueur.carte].tp[i][2][0]
+                Joueur.position_y = Listes.liste_cartes[Joueur.carte].tp[i][2][1]
+                Joueur.carte = Listes.liste_cartes[Joueur.carte].tp[i][0]
                     
         
-        # On affiche la carte 
-        liste_cartes[perso.carte].afficher_carte(fenetre)
+        # On affiche la Joueur.carte 
+        Listes.liste_cartes[Joueur.carte].afficher_carte(fenetre)
         
-        for i in liste_items:
-            liste_items[i].afficher_item(fenetre, perso)
+        for i in Listes.liste_items:
+            Listes.liste_items[i].afficher_item(fenetre)
 
-        # Puis les pnjs en parcourant leur liste et en testant s'il sont sur la carte
-        for val in liste_pnjs.values():
-            if val.carte == perso.carte:
+        # Puis les pnjs en parcourant leur liste et en testant s'il sont sur la Joueur.carte
+        for val in Listes.liste_pnjs.values():
+            if val.carte == Joueur.carte:
                 fenetre.blit(val.image, (val.pos_x, val.pos_y))
         
-        # On affiche ensuite le personnage selon son orientation et sa position
-        fenetre.blit(self.orientation, (self.position_x,self.position_y))
+        # On affiche ensuite le personnage selon son Joueur.orientation et sa position
+        fenetre.blit(Joueur.orientation, (Joueur.position_x,Joueur.position_y))
         pygame.display.flip() # Et on raffraichi tout ça
      
-    def parler_pnj(self, perso, liste_pnjs, fenetre, liste_cartes, liste_items, liste_quetes, inventaire):
+    def parler_pnj(fenetre, inventaire):
         # On définit deux varibles contenant la distance séparant le personnage du bloc qu'il voit
-        self.voir_x = 0
-        self.voir_y = 0
+        voir_x = 0
+        voir_y = 0
         
-        # En fonction de l'orientation du personnage, on change ces variables
-        if perso.orientation == perso.perso_b:
-            self.voir_y = 30
-        elif perso.orientation == perso.perso_h:
-            self.voir_y = -30
-        elif perso.orientation == perso.perso_g:
-            self.voir_x = -30
+        # En fonction de l'Joueur.orientation du personnage, on change ces variables
+        if Joueur.orientation == Joueur.perso_b:
+            voir_y = 30
+        elif Joueur.orientation == Joueur.perso_h:
+            voir_y = -30
+        elif Joueur.orientation == Joueur.perso_g:
+            voir_x = -30
         else:
-            self.voir_x = 30
+            voir_x = 30
     
         # On parcourt la liste des pnjs
-        for val in liste_pnjs.values():
-            # Si ce pnj se trouve sur la carte actuelle
-            if val.carte == perso.carte:
+        for val in Listes.liste_pnjs.values():
+            # Si ce pnj se trouve sur la Joueur.carte actuelle
+            if val.carte == Joueur.carte:
                # Si sa position est égale à celle qu'on regarde
-               if perso.position_x + self.voir_x == val.pos_x and perso.position_y + self.voir_y == val.pos_y:
+               if Joueur.position_x + voir_x == val.pos_x and Joueur.position_y + voir_y == val.pos_y:
                     # Alors on affiche le dialogue
                     # On découpe le dialogue en plusieurs listes pour ne pas déborder de l'écran
-                    faire_quete(val, liste_quetes, inventaire)
-                    choisir_dialogue(val, fenetre, liste_cartes, perso, liste_pnjs, liste_items, liste_quetes)
+                    faire_quete(val, inventaire)
+                    choisir_dialogue(val, fenetre)
                                              
-    def prendre_item(self, inventaire, liste_items, perso, liste_cartes, liste_pnjs, fenetre):
-        self.voir_x = 0
-        self.voir_y = 0
+    def prendre_item(inventaire, fenetre):
+        voir_x = 0
+        voir_y = 0
         
-        if perso.orientation == perso.perso_b:
-            self.voir_y = 30
-        elif perso.orientation == perso.perso_h:
-            self.voir_y = -30
-        elif perso.orientation == perso.perso_g:
-            self.voir_x = -30
+        if Joueur.orientation == Joueur.perso_b:
+            voir_y = 30
+        elif Joueur.orientation == Joueur.perso_h:
+            voir_y = -30
+        elif Joueur.orientation == Joueur.perso_g:
+            voir_x = -30
         else:
-            self.voir_x = 30
+            voir_x = 30
                 
-        # Position item : [[x, y, carte],[x, y, carte]] etc
-        for val in liste_items.values():
-            if perso.carte in val.carte :
-                # print([[perso.position_x + self.voir_x, perso.position_y + self.voir_y], perso.carte])
+        # Position item : [[x, y, Joueur.carte],[x, y, Joueur.carte]] etc
+        for val in Listes.liste_items.values():
+            if Joueur.carte in val.carte :
+                # print([[Joueur.position_x + voir_x, Joueur.position_y + voir_y], Joueur.carte])
                 # print(val.position)
                 # print(val.nom)
                 
                 dialogue = "Vous venez de ramasser l'objet «{0}». Il sera affiché sous le nom «{1}»".format(val.nom_entier, val.nom)
                 
-                if [[perso.position_x + self.voir_x, perso.position_y + self.voir_y], perso.carte] in val.position:
+                if [[Joueur.position_x + voir_x, Joueur.position_y + voir_y], Joueur.carte] in val.position:
                     inventaire[val.nom] +=1
-                    val.position.remove([[perso.position_x + self.voir_x, perso.position_y + self.voir_y], perso.carte])
-                    liste_cartes[perso.carte].collisions.remove((perso.position_x + self.voir_x, perso.position_y + self.voir_y))
+                    val.position.remove([[Joueur.position_x + voir_x, Joueur.position_y + voir_y], Joueur.carte])
+                    Listes.liste_cartes[Joueur.carte].collisions.remove((Joueur.position_x + voir_x, Joueur.position_y + voir_y))
                     
-                    fenetre_dialogue(fenetre, dialogue, liste_cartes, perso, liste_pnjs, liste_items)
+                    fenetre_dialogue(fenetre, dialogue)
   
-def choisir_dialogue(pnj, fenetre, liste_cartes, perso, liste_pnjs, liste_items, liste_quetes):
+def choisir_dialogue(pnj, fenetre):
     conn = sqlite3.connect(os.path.join('quete','quetes.db'))
     c = conn.cursor()
     c.execute("SELECT * FROM dialogues WHERE personnage = ?", (pnj.id,))
@@ -300,39 +301,39 @@ def choisir_dialogue(pnj, fenetre, liste_cartes, perso, liste_pnjs, liste_items,
     
     # sauvegarde = list(Sauvegarde.charger_quete()) # quetes sauvegardées
     liste = list()
-    for i in range(len(liste_quetes)):
-        # print(liste_quetes[i+1].objectif)
-        for j in range(len(liste_quetes[i+1].objectif)):
-            liste.append((liste_quetes[i+1].objectif[j]['id'], liste_quetes[i+1].objectif[j]['quete'], liste_quetes[i+1].objectif[j]['avancement']))
+    for i in range(len(Listes.liste_quetes)):
+        # print(Listes.liste_quetes[i+1].objectif)
+        for j in range(len(Listes.liste_quetes[i+1].objectif)):
+            liste.append((Listes.liste_quetes[i+1].objectif[j]['id'], Listes.liste_quetes[i+1].objectif[j]['quete'], Listes.liste_quetes[i+1].objectif[j]['avancement']))
     
     sauvegarde = liste
     
     for i in range(len(sauvegarde)):
-        for j in range(len(liste_quetes)):
-            for k in range(len(liste_quetes[j+1].objectif)):
-                if liste_quetes[j+1].objectif[k]['quete'] == sauvegarde[i][1]: #si c'est la même quête
+        for j in range(len(Listes.liste_quetes)):
+            for k in range(len(Listes.liste_quetes[j+1].objectif)):
+                if Listes.liste_quetes[j+1].objectif[k]['quete'] == sauvegarde[i][1]: #si c'est la même quête
                     sauvegarde[i] = list(sauvegarde[i])
-                    sauvegarde[i][2] = liste_quetes[j+1].actuel
+                    sauvegarde[i][2] = Listes.liste_quetes[j+1].actuel
     
     # print(sauvegarde) #id, quete, avancement
     
-    liste_dial = list()
+    Listes.liste_dial = list()
     for i in range(len(dialogues)):
         for j in range(len(sauvegarde)):
-            if dialogues[i][2] == sauvegarde[j][1] and dialogues[i][3] == sauvegarde[j][2] and liste_quetes[sauvegarde[j][1]].finie < 2: #si même quête et même avancement et quete pas finie
-                if dialogues[i][4] not in liste_dial:
-                    liste_dial.append(dialogues[i][4])
-                if liste_quetes[sauvegarde[j][1]].finie == 1:
-                    liste_quetes[sauvegarde[j][1]].finie = 2
-                    Quete.en_cours.remove(liste_quetes[sauvegarde[j][1]].id)
-                    Quete.quetes_finies.append(liste_quetes[sauvegarde[j][1]].id)
+            if dialogues[i][2] == sauvegarde[j][1] and dialogues[i][3] == sauvegarde[j][2] and Listes.liste_quetes[sauvegarde[j][1]].finie < 2: #si même quête et même avancement et quete pas finie
+                if dialogues[i][4] not in Listes.liste_dial:
+                    Listes.liste_dial.append(dialogues[i][4])
+                if Listes.liste_quetes[sauvegarde[j][1]].finie == 1:
+                    Listes.liste_quetes[sauvegarde[j][1]].finie = 2
+                    Quete.en_cours.remove(Listes.liste_quetes[sauvegarde[j][1]].id)
+                    Quete.quetes_finies.append(Listes.liste_quetes[sauvegarde[j][1]].id)
     
-    if len(liste_dial) > 0:
-        for i in liste_dial:
+    if len(Listes.liste_dial) > 0:
+        for i in Listes.liste_dial:
             dialogue = "QUETE : " + i
-            fenetre_dialogue(fenetre, dialogue, liste_cartes, perso, liste_pnjs, liste_items)
+            fenetre_dialogue(fenetre, dialogue)
     else:
-        fenetre_dialogue(fenetre, pnj.dialogues, liste_cartes, perso, liste_pnjs, liste_items)
+        fenetre_dialogue(fenetre, pnj.dialogues)
                     
 def creer_liste_pnj():
     conn = sqlite3.connect(os.path.join('pnj','PNJs.db'))
@@ -359,7 +360,7 @@ class PNJ:
         self.carte = int()
         self.dialogues = str()
 
-    def charger_pnj(self, liste_cartes):
+    def charger_pnj(self):
         conn = sqlite3.connect(os.path.join('pnj','PNJs.db'))
         c = conn.cursor()
         c.execute("SELECT * FROM pnj WHERE id = ?", (self.id,))
@@ -381,7 +382,7 @@ class PNJ:
         
         # print("{0} : {1}".format(self.id, self.nom))
         
-        liste_cartes[self.carte].collisions.append((self.pos_x, self.pos_y))
+        Listes.liste_cartes[self.carte].collisions.append((self.pos_x, self.pos_y))
         
         # nom, nom_entier text, position text, carte real, image text, dialogue_avant text, dialogue_apres text
                 
@@ -399,7 +400,7 @@ class Item:
         self.carte = []
         self.ligne = []
 
-    def charger_item(self, liste_cartes):
+    def charger_item(self):
         try:
             self.image = pygame.image.load(os.path.join('items', 'images', '{0}.png'.format(self.nom))).convert_alpha()
         except:
@@ -426,14 +427,14 @@ class Item:
                 
                 self.carte.append(int(self.ligne[-1][1]))
                 
-                liste_cartes[self.carte[-1]].collisions.append((int(self.ligne[-1][0][0]), int(self.ligne[-1][0][1])))
+                Listes.liste_cartes[self.carte[-1]].collisions.append((int(self.ligne[-1][0][0]), int(self.ligne[-1][0][1])))
                 self.position.append(self.ligne[-1])
                 # x, y, carte
 
         
-    def afficher_item(self, fenetre, perso):   
+    def afficher_item(self, fenetre):   
         for val in self.position:
-            if int(val[1]) == perso.carte:
+            if int(val[1]) == Joueur.carte:
                 fenetre.blit(self.image, (int(val[0][0]), int(val[0][1])))
 
 def creer_liste_quetes():
@@ -449,17 +450,17 @@ def creer_liste_quetes():
     
     return liste
 
-def faire_quete(pnj, liste_quetes, inventaire):
+def faire_quete(pnj, inventaire):
     objets_requis = dict()
     xp_requis = 0
 
-    for i in range(len(liste_quetes)):
-        for j in range(len(liste_quetes[i+1].objectif)):
-            if liste_quetes[i+1].objectif[j]['personnage'] == pnj.id: # Si c'est bien le bon PNJ pour l'avancement
-                if liste_quetes[i+1].objectif[j]['avancement'] == liste_quetes[i+1].actuel + 1:
-                    # print(liste_quetes[i+1].objectif[j]['requis'])
-                    if liste_quetes[i+1].objectif[j]['requis']:
-                        requis = liste_quetes[i+1].objectif[j]['requis'].split(",")
+    for i in range(len(Listes.liste_quetes)):
+        for j in range(len(Listes.liste_quetes[i+1].objectif)):
+            if Listes.liste_quetes[i+1].objectif[j]['personnage'] == pnj.id: # Si c'est bien le bon PNJ pour l'avancement
+                if Listes.liste_quetes[i+1].objectif[j]['avancement'] == Listes.liste_quetes[i+1].actuel + 1:
+                    # print(Listes.liste_quetes[i+1].objectif[j]['requis'])
+                    if Listes.liste_quetes[i+1].objectif[j]['requis']:
+                        requis = Listes.liste_quetes[i+1].objectif[j]['requis'].split(",")
                         for k in range(len(requis)):
                             if requis[k].split(":")[0] == "item":
                                 if requis[k].split(":")[1] in inventaire: #si l'objet existe bel et bien
@@ -473,29 +474,29 @@ def faire_quete(pnj, liste_quetes, inventaire):
                         objets_requis = None
                         
     reussi = 0      
-    for i in range(len(liste_quetes)):
-        for j in range(len(liste_quetes[i+1].objectif)):
-            if liste_quetes[i+1].objectif[j]['personnage'] == pnj.id: # Si c'est bien le bon PNJ pour l'avancement
-                if liste_quetes[i+1].actuel + 1 == liste_quetes[i+1].objectif[j]['avancement']:
-                    if liste_quetes[i+1].id in Quete.en_cours:
+    for i in range(len(Listes.liste_quetes)):
+        for j in range(len(Listes.liste_quetes[i+1].objectif)):
+            if Listes.liste_quetes[i+1].objectif[j]['personnage'] == pnj.id: # Si c'est bien le bon PNJ pour l'avancement
+                if Listes.liste_quetes[i+1].actuel + 1 == Listes.liste_quetes[i+1].objectif[j]['avancement']:
+                    if Listes.liste_quetes[i+1].id in Quete.en_cours:
                         for key in objets_requis.keys():
                             if inventaire[key] >= objets_requis[key] and GameFonctions.MyCharacters.Character1.Exp >= xp_requis:
                                 reussi = 1
                                 numero_quete = i+1                        
 
-                if (liste_quetes[i+1].objectif[j]['avancement'] == liste_quetes[i+1].minimum) and liste_quetes[i+1].actuel == 0:
-                    if liste_quetes[i+1].objectif[j]['personnage'] == pnj.id:
-                        # print(liste_quetes[i+1].objectif[j]['personnage'])
+                if (Listes.liste_quetes[i+1].objectif[j]['avancement'] == Listes.liste_quetes[i+1].minimum) and Listes.liste_quetes[i+1].actuel == 0:
+                    if Listes.liste_quetes[i+1].objectif[j]['personnage'] == pnj.id:
+                        # print(Listes.liste_quetes[i+1].objectif[j]['personnage'])
                         # print(pnj.id)
-                        if liste_quetes[i+1].id not in Quete.en_cours:
-                            Quete.en_cours.append((liste_quetes[i+1].id))
+                        if Listes.liste_quetes[i+1].id not in Quete.en_cours:
+                            Quete.en_cours.append((Listes.liste_quetes[i+1].id))
                             
     if reussi:
-        liste_quetes[numero_quete].actuel += 1         
+        Listes.liste_quetes[numero_quete].actuel += 1         
         print("tu peux continuer la quête !")
     
-        if liste_quetes[numero_quete].actuel == liste_quetes[numero_quete].nombre:
-            liste_quetes[numero_quete].finie = 1
+        if Listes.liste_quetes[numero_quete].actuel == Listes.liste_quetes[numero_quete].nombre:
+            Listes.liste_quetes[numero_quete].finie = 1
                 
 class Quete:
     en_cours = list()
@@ -544,13 +545,13 @@ class Quete:
             self.actuel = c.fetchone()[0]
         except:
             self.actuel = 0
-        # print(self.actuel)
-        
-        # print(self.nom)
-        # print(self.id)
-        # print(self.nombre)
-        # print(self.actuel)
-        # print(self.objectif)
+            # print(self.actuel)
+            
+            # print(self.nom)
+            # print(self.id)
+            # print(self.nombre)
+            # print(self.actuel)
+            # print(self.objectif)
 
 class Listes:
     liste_persos = list()
@@ -558,9 +559,9 @@ class Listes:
     liste_items = list()
     liste_pnjs = list()
     liste_cartes = list()
+
     
-    
-def options(fenetre, liste_cartes, perso, liste_pnjs, liste_items, inventaire):
+def options(fenetre, inventaire):
     curseur_x = 520-100
     curseur_y = 220-150
     cst = 35
@@ -610,14 +611,7 @@ def options(fenetre, liste_cartes, perso, liste_pnjs, liste_items, inventaire):
                 quit()
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
-                    liste_cartes[perso.carte].afficher_carte(fenetre)
-                    for val in liste_pnjs.values():
-                        if val.carte == perso.carte:
-                            fenetre.blit(val.image, (val.pos_x, val.pos_y))
-                    for i in liste_items:
-                        liste_items[i].afficher_item(fenetre, perso)
-                    fenetre.blit(perso.orientation, (perso.position_x,perso.position_y))
-                    pygame.display.flip()
+                    afficher_monde(fenetre)
                     continuer = 0
                     
                 if event.key == K_DOWN:
@@ -648,22 +642,25 @@ def options(fenetre, liste_cartes, perso, liste_pnjs, liste_items, inventaire):
                     
                     if curseur == 1:
                         # print(inventaire)                       
-                        afficher_inventaire(fenetre, liste_cartes, perso, liste_pnjs, liste_items, inventaire)
+                        afficher_inventaire(fenetre, inventaire)
                         continuer = 0
                        
                         
                     if curseur == 4:
-                        liste_cartes[perso.carte].afficher_carte(fenetre)
-                        for val in liste_pnjs.values():
-                            if val.carte == perso.carte:
-                                fenetre.blit(val.image, (val.pos_x, val.pos_y))
-                        for i in liste_items:
-                            liste_items[i].afficher_item(fenetre, perso)
-                        fenetre.blit(perso.orientation, (perso.position_x,perso.position_y))
-                        pygame.display.flip()
+                        afficher_monde(fenetre)
                         continuer = 0
+
+def afficher_monde(fenetre):
+    Listes.liste_cartes[Joueur.carte].afficher_carte(fenetre)
+    for val in Listes.liste_pnjs.values():
+        if val.carte == Joueur.carte:
+            fenetre.blit(val.image, (val.pos_x, val.pos_y))
+    for i in Listes.liste_items:
+        Listes.liste_items[i].afficher_item(fenetre)
+    fenetre.blit(Joueur.orientation, (Joueur.position_x, Joueur.position_y))
+    pygame.display.flip()
                         
-def fenetre_dialogue(fenetre, dialogue, liste_cartes, perso, liste_pnjs, liste_items):
+def fenetre_dialogue(fenetre, dialogue):
     myfont = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 14)
     dialogue_wrap = textwrap.wrap(dialogue.replace("%{0}%", GameFonctions.MyCharacters.Character1.Nickname),65)
     fond_dial = pygame.image.load(os.path.join('images', 'fond_dialogue.png')).convert_alpha()
@@ -726,17 +723,10 @@ def fenetre_dialogue(fenetre, dialogue, liste_cartes, perso, liste_pnjs, liste_i
             if event.type == KEYDOWN:
                 if event.key == K_RCTRL:
                     continuer = 0
-
-                    liste_cartes[perso.carte].afficher_carte(fenetre)
-                    for val in liste_pnjs.values():
-                        if val.carte == perso.carte:
-                            fenetre.blit(val.image, (val.pos_x, val.pos_y))
-                    for i in liste_items:
-                        liste_items[i].afficher_item(fenetre, perso)
-                    fenetre.blit(perso.orientation, (perso.position_x,perso.position_y))
-                    pygame.display.flip()
+                    afficher_monde(fenetre)
+                    
                             
-def afficher_inventaire(fenetre, liste_cartes, perso, liste_pnjs, liste_items, inventaire):
+def afficher_inventaire(fenetre, inventaire):
     image_inventaire = pygame.image.load(os.path.join("images", "inventaire.png"))
     myfont = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 16)
     
@@ -750,12 +740,12 @@ def afficher_inventaire(fenetre, liste_cartes, perso, liste_pnjs, liste_items, i
     
     categories = []
     j = 0
-    for i in liste_items.keys():       
-        if liste_items[i].categorie.upper() not in categories:
-            categories.append(liste_items[i].categorie.upper())
+    for i in Listes.liste_items.keys():       
+        if Listes.liste_items[i].categorie.upper() not in categories:
+            categories.append(Listes.liste_items[i].categorie.upper())
         
-            taille = myfont.render(liste_items[i].categorie.upper(), 1, (0,0,0)).get_rect().width
-            fenetre.blit(myfont.render(liste_items[i].categorie.upper(), 1, (0,0,0)), ((600-422-37)/2-taille/2+37, 140+j*50))
+            taille = myfont.render(Listes.liste_items[i].categorie.upper(), 1, (0,0,0)).get_rect().width
+            fenetre.blit(myfont.render(Listes.liste_items[i].categorie.upper(), 1, (0,0,0)), ((600-422-37)/2-taille/2+37, 140+j*50))
        
             j += 1
     
@@ -768,7 +758,7 @@ def afficher_inventaire(fenetre, liste_cartes, perso, liste_pnjs, liste_items, i
     nb_actuel = 0
     tab = 0
     
-    nb_obj, objet_actuel = afficher_categorie(fenetre, categorie_actuelle, tab, inventaire, nb_actuel, liste_items, categories)   
+    nb_obj, objet_actuel = afficher_categorie(fenetre, categorie_actuelle, tab, inventaire, nb_actuel, categories)   
                
     pygame.display.flip()
         
@@ -792,7 +782,7 @@ def afficher_inventaire(fenetre, liste_cartes, perso, liste_pnjs, liste_items, i
                         nb_actuel = 0
                         categorie_actuelle = categories[cat]
                     
-                    nb_obj, objet_actuel = afficher_categorie(fenetre, categorie_actuelle, tab, inventaire, nb_actuel, liste_items, categories)
+                    nb_obj, objet_actuel = afficher_categorie(fenetre, categorie_actuelle, tab, inventaire, nb_actuel, categories)
                     
                 if event.key == K_LEFT:
                     if tab == 0:
@@ -803,7 +793,7 @@ def afficher_inventaire(fenetre, liste_cartes, perso, liste_pnjs, liste_items, i
                         nb_actuel = 0
                         categorie_actuelle = categories[cat]  
                         
-                    nb_obj, objet_actuel = afficher_categorie(fenetre, categorie_actuelle, tab, inventaire, nb_actuel, liste_items, categories)
+                    nb_obj, objet_actuel = afficher_categorie(fenetre, categorie_actuelle, tab, inventaire, nb_actuel, categories)
                 
                 if event.key == K_UP or event.key == K_DOWN:
                     if tab == 0 :
@@ -814,25 +804,18 @@ def afficher_inventaire(fenetre, liste_cartes, perso, liste_pnjs, liste_items, i
                             if nb_actuel < nb_obj - 1:
                                 nb_actuel += 1    
                                     
-                    nb_obj, objet_actuel = afficher_categorie(fenetre, categorie_actuelle, tab, inventaire, nb_actuel, liste_items, categories)
+                    nb_obj, objet_actuel = afficher_categorie(fenetre, categorie_actuelle, tab, inventaire, nb_actuel, categories)
                     
                     
                 if event.key == K_RETURN:
                     if tab == 0 and objet_actuel:
                         nb_actuel = action_objet(fenetre, objet_actuel, inventaire, nb_actuel, nb_obj)
-                        nb_obj, objet_actuel = afficher_categorie(fenetre, categorie_actuelle, tab, inventaire, nb_actuel, liste_items, categories)    
+                        nb_obj, objet_actuel = afficher_categorie(fenetre, categorie_actuelle, tab, inventaire, nb_actuel, categories)    
                 
                         
                 if event.key == K_ESCAPE or event.key == K_i:
                     continuer = 0
-                    liste_cartes[perso.carte].afficher_carte(fenetre)
-                    for val in liste_pnjs.values():
-                        if val.carte == perso.carte:
-                            fenetre.blit(val.image, (val.pos_x, val.pos_y))
-                    for i in liste_items:
-                        liste_items[i].afficher_item(fenetre, perso)
-                    fenetre.blit(perso.orientation, (perso.position_x,perso.position_y))
-                    pygame.display.flip()
+                    afficher_monde(fenetre)
 
 def action_objet(fenetre, objet_actuel, inventaire, nb_actuel, nb_obj):  
     fond = pygame.image.load(os.path.join("images", "choix_inventaire.png")) # 149 * 93
@@ -899,7 +882,7 @@ def action_objet(fenetre, objet_actuel, inventaire, nb_actuel, nb_obj):
         
     else: return nb_actuel
     
-def afficher_categorie(fenetre, categorie_actuelle, tab, inventaire, nb_actuel, liste_items, categories):
+def afficher_categorie(fenetre, categorie_actuelle, tab, inventaire, nb_actuel, categories):
     image_inventaire = pygame.image.load(os.path.join("images", "inventaire.png"))
     myfont = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 16)
     
@@ -922,7 +905,7 @@ def afficher_categorie(fenetre, categorie_actuelle, tab, inventaire, nb_actuel, 
     pygame.gfxdraw.filled_trigon(fenetre, gauche, 60, gauche, 20+60, gauche-10, 10+60, (0,0,0)) # gauche
     
     for val in sorted(inventaire, key=lambda item: (int(item) if item.isdigit() else float('inf'), item)):
-        if liste_items[val].categorie.upper() == categorie_actuelle:
+        if Listes.liste_items[val].categorie.upper() == categorie_actuelle:
             if inventaire[val] != 0:
                 nb_obj +=1
     
@@ -933,10 +916,10 @@ def afficher_categorie(fenetre, categorie_actuelle, tab, inventaire, nb_actuel, 
         page = nb_actuel - (10 - 1)
         nombre = 10 - 1
     
-    liste_cat = []
+    Listes.liste_cat = []
     for val in sorted(inventaire, key=lambda item: (int(item) if item.isdigit() else float('inf'), item))[(page):]:
-        if liste_items[val].categorie.upper() == categorie_actuelle:
-            # print("{0} : {1} : {3} // {2}".format(val, liste_items[val].categorie.upper(), categorie_actuelle, inventaire[val]))
+        if Listes.liste_items[val].categorie.upper() == categorie_actuelle:
+            # print("{0} : {1} : {3} // {2}".format(val, Listes.liste_items[val].categorie.upper(), categorie_actuelle, inventaire[val]))
         
             y = 130+i*40
             if y < 520 and inventaire[val] !=0:
@@ -944,10 +927,10 @@ def afficher_categorie(fenetre, categorie_actuelle, tab, inventaire, nb_actuel, 
                 fenetre.blit(myfont.render("x{0}".format(str(inventaire[val])), 1, (0,0,0)), (500, 130+i*40))
                 pygame.draw.line(fenetre, (0,0,0), (210,130+i*40+25), (550,130+i*40+25))
                 i += 1
-                liste_cat.append(val)                    
+                Listes.liste_cat.append(val)                    
     
-    if len(liste_cat) > 0:
-        objet_actuel = liste_cat[nb_actuel-page]
+    if len(Listes.liste_cat) > 0:
+        objet_actuel = Listes.liste_cat[nb_actuel-page]
         # print("{0} : {1}".format(objet_actuel, inventaire[objet_actuel]))
         y = 130+nombre*40+5
         # fenetre.blit(myfont.render("ICI".format(str(inventaire[val])), 1, (0,0,0)), (400, 130+nombre*40))
@@ -973,10 +956,10 @@ def afficher_categorie(fenetre, categorie_actuelle, tab, inventaire, nb_actuel, 
     pygame.display.flip()
     return nb_obj, objet_actuel
         
-def selection_personnage(fenetre, liste_persos):
+def selection_personnage(fenetre):
     actuel = 0
     
-    afficher_personnage(fenetre, liste_persos, actuel)
+    afficher_personnage(fenetre, actuel)
     
     continuer = 1
     while continuer:
@@ -986,7 +969,7 @@ def selection_personnage(fenetre, liste_persos):
                 quit()
             if event.type == KEYDOWN:
                 if event.key == K_RIGHT:
-                    if actuel < len(liste_persos)-1 :
+                    if actuel < len(Listes.liste_persos)-1 :
                         actuel += 1
                         
                 if event.key == K_LEFT:
@@ -994,17 +977,17 @@ def selection_personnage(fenetre, liste_persos):
                         actuel -= 1
 
                 if event.key == K_LEFT or event.key == K_RIGHT:
-                    afficher_personnage(fenetre, liste_persos, actuel)
+                    afficher_personnage(fenetre, actuel)
     
                 if event.key == K_RETURN:
-                    GameFonctions.MyCharacters.Character1.Nickname = liste_persos[actuel]
+                    GameFonctions.MyCharacters.Character1.Nickname = Listes.liste_persos[actuel]
                     continuer = 0
             
                 if event.unicode == "a" or event.unicode == "A":
-                    nouveau, clan = selection_clan(fenetre, liste_persos)
+                    nouveau, clan = selection_clan(fenetre)
                     
                     if nouveau == 0:
-                        afficher_personnage(fenetre, liste_persos, actuel)
+                        afficher_personnage(fenetre, actuel)
                     else:
                         GameFonctions.MyCharacters.Character1.Nickname = nouveau
                         GameFonctions.MyCharacters.Character1.Lvl = 1
@@ -1018,7 +1001,7 @@ def selection_personnage(fenetre, liste_persos):
                         GameFonctions.MyCharacters.CreateSave(GameFonctions.MyCharacters.Character1)
                         continuer = 0
                     
-def selection_clan(fenetre, liste_persos):
+def selection_clan(fenetre):
     actuel = 0
     
     afficher_clan(fenetre, actuel)
@@ -1047,7 +1030,7 @@ def selection_clan(fenetre, liste_persos):
                 
                 if event.key == K_RETURN: # DEMANDER NOM PERSO !!!
                     # continuer = 0
-                    var = pygame_input(fenetre, actuel, liste_persos)
+                    var = pygame_input(fenetre, actuel)
                     
                     if var != 0:
                         GameFonctions.MyCharacters.Character1.ClanName = GameFonctions.Clans[actuel]
@@ -1060,7 +1043,7 @@ def selection_clan(fenetre, liste_persos):
                     description_clan(fenetre, GameFonctions.Clans[actuel])
                     afficher_clan(fenetre, actuel)
 
-def afficher_personnage(fenetre, liste_persos, actuel):
+def afficher_personnage(fenetre, actuel):
     cst_x1 = 300+100+20
     cst_x2 = 300-100-20-10
     cst_y = 300-10
@@ -1071,7 +1054,7 @@ def afficher_personnage(fenetre, liste_persos, actuel):
     pygame.gfxdraw.box(fenetre, (200, 200, 200, 200), (0,0,0))
     pygame.gfxdraw.box(fenetre, (202, 202, 196, 196), (255,255,255))
     
-    GameFonctions.MyCharacters.ReadSave(liste_persos[actuel],GameFonctions.MyCharacters.Character1)
+    GameFonctions.MyCharacters.ReadSave(Listes.liste_persos[actuel], GameFonctions.MyCharacters.Character1)
     
     fenetre.blit(myfont.render("Ajouter personnage : A", 1, (0,0,0)), (210, 150))
     
@@ -1084,10 +1067,10 @@ def afficher_personnage(fenetre, liste_persos, actuel):
     fenetre.blit(myfont.render("Vitalité : " + str(GameFonctions.MyCharacters.Character1.Vitality), 1, (0,0,0)), (210, 210+7*20))
     fenetre.blit(myfont.render("Niveau : " + str(GameFonctions.MyCharacters.Character1.Lvl), 1, (0,0,0)), (210, 210+8*20))
     
-    taille = myfont.render("{0} / {1}".format(actuel+1, len(liste_persos)), 1, (0,0,0)).get_rect().width
-    fenetre.blit(myfont.render("{0} / {1}".format(actuel+1, len(liste_persos)), 1, (0,0,0)), (300-taille/2, 250+8*20))  
+    taille = myfont.render("{0} / {1}".format(actuel+1, len(Listes.liste_persos)), 1, (0,0,0)).get_rect().width
+    fenetre.blit(myfont.render("{0} / {1}".format(actuel+1, len(Listes.liste_persos)), 1, (0,0,0)), (300-taille/2, 250+8*20))  
    
-    if actuel < len(liste_persos)-1:
+    if actuel < len(Listes.liste_persos)-1:
         pygame.gfxdraw.filled_trigon(fenetre, 0+cst_x1, 0+cst_y, 0+cst_x1, 20+cst_y, 10+cst_x1, 10+cst_y, (0,0,0))
     if actuel > 0:
         pygame.gfxdraw.filled_trigon(fenetre, 10+cst_x2, 0+cst_y, 10+cst_x2, 20+cst_y, 0+cst_x2, 10+cst_y, (0,0,0))
@@ -1188,7 +1171,7 @@ def description_clan(fenetre, clan):
                 if event.key == K_ESCAPE:
                     continuer = 0
                     
-def pygame_input(fenetre, actuel, liste_persos):
+def pygame_input(fenetre, actuel):
     myfont = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 14)
     
     taille = myfont.render("Nom :", 1, (0,0,0)).get_rect().width
@@ -1246,5 +1229,5 @@ def pygame_input(fenetre, actuel, liste_persos):
                     
                     pygame.display.flip()
                  
-                elif event.key == K_RETURN and len(pseudo) > 2 and pseudo not in liste_persos:
+                elif event.key == K_RETURN and len(pseudo) > 2 and pseudo not in Listes.liste_persos:
                     return pseudo

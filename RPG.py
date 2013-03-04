@@ -20,53 +20,53 @@ pygame.key.set_repeat(1, 200)
 fenetre = pygame.display.set_mode((600,600))
 pygame.display.set_caption(titre)
 
+creer_images_perso()
+
+
 # fenetre.blit(pygame.image.load(os.path.join("images", "fond.png")), (0,0))
 
 # On crée une liste contenant chaque carte
-liste_cartes = list()
+Listes.liste_cartes = list()
 
-# On lit le dossier "map" et on crée associe l'objet Carte à chaque indice qui correspond à son nom (Ainsi la carte 6 se trouvera à liste_cartes[6])
+# On lit le dossier "map" et on crée associe l'objet Carte à chaque indice qui correspond à son nom (Ainsi la carte 6 se trouvera à Listes.liste_cartes[6])
 for i in range(len(os.listdir("map"))):
-    liste_cartes.append(Carte(i))
+    Listes.liste_cartes.append(Carte(i))
 
     # Après avoir crée l'objet, on la charge (collisions, etc)
-    liste_cartes[i].charger_carte()
+    Listes.liste_cartes[i].charger_carte()
 
 
-liste_quetes = creer_liste_quetes()
-for i in liste_quetes.keys():
-    liste_quetes[i].charger_quete()
+Listes.liste_quetes = creer_liste_quetes()
+for i in Listes.liste_quetes.keys():
+    Listes.liste_quetes[i].charger_quete()
 
-liste_pnjs = creer_liste_pnj()
-for i in liste_pnjs.keys():
-    liste_pnjs[i].charger_pnj(liste_cartes)
+Listes.liste_pnjs = creer_liste_pnj()
+for i in Listes.liste_pnjs.keys():
+    Listes.liste_pnjs[i].charger_pnj()
 
 
-liste_items = dict()
+Listes.liste_items = dict()
 for i in os.listdir("items"): # i vaut le nom du pnj, "bidule.txt"
     if re.match("[0-9a-zA-Z_\-\.\ ]+.txt", i):
-        liste_items[i.replace(".txt", "")] = Item(i.replace(".txt", ""))
-        liste_items[i.replace(".txt", "")].charger_item(liste_cartes)
+        Listes.liste_items[i.replace(".txt", "")] = Item(i.replace(".txt", ""))
+        Listes.liste_items[i.replace(".txt", "")].charger_item()
 
 inventaire = dict()
-for val in liste_items.keys():
-    inventaire[val.replace(".txt", "")] = liste_items[val].nombre
+for val in Listes.liste_items.keys():
+    inventaire[val.replace(".txt", "")] = Listes.liste_items[val].nombre
 
-# print(liste_items)
+# print(Listes.liste_items)
 # print(inventaire)
-
-# On crée notre personnage
-bentz = Joueur()
 
 # Chargement de tous les fichiers nécessaires
 GameFonctions.ClansInfo.Ini_Clans()
 GameFonctions.ClansInfo.OpenClansStats()
 
-liste_persos = []
+Listes.liste_persos = []
 for val in os.listdir("MyCharacters"):
-    liste_persos.append(val.replace(".txt", ""))
+    Listes.liste_persos.append(val.replace(".txt", ""))
 
-selection_personnage(fenetre, liste_persos)
+selection_personnage(fenetre)
 
 
 
@@ -81,17 +81,17 @@ Quete.charger_quete_en_cours()
 cle_deplacement = [K_UP, K_DOWN, K_LEFT, K_RIGHT]
 
 # On affiche la carte sur laquelle est le personnage puis le personnage lui même
-liste_cartes[bentz.carte].afficher_carte(fenetre)
-fenetre.blit(bentz.orientation, (bentz.position_x,bentz.position_y))
+Listes.liste_cartes[Joueur.carte].afficher_carte(fenetre)
+fenetre.blit(Joueur.orientation, (Joueur.position_x,Joueur.position_y))
 
 # On affiche ensuite les pnjs présents au démarrage
-for val in liste_pnjs.values():
-    if val.carte == bentz.carte:
+for val in Listes.liste_pnjs.values():
+    if val.carte == Joueur.carte:
         fenetre.blit(val.image, (val.pos_x, val.pos_y))
 
-for val in liste_items.values():
+for val in Listes.liste_items.values():
     for val2 in val.position:
-        if int(val2[1]) == bentz.carte:
+        if int(val2[1]) == Joueur.carte:
             fenetre.blit(val.image, (int(val2[0][0]), int(val2[0][1])))
 
 
@@ -110,19 +110,19 @@ while continuer == 1:
         if event.type == KEYDOWN:
             # Soit elle se trouve dans les clés de déplacement et on bouge le perso
             if event.key in cle_deplacement:
-                bentz.bouger_perso(event.key, fenetre, liste_cartes, bentz, liste_pnjs, liste_items);
+                Joueur.bouger_perso(event.key, fenetre);
                 
             # Soit c'est "Entrée" et on fait parler le personnage
             if event.key == K_RETURN:
-                bentz.parler_pnj(bentz, liste_pnjs, fenetre, liste_cartes, liste_items, liste_quetes, inventaire)
-                bentz.prendre_item(inventaire, liste_items, bentz, liste_cartes, liste_pnjs, fenetre)
+                Joueur.parler_pnj(fenetre, inventaire)
+                Joueur.prendre_item(inventaire, fenetre)
 
             if event.key == K_ESCAPE:
-                options(fenetre, liste_cartes, bentz, liste_pnjs, liste_items, inventaire)
+                options(fenetre, inventaire)
 
             if event.key == K_i:
                 # pprint(inventaire)
-                afficher_inventaire(fenetre, liste_cartes, bentz, liste_pnjs, liste_items, inventaire)
+                afficher_inventaire(fenetre, inventaire)
             
             if event.key == K_h:
                 print("Quêtes en cours : {0}".format(Quete.en_cours))
