@@ -43,7 +43,10 @@ for i in Listes.liste_quetes.keys():
 Listes.liste_pnjs = creer_liste_pnj()
 for i in Listes.liste_pnjs.keys():
     Listes.liste_pnjs[i].charger_pnj()
-
+    
+Listes.liste_obstacles = creer_liste_obstacles()    
+for i in Listes.liste_obstacles.keys():
+    Listes.liste_obstacles[i].charger_obs()
 
 Listes.liste_items = dict()
 for i in os.listdir("items"): # i vaut le nom du pnj, "bidule.txt"
@@ -94,7 +97,10 @@ for val in Listes.liste_items.values():
         if int(val2[1]) == Joueur.carte:
             fenetre.blit(val.image, (int(val2[0][0]), int(val2[0][1])))
 
-
+for i in Listes.liste_obstacles.keys():
+    if Listes.liste_obstacles[i].carte == Joueur.carte:
+        Listes.liste_obstacles[i].afficher_obstacle(fenetre)
+            
 pygame.display.flip() # Un petit peu d'eau, faut rafraichir
 
 continuer = 1
@@ -128,6 +134,9 @@ while continuer == 1:
                 print("Quêtes en cours : {0}".format(Quete.en_cours))
                 print("Quêtes finies : {0}".format(Quete.quetes_finies))
                 print("\n")
+            
+            if event.key == K_u:
+                pygame.image.save(fenetre, os.path.join("cartes_images", "{0}.png".format(Joueur.carte)))
             
             
             if event.key == K_f:

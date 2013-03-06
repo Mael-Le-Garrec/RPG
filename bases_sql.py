@@ -183,7 +183,23 @@ c.execute("DROP TABLE IF EXISTS quetes")
 c.execute('CREATE TABLE quetes (id integer primary key, quete integer, avancement integer)')
 # c.execute("INSERT INTO quetes (quete, avancement) VALUES (1,1)")
 # c.execute("INSERT INTO quetes (quete, avancement) VALUES (2,0)")
-#########################
+
+#########################################################################################################################################################################################
+
+
+######################################################################################################################################################################################### OBSTACLES
+
+conn = sqlite3.connect(os.path.join('items','items.db'))
+c = conn.cursor()
+
+######################### Quetes en cours
+c.execute("DROP TABLE IF EXISTS obstacles")
+c.execute('CREATE TABLE obstacles (id integer primary key, nom text, quete integer, image test, position text, carte text)')
+
+c.execute("INSERT INTO obstacles (nom, quete, image, position, carte) VALUES (?,?,?,?,?)", ("Arbre couché", "5", "arbre.png", "390;360", "0"))
+c.execute("INSERT INTO obstacles (nom, quete, image, position, carte) VALUES (?,?,?,?,?)", ("Arbre couché", "5", "arbre.png", "420;360", "0"))
+
+######################################################################################################################################################################################### 
 
 conn.commit()
 conn.close()

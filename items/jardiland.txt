@@ -1,4 +1,4 @@
 TEH JARDILAND
 0
 quete
-390:360;1
+390:330;1

@@ -258,19 +258,7 @@ class Joueur:
            
         
         # On affiche la Joueur.carte 
-        Listes.liste_cartes[Joueur.carte].afficher_carte(fenetre)
-        
-        for i in Listes.liste_items:
-            Listes.liste_items[i].afficher_item(fenetre)
-
-        # Puis les pnjs en parcourant leur liste et en testant s'il sont sur la Joueur.carte
-        for val in Listes.liste_pnjs.values():
-            if val.carte == Joueur.carte:
-                fenetre.blit(val.image, (val.pos_x, val.pos_y))
-        
-        # On affiche ensuite le personnage selon son Joueur.orientation et sa position
-        fenetre.blit(Joueur.orientation, (Joueur.position_x,Joueur.position_y))
-        pygame.display.flip() # Et on raffraichi tout ça
+        afficher_monde(fenetre)
      
     def parler_pnj(fenetre, inventaire):
         # On définit deux varibles contenant la distance séparant le personnage du bloc qu'il voit
@@ -362,6 +350,11 @@ def choisir_dialogue(pnj, fenetre):
                     Listes.liste_quetes[sauvegarde[j][1]].finie = 2
                     Quete.en_cours.remove(Listes.liste_quetes[sauvegarde[j][1]].id)
                     Quete.quetes_finies.append(Listes.liste_quetes[sauvegarde[j][1]].id)
+                    
+                    for k in range(len(Listes.liste_obstacles.keys())):
+                        if Listes.liste_obstacles[k+1].quete == Listes.liste_quetes[sauvegarde[j][1]].id:
+                            Listes.liste_cartes[Joueur.carte].collisions.remove((Listes.liste_obstacles[k+1].pos_x, Listes.liste_obstacles[k+1].pos_y))
+                    
     
     if len(Listes.liste_dial) > 0:
         for i in Listes.liste_dial:
@@ -580,13 +573,6 @@ class Quete:
             self.actuel = c.fetchone()[0]
         except:
             self.actuel = 0
-            # print(self.actuel)
-            
-            # print(self.nom)
-            # print(self.id)
-            # print(self.nombre)
-            # print(self.actuel)
-            # print(self.objectif)
 
 class Listes:
     liste_persos = list()
@@ -594,8 +580,59 @@ class Listes:
     liste_items = list()
     liste_pnjs = list()
     liste_cartes = list()
+    liste_obstacles = list()
 
+def creer_liste_obstacles():
+    conn = sqlite3.connect(os.path.join('items','items.db'))
+    c = conn.cursor()
+    c.execute("SELECT id FROM obstacles")
+    obs = c.fetchall()
+
+    liste = dict()
+    for i in range(len(obs)):
+        liste[i+1] = Obstacle((obs[i])[0])
+
+    conn.close()
     
+    return liste
+    
+ 
+class Obstacle:
+    def __init__(self, id):
+        self.id = id
+        self.nom = str()
+        self.carte = int()
+        self.quete = int()
+        
+    def charger_obs(self):
+        conn = sqlite3.connect(os.path.join('items','items.db'))
+        c = conn.cursor()
+        c.execute("SELECT * FROM obstacles WHERE id = ?", (self.id,))
+        reponse = c.fetchall()[0]
+        conn.close()
+        # id, nom, quete, image, position, carte
+        
+        self.nom = reponse[1]
+        
+        try:
+            self.image = pygame.image.load(os.path.join('items', 'images', '{0}'.format(reponse[3]))).convert_alpha()
+        except:
+            self.image = pygame.image.load(os.path.join('items', 'images', 'arbre.png')).convert_alpha()
+        
+        self.position = reponse[4].split(";")
+        self.pos_x = int(self.position[0])
+        self.pos_y = int(self.position[1])
+        
+        self.quete = int(reponse[2])
+        
+        self.carte = int(reponse[5])
+                
+        Listes.liste_cartes[self.carte].collisions.append((self.pos_x, self.pos_y))
+                       
+        
+    def afficher_obstacle(self, fenetre):
+        fenetre.blit(self.image, (self.pos_x, self.pos_y))
+ 
 def options(fenetre, inventaire):
     curseur_x = 520-100
     curseur_y = 220-150
@@ -687,11 +724,19 @@ def options(fenetre, inventaire):
 
 def afficher_monde(fenetre):
     Listes.liste_cartes[Joueur.carte].afficher_carte(fenetre)
+    
     for val in Listes.liste_pnjs.values():
         if val.carte == Joueur.carte:
             fenetre.blit(val.image, (val.pos_x, val.pos_y))
+            
     for i in Listes.liste_items:
         Listes.liste_items[i].afficher_item(fenetre)
+        
+    for i in Listes.liste_obstacles.keys():
+        if Listes.liste_obstacles[i].carte == Joueur.carte:
+            if Listes.liste_obstacles[i].quete not in Quete.quetes_finies:
+                Listes.liste_obstacles[i].afficher_obstacle(fenetre)
+            
     fenetre.blit(Joueur.orientation, (Joueur.position_x, Joueur.position_y))
     pygame.display.flip()
                         
