@@ -283,8 +283,10 @@ class Joueur:
                if Joueur.position_x + voir_x == val.pos_x and Joueur.position_y + voir_y == val.pos_y:
                     # Alors on affiche le dialogue
                     # On découpe le dialogue en plusieurs listes pour ne pas déborder de l'écran
-                    faire_quete(val, inventaire)
+                    dialogue = faire_quete(val, inventaire, fenetre)
                     choisir_dialogue(val, fenetre)
+                    if dialogue:
+                        fenetre_dialogue(fenetre, dialogue)
                                              
     def prendre_item(inventaire, fenetre):
         voir_x = 0
@@ -353,7 +355,7 @@ def choisir_dialogue(pnj, fenetre):
                     
                     for k in range(len(Listes.liste_obstacles.keys())):
                         if Listes.liste_obstacles[k+1].quete == Listes.liste_quetes[sauvegarde[j][1]].id:
-                            Listes.liste_cartes[Joueur.carte].collisions.remove((Listes.liste_obstacles[k+1].pos_x, Listes.liste_obstacles[k+1].pos_y))
+                            Listes.liste_cartes[Listes.liste_obstacles[k+1].carte].collisions.remove((Listes.liste_obstacles[k+1].pos_x, Listes.liste_obstacles[k+1].pos_y))
                     
     
     if len(Listes.liste_dial) > 0:
@@ -478,7 +480,7 @@ def creer_liste_quetes():
     
     return liste
 
-def faire_quete(pnj, inventaire):
+def faire_quete(pnj, inventaire, fenetre):
     objets_requis = dict()
     xp_requis = 0
 
@@ -520,11 +522,74 @@ def faire_quete(pnj, inventaire):
                             Quete.en_cours.append((Listes.liste_quetes[i+1].id))
                             
     if reussi:
-        Listes.liste_quetes[numero_quete].actuel += 1         
-        print("tu peux continuer la quête !")
-    
+        Listes.liste_quetes[numero_quete].actuel += 1
+        gagnes = list()
+        perdus = list()
+        xp = 0
+        
+        for val in Listes.liste_quetes[numero_quete].objectif:
+            if val['avancement'] == Listes.liste_quetes[numero_quete].actuel:
+                for val2 in val['recompense']:
+                    type = val2.split(":")[0].strip()
+                    recompense = val2.split(":")[1].strip()
+                    
+                    if type == 'item' and recompense[0] == "-":
+                        if recompense[1:] in inventaire:
+                            if inventaire[recompense[1:]] > 0:
+                                inventaire[recompense[1:]] -= 1
+                                perdus.append(recompense[1:])
+                    elif type == 'item':
+                        if recompense in inventaire:
+                            inventaire[recompense] += 1
+                            gagnes.append(recompense)
+                    if type == 'xp':
+                        # print(recompense)
+                        try:
+                            GameFonctions.MyCharacters.Character1.Exp += int(recompense)
+                            xp = int(recompense)
+                        except:
+                            pass
+        
+        for i in range(len(gagnes)):
+            gagnes[i] = "«{1}{0}{1}»".format(gagnes[i], b'\xA0'.decode("utf-8", "replace"))
+        for i in range(len(perdus)):
+            perdus[i] = "«{1}{0}{1}»".format(perdus[i], b'\xA0'.decode("utf-8", "replace"))
+        
+        dialogue = str()       
+        if len(gagnes) > 1 and len(perdus) > 1:           
+            dialogue = "Vous obtenez les objets {0} et laissez les objets {1}.".format(", ".join(gagnes), ", ".join(perdus))
+        
+        elif len(gagnes) > 1 and len(perdus) == 1:
+            dialogue = "Vous obtenez les objets {0} et laissez l'objet {1}.".format(", ".join(gagnes), ", ".join(perdus))
+            
+        elif len(gagnes) == 1 and len(perdus) > 1:
+            dialogue = "Vous obtenez l'objet {0} et laissez les objet {1}.".format(", ".join(gagnes), ", ".join(perdus))
+        
+        elif len(gagnes) == 1 and len(perdus) == 1:
+            dialogue = "Vous obtenez l'objet {0} et laissez l'objet {1}.".format(", ".join(gagnes), ", ".join(perdus))
+
+        elif len(gagnes) == 0 and len(perdus) == 1:
+            dialogue = "Vous laissez l'objet {1}.".format(", ".join(perdus))
+            
+        elif len(gagnes) == 0 and len(perdus) > 1:
+            dialogue = "Vous laissez les objets {1}.".format(", ".join(perdus))
+            
+        elif len(gagnes) == 1 and len(perdus) == 0:
+            dialogue = "Vous obtenez l'objet {0}.".format(", ".join(gagnes))
+            
+        elif len(gagnes) > 1 and len(perdus) == 0:
+            dialogue = "Vous obtenez les objets {0}.".format(", ".join(gagnes))
+
+        if xp > 0 and dialogue:
+            dialogue = dialogue + " Vous gagnez également {0} d'expérience.".format(xp)
+        else:
+            dialogue = "Vous gagnez {0} d'expérience.".format(xp)
+        
         if Listes.liste_quetes[numero_quete].actuel == Listes.liste_quetes[numero_quete].nombre:
             Listes.liste_quetes[numero_quete].finie = 1
+ 
+        if len(dialogue) > 0:
+            return dialogue
                 
 class Quete:
     en_cours = list()
@@ -564,7 +629,7 @@ class Quete:
         
         
         for i in reponse:
-            self.objectif.append({'id':i[0], 'quete':i[1], 'personnage':i[2], 'objectif':i[3], 'avancement':i[4], 'requis':i[5], 'recompense':i[6]})
+            self.objectif.append({'id':i[0], 'quete':i[1], 'personnage':i[2], 'objectif':i[3], 'avancement':i[4], 'requis':i[5], 'recompense':i[6].split(",")})
        
         conn = sqlite3.connect(os.path.join('sauvegarde','sauvegarde.db'))
         c = conn.cursor()

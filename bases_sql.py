@@ -75,8 +75,11 @@ c.execute("INSERT INTO dialogues(personnage, quete, avancement, dialogue) VALUES
 dialogue = "Bonjour, vous avez peut-être remarqué que je suis déguisé en pot de fleurs ? Non ? Regardez mieux ! Soit, je cherche à parfaire mon déguisement, et pour ce faire, il me faudrait des fleurs. J'en ai besoin de trois, merci, on se revoit plus tard."
 c.execute("INSERT INTO dialogues(personnage, quete, avancement, dialogue) VALUES (4,3,0, ?)", (dialogue,))
 
-dialogue = "Maintenant, je suis un vrai pot de fleurs !"
+dialogue = "Mon déguisement est vraiment bon maintenant ! Il me manque toutefois une fleur rare pour qu'il soit vraiment parfait... Il y en a une au nord, mais un tronc empêche le passage. Allez parler aux personnes entourtant la petite maison, tout près d'ici. Un habitant pourra peut-être vous aider."
 c.execute("INSERT INTO dialogues(personnage, quete, avancement, dialogue) VALUES (4,3,1, ?)", (dialogue,))
+
+dialogue = "Maintenant, je suis un vrai pot de fleurs !"
+c.execute("INSERT INTO dialogues(personnage, quete, avancement, dialogue) VALUES (4,3,2, ?)", (dialogue,))
 
 
 dialogue = "Je suis un grand admirateur de noix de coco, pourriez vous m'en rapporter deux s'il vous plait ? Alleeeeeeeeez !"
@@ -89,10 +92,10 @@ dialogue = "Youpi, des noix de coco poêlées au poêle à bois ! C'est cool !"
 c.execute("INSERT INTO dialogues(personnage, quete, avancement, dialogue) VALUES (2,4,2, ?)", (dialogue,))
 
 
-dialogue = "J'aime beaucoup les fleurs ! Pour pouvoir en observer autant que je veux, j'aimerais un Jardiland. Pensez vous que vous pourriez m'en obtenir un ? D'après ce que j'ai lu dans des articles, un Jardiland ressemblerait à un buisson avec des fleurs."
+dialogue = "J'aime beaucoup les fleurs ! Pour pouvoir en observer autant que je veux, j'aimerais un Jardiland. Pensez vous que vous pourriez m'en obtenir un ? D'après ce que j'ai lu dans des articles, un Jardiland ressemblerait à un buisson avec des fleurs. Comprenez que je suis un expert en taillage d'arbre, rien ne me résiste."
 c.execute("INSERT INTO dialogues(personnage, quete, avancement, dialogue) VALUES (8,5,0, ?)", (dialogue,))
 
-dialogue = "Vous avez fait de moi un homme heureux ! Merci beaucoup pour ce Jardiland si dûrement acquis par vos soins."
+dialogue = "Vous avez fait de moi un homme heureux ! Merci beaucoup pour ce Jardiland si dûrement acquis par vos soins. Pour la peine, je vais détruire le tronc couché au nord, je ne l'aime pas !"
 c.execute("INSERT INTO dialogues(personnage, quete, avancement, dialogue) VALUES (8,5,1, ?)", (dialogue,))
 
 ###########################
@@ -128,7 +131,7 @@ c.execute('CREATE TABLE objectifs (id integer primary key, quete integer, person
 
 objectif = "Trouver un chat"
 requis = "item:chat"
-recompense = "xp:+50, item:potion, item:-chat"
+recompense = "xp:50, item:potion, item:-chat"
 c.execute("INSERT INTO objectifs(quete, personnage, objectif, avancement, requis, recompense) VALUES (1,1,?,1,?,?)", (objectif, requis, recompense)) # avancement : avancement débloqué si requis
 
 objectif = "Trouver une armoire"
@@ -153,6 +156,13 @@ requis = "item:fleurs,item:fleurs,item:fleurs"
 recompense = "xp:+500"
 c.execute("INSERT INTO objectifs(quete, personnage, objectif, avancement, requis, recompense) VALUES (3,4,?,1,?,?)", (objectif, requis, recompense))
 
+
+objectif = "Ramener la fleur rare"
+requis = "item:fleur rare"
+recompense = "xp:+500"
+c.execute("INSERT INTO objectifs(quete, personnage, objectif, avancement, requis, recompense) VALUES (3,4,?,2,?,?)", (objectif, requis, recompense))
+
+
 objectif = "Ramener des noix de coco"
 requis = "item:noix de coco,item:noix de coco"
 recompense = "xp:+500"
@@ -166,7 +176,7 @@ c.execute("INSERT INTO objectifs(quete, personnage, objectif, avancement, requis
 
 objectif = "Ramener un jardiland"
 requis = "item:jardiland"
-recompense = "xp:+500"
+recompense = "xp:+500, item:bonhomme, item:-jardiland"
 c.execute("INSERT INTO objectifs(quete, personnage, objectif, avancement, requis, recompense) VALUES (5,8,?,1,?,?)", (objectif, requis, recompense))
 #########################
 
@@ -196,8 +206,9 @@ c = conn.cursor()
 c.execute("DROP TABLE IF EXISTS obstacles")
 c.execute('CREATE TABLE obstacles (id integer primary key, nom text, quete integer, image test, position text, carte text)')
 
-c.execute("INSERT INTO obstacles (nom, quete, image, position, carte) VALUES (?,?,?,?,?)", ("Arbre couché", "5", "arbre.png", "390;360", "0"))
-c.execute("INSERT INTO obstacles (nom, quete, image, position, carte) VALUES (?,?,?,?,?)", ("Arbre couché", "5", "arbre.png", "420;360", "0"))
+# c.execute("INSERT INTO obstacles (nom, quete, image, position, carte) VALUES (?,?,?,?,?)", ("Arbre couché", "5", "arbre.png", "390;360", "0"))
+# c.execute("INSERT INTO obstacles (nom, quete, image, position, carte) VALUES (?,?,?,?,?)", ("Arbre couché", "5", "arbre.png", "420;360", "0"))
+c.execute("INSERT INTO obstacles (nom, quete, image, position, carte) VALUES (?,?,?,?,?)", ("tronc couché", "5", "tronc.png", "510;270", "1"))
 
 ######################################################################################################################################################################################### 
 
