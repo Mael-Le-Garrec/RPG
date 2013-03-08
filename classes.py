@@ -119,7 +119,8 @@ class Carte:
                         
     def afficher_carte(self, fenetre):
         # On réaffiche le fond
-        fenetre.blit(self.fond, (0, 0))        
+        # fenetre.blit(self.fond, (0, 0))
+        fenetre.fill((240, 240, 240))
         
         # Puis chaque bloc un par un, contenus dans la liste des blocs
         for i in range(len(self.bloc)):

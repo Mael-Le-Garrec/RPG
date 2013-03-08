@@ -24,6 +24,7 @@ creer_images_perso()
 
 
 # fenetre.blit(pygame.image.load(os.path.join("images", "fond.png")), (0,0))
+fenetre.fill((240, 240, 240))
 
 # On crée une liste contenant chaque carte
 Listes.liste_cartes = list()
