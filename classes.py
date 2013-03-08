@@ -250,7 +250,7 @@ class Joueur:
                         else:
                             Joueur.position_y = Joueur.ancienne_y
                             Joueur.position_x = Joueur.ancienne_x
-                            fenetre_dialogue(fenetre, "Vous devez posséder l'objet « {0} » pour pouvoir passer.".format(Joueur.carte_actuelle.tp[i][3]))
+                            fenetre_dialogue(fenetre, "Vous devez posséder l'objet «{1}{0}{1}» pour pouvoir passer.".format(Joueur.carte_actuelle.tp[i][3], b'\xA0'.decode("utf-8", "replace")))
                 else:
                     Joueur.position_x = Listes.liste_cartes[Joueur.carte].tp[i][2][0]
                     Joueur.position_y = Listes.liste_cartes[Joueur.carte].tp[i][2][1]
@@ -309,7 +309,7 @@ class Joueur:
                 # print(val.position)
                 # print(val.nom)
                 
-                dialogue = "Vous venez de ramasser l'objet «{0}». Il sera affiché sous le nom «{1}»".format(val.nom_entier, val.nom)
+                dialogue = "Vous venez de ramasser l'objet «{2}{0}{2}». Il sera affiché sous le nom «{2}{1}{2}»".format(val.nom_entier, val.nom, b'\xA0'.decode("utf-8", "replace"))
                 
                 if [[Joueur.position_x + voir_x, Joueur.position_y + voir_y], Joueur.carte] in val.position:
                     inventaire[val.nom] +=1

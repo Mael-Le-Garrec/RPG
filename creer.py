@@ -6,6 +6,9 @@ from tkinter import *
 from tkinter_png import *
 import os
 from collections import OrderedDict
+from tkinter import filedialog
+import re
+
 
 class createurMonde(tkinter.Tk):
     def __init__(self,parent):
@@ -51,6 +54,7 @@ class createurMonde(tkinter.Tk):
         # carte
         cartesmenu = Menu(menubar, tearoff=0)
         optionsmenu.add_cascade(label="Cartes", menu=cartesmenu)
+        cartesmenu.add_command(label="Ouvrir", command=self.ouvrirCarte)
         cartesmenu.add_command(label="Afficher", command=self.hello)
         cartesmenu.add_command(label="Sauvegarder", command=self.hello)
         cartesmenu.add_command(label="Reset", command=self.hello)
@@ -105,6 +109,7 @@ class createurMonde(tkinter.Tk):
         
         # self.chargerTextures()
         
+        # tkinter.Button(self, text = "Browse", command = self.ouvrirCarte, width = 10).pack()
 
         # self.fond_objets = Canvas(self, bg='purple', bd=1, width=350, height=600, relief='sunken')
         # self.fond_objets.place(x=630,y=10)
@@ -127,6 +132,80 @@ class createurMonde(tkinter.Tk):
         # self.entry.focus_set()
         # self.entry.selection_range(0, tkinter.END)
     
+    def ouvrirCarte(self): 
+        fichier = filedialog.askopenfilename(filetypes = (("Fichiers de carte", "*.map"), ("Tous les fichiers", "*")))
+        if fichier:
+            self.fichier_carte = fichier
+            self.chargerCarte()
+
+    def chargerCarte(self):
+        self.coords = list()
+        self.bloc = list()
+        self.textures_fichier = dict()
+        self.fichier_carte = open(os.path.join('{}'.format(self.fichier_carte)), "r")
+        self.lignes = self.fichier_carte.readlines()
+        self.fichier_carte.close()
+                 
+        # Petit mémo de la liste :
+        # self.coords[i] => ligne
+        # self.coords[i][0][0] => composante x du premier point de la zone
+        # self.coords[i][0][1] => composante y du premier point de la zone
+        
+        # self.coords[i][1][0] => composante x du second point de la zone
+        # self.coords[i][1][1] => composante y du second point de la zone
+        # self.coords[i][2] => texture de chaque case de la zone
+        # self.coords[i][3] => 0 si la zone est traversable, 1 sinon
+        # self.coords[i][4] => vers quelle position la zone téléporte
+        # self.coords[i][5] => vers quelle carte la zone téléporte
+        # self.coords[i][6] => objet requis pour prendre le téléporteur
+                
+        # coords[i][1][0] - coords[i][0][0] = nb de repets d'un bloc en x
+        # coords[i][1][1] - coords[i][0][1] = nb de repets d'un bloc en y
+        for i in range(len(self.lignes)):
+            if re.match("^[0-9]+:[0-9]+;[0-9]+:[0-9]+;[a-zA-Z0-9_]+;(1|0)$", self.lignes[i]):
+                self.coords.append(self.lignes[i]) # Si oui, on ajoute la ligne dans la liste des coordonnées
+                self.coords[-1] = self.coords[-1].rstrip().split(";") # On split la dernière entrée au niveau des  ; pour diviser la chaine
+                self.coords[-1][0] = self.coords[-1][0].split(":") # On split le : du premier point (x:y)
+                self.coords[-1][1] = self.coords[-1][1].split(":") # Puis du second
+                
+            # Si la ligne contient également des informations de téléportation, on l'ajoute en splittant les coordonnées
+            elif re.match("[0-9]+:[0-9]+;[0-9]+:[0-9]+;[a-zA-Z0-9_]+;(0|1);[0-9]+:[0-9]+;[0-9]+$", self.lignes[i]):
+                self.coords.append(self.lignes[i]) # Si oui, on ajoute la ligne dans la liste des coordonnées
+                self.coords[-1] = self.coords[-1].rstrip().split(";") # On split la dernière entrée au niveau des  ; pour diviser la chaine
+                self.coords[-1][0] = self.coords[-1][0].split(":") # On split le : du premier point (x:y)
+                self.coords[-1][1] = self.coords[-1][1].split(":") # Puis du second
+                self.coords[-1][4] = self.coords[-1][4].split(":") # Ajout des coordonnées de téléportation
+                
+            elif re.match("[0-9]+:[0-9]+;[0-9]+:[0-9]+;[a-zA-Z0-9_]+;(0|1);[0-9]+:[0-9]+;[0-9]+;[0-9a-zA-Z ]+$", self.lignes[i]):
+                self.coords.append(self.lignes[i]) # Si oui, on ajoute la ligne dans la liste des coordonnées
+                self.coords[-1] = self.coords[-1].rstrip().split(";") # On split la dernière entrée au niveau des  ; pour diviser la chaine
+                self.coords[-1][0] = self.coords[-1][0].split(":") # On split le : du premier point (x:y)
+                self.coords[-1][1] = self.coords[-1][1].split(":") # Puis du second
+                self.coords[-1][4] = self.coords[-1][4].split(":") # Ajout des coordonnées de téléportation
+                
+        # Du genre : {'pot_de_fleur' : 'objet'}
+        
+        for i in range(len(self.coords)):      
+            print(os.path.join("textures","{0}.png".format(self.coords[i][2])))
+            self.textures_fichier[self.coords[i][2]] = PngImageTk(os.path.join("textures","{0}.png".format(self.coords[i][2])))
+            self.textures_fichier[self.coords[i][2]].convert()
+            
+        # self.tp[i][0] => carte de  destination
+        # self.tp[i][1][0] => x carte actuelle
+        # self.tp[i][1][1] => y carte actuelle 
+        
+        # self.tp[i][2][0] => x carte destination
+        # self.tp[i][2][1] => y carte destination
+        for i in range(len(self.coords)):
+            for j in range(0,(int(self.coords[i][1][0]) - int(self.coords[i][0][0])) // 30):
+                for k in range(0,(int(self.coords[i][1][1]) - int(self.coords[i][0][1])) // 30):
+                    self.bloc.append((int(self.coords[i][0][0]) + j * 30, int(self.coords[i][0][1]) + k * 30, self.textures_fichier[self.coords[i][2]]))
+        
+        # image : self.bloc[i][2], x : self.bloc[i][0], y : self.bloc[i][1]
+        for i in range(len(self.bloc)):
+            # fenetre.blit(self.bloc[i][2], (self.bloc[i][0], self.bloc[i][1]))
+            self.fond_carte.create_image(self.bloc[i][0]+3,self.bloc[i][1]+3, image=self.bloc[i][2].image, anchor=NW)
+    
     def choixTexture(self, event):
         try:
             print(list(self.textures.keys())[self.fond_objets.find_overlapping(event.x, event.y, event.x, event.y)[0]-1])
@@ -143,8 +222,9 @@ class createurMonde(tkinter.Tk):
             self.fond_carte.create_image(((x)//30) * 30+3,((y)//30) * 30+3, image=self.textures[self.texture_actuelle].image, anchor=NW)
         
     def hello(self):
-        print(self.fond_objets.find_all())
+        # print(self.fond_objets.find_all())
         # print(self.textures.keys())
+        print(self.fichier_carte)
     
     def chargerTextures(self):
         if self.textures is None:
