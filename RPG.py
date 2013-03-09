@@ -112,7 +112,14 @@ while continuer == 1:
     for event in pygame.event.get():
         if event.type == QUIT:
             continuer = 0
-
+        
+        if event.type == MOUSEBUTTONDOWN and event.button == 1:
+            # if event.pos[0] > 10 and event.pos[0] < 610 and event.pos[1] > 10 and event.pos[1] < 610:
+            Joueur.position_x = event.pos[0]//30*30            
+            Joueur.position_y = event.pos[1]//30*30
+            print(Joueur.position_x, Joueur.position_y)
+            afficher_monde(fenetre)
+            
         # Si on a pressé une touche
         if event.type == KEYDOWN:
             # Soit elle se trouve dans les clés de déplacement et on bouge le perso
