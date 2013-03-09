@@ -2,6 +2,7 @@
 # -*- coding: iso-8859-1 -*-
 
 import tkinter
+import tkinter.ttk
 from tkinter import *
 from tkinter_png import *
 import os
@@ -92,24 +93,21 @@ class createurMonde(tkinter.Tk):
         self.fond_carte.bind("<Button-1>", self.dessinerTexture)
         self.fond_carte.bind("<Button-3>", self.effacerTexture)
 
-        # self.fond_objets = Canvas(self, bg='purple', bd=1, width=350, height=600, relief='solid')
-        # self.fond_objets.place(x=630,y=10)
-
-
-
         frame = Frame(self, bd=1)
-
         yscrollbar = Scrollbar(frame)
         yscrollbar.grid(row=0, column=1, sticky=N+S)
 
         self.fond_objets = Canvas(frame, bd=1, relief='solid', bg='purple', height=600, width=350, scrollregion=(0, 0, 0, 0), yscrollcommand=yscrollbar.set)
-        
         self.fond_objets.grid(row=0, column=0, sticky=N+S+E+W)
 
         yscrollbar.config(command=self.fond_objets.yview)
         frame.place(x=630, y=10)
         self.fond_objets.bind("<Button-1>", self.choixTexture)
         
+        
+        # self.pb = ttk.Progressbar(self,orient ="horizontal",length = 500, mode ="determinate")
+        # self.pb.pack()
+
         # self.chargerTextures()
         
         # tkinter.Button(self, text = "Browse", command = self.ouvrirCarte, width = 10).pack()
@@ -220,7 +218,7 @@ class createurMonde(tkinter.Tk):
                 
         # Du genre : {'pot_de_fleur' : 'objet'}
         
-        for i in range(len(self.coords)):      
+        for i in range(len(self.coords)):   
             # print(os.path.join("textures","{0}.png".format(self.coords[i][2])))
             self.textures_fichier[self.coords[i][2]] = PngImageTk(os.path.join("textures","{0}.png".format(self.coords[i][2])))
             self.textures_fichier[self.coords[i][2]].convert()
@@ -235,14 +233,14 @@ class createurMonde(tkinter.Tk):
             for j in range(0,(int(self.coords[i][1][0]) - int(self.coords[i][0][0])) // 30):
                 for k in range(0,(int(self.coords[i][1][1]) - int(self.coords[i][0][1])) // 30):
                     self.bloc.append((int(self.coords[i][0][0]) + j * 30, int(self.coords[i][0][1]) + k * 30, self.textures_fichier[self.coords[i][2]], self.coords[i][2]))
-
+                    # print(self.coords[i])
+                    
         # image : self.bloc[i][2], x : self.bloc[i][0], y : self.bloc[i][1], texture : self.bloc[i][3]
         for i in range(len(self.bloc)):
             # fenetre.blit(self.bloc[i][2], (self.bloc[i][0], self.bloc[i][1]))
             self.fond_carte.create_image(self.bloc[i][0]+3,self.bloc[i][1]+3, image=self.bloc[i][2].image, anchor=NW)
             self.affiches.append(((int(self.bloc[i][0]), int(self.bloc[i][1]), self.bloc[i][3])))
-            
-    
+
     def choixTexture(self, event):
         try:
             # print(list(self.textures.keys())[self.fond_objets.find_overlapping(event.x, event.y, event.x, event.y)[0]-1])
@@ -256,22 +254,28 @@ class createurMonde(tkinter.Tk):
             # print(self.textures_fichier)
         x = self.fond_carte.canvasx(event.x)
         y = self.fond_carte.canvasy(event.y)
-        enlever = list()
         
         continuer = 1
         while continuer:
             try: 
                 self.fond_carte.delete(self.fond_carte.find_overlapping(x+3, y+3, x+3, y+3)[0])
                 # print(self.fond_carte.find_overlapping(event.x, event.y, event.x, event.y)[0])
+                print(len(self.affiches))
+
+                valeurs = list()
+                for val in self.affiches:
+                    if val == (int((x)//30*30), int((y)//30*30), val[2]):
+                        # self.affiches.remove((int(x//30*30), int(y//30*30), val[2]))
+                        valeurs.append((val[0], val[1], val[2]))
+                print(valeurs)
+                for val in valeurs:
+                    self.affiches.remove(val)
+            
             except:
                 continuer = 0
                 pass
         
-        for val in self.affiches:
-            pass
-            if (int(x//30*30), int(y//30*30), val[2]) in self.affiches:
-                self.affiches.remove((int(x//30*30), int(y//30*30), val[2]))
-
+       
         
     def dessinerTexture(self, event):
         x = self.fond_carte.canvasx(event.x)
@@ -285,8 +289,8 @@ class createurMonde(tkinter.Tk):
         # print(self.textures.keys())
         # print(self.fichier_carte)
         print(len(self.affiches))
-        if len(self.affiches) < 10:
-            print(self.affiches)
+        # if len(self.affiches) < 10:
+        print(self.affiches)
     
     def chargerTextures(self):
         if self.textures is None:
