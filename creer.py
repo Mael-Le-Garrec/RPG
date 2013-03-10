@@ -124,6 +124,12 @@ class createurMonde(tkinter.Tk):
         label_tp = Label(self.fond_tp, text="Téléportation vers :")
         label_tp.place(x=10, y=10)
         
+        self.label_tp_var = StringVar()
+        self.label_aide = Label(self.fond_tp, textvariable=self.label_tp_var)
+        self.label_aide.place(x=10, y=40)
+        
+        
+        
         
         label_carte = Label(self.fond_radio_carte, text="Placement et clic du milieu :")
         label_carte.place(x=10, y=10)
@@ -152,7 +158,13 @@ class createurMonde(tkinter.Tk):
         self.popup_carte = None
         self.coords_aide = [0,0]
         self.rectangle_aide = list()
-
+        
+        self.liste_tp = list()
+        
+        self.tp_x = 0
+        self.tp_y = 0
+        self.carte_aide = 0
+        self.label_tp_var.set("{0};{1} sur carte {2}".format(self.tp_x , self.tp_y, self.carte_aide))
         # self.update()
         # self.geometry(self.geometry())
         
@@ -176,11 +188,19 @@ class createurMonde(tkinter.Tk):
         if path:
             fichier = open(path)
         
+        path = path.split('\\')
+        for i in range(len(path)):
+            path[i] = path[i].split('/')
+            
+        self.carte_aide = path[0][-1]
+
         if self.popup_carte is None:
             self.popup_carte = Toplevel()  
             self.popup_carte.geometry("606x626")
             self.fond_aide = Canvas(self.popup_carte, bd=1, relief='solid', bg="white", height=600, width=600)
             self.fond_aide.place(x=0,y=20)
+            self.fond_aide.bind("<Button-1>", self.choixTeleporteur)   
+            
             self.label_var = StringVar()
             self.label_aide = Label(self.popup_carte, textvariable=self.label_var)
             self.label_aide.place(x=303, y=10, anchor="center")
@@ -189,7 +209,13 @@ class createurMonde(tkinter.Tk):
             self.chargerCarteAide(self.fond_aide, fichier)
         self.fond_aide.bind("<Motion>", self.afficherCoordonnees)
         
+    def choixTeleporteur(self, event):
+        self.tp_x = int(self.fond_aide.canvasx(event.x)//30*30)
+        self.tp_y = int(self.fond_aide.canvasy(event.y)//30*30)
         
+        self.label_tp_var.set("{0};{1} sur carte {2}".format(self.tp_x , self.tp_y, self.carte_aide))
+        
+    
     def afficherCoordonnees(self, event):
         x = int(self.fond_aide.canvasx(event.x)//30*30)
         y = int(self.fond_aide.canvasy(event.y)//30*30)
@@ -200,7 +226,7 @@ class createurMonde(tkinter.Tk):
                     self.fond_aide.delete(self.rectangle_aide[-1])
                 except:
                     pass
-                self.rectangle_aide.append(self.fond_aide.create_rectangle(x+3, y+3, x+30+3, y+30+3))
+                self.rectangle_aide.append(self.fond_aide.create_rectangle(x+3, y+3, x+30+3, y+30+3, outline="yellow"))
                 self.coords_aide = [x,y]
                 self.label_var.set("{0};{1}".format(x,y))
                 
@@ -267,13 +293,11 @@ class createurMonde(tkinter.Tk):
         if self.radio_carte.get() == 1: # traversable
             print(x,y,"traversable")
             for i in range(len(self.affiches)):
-                if self.affiches[i] == [x, y, self.affiches[i][2], 1]:
-                    self.affiches[i][3] = 0
+                self.affiches[i][3] = 0
         elif self.radio_carte.get() == 2: # non traversable
             print("non traversable")
             for i in range(len(self.affiches)):
-                if self.affiches[i] == [x, y, self.affiches[i][2], 0]:
-                    self.affiches[i][3] = 1
+                self.affiches[i][3] = 1
     
     def resetCarte(self):
         self.fond_carte.delete("all")
@@ -295,10 +319,14 @@ class createurMonde(tkinter.Tk):
         fichier.write("droite:{0}\n".format(droite))
         fichier.write("gauche:{0}\n\n".format(gauche))
         
-        for val in self.affiches:
-            fichier.write("{0}:{1};{2}:{3};{4};{5}\n".format(val[0], val[1], val[0] + 30, val[1] + 30, val[2], val[3]))
-            # x, y, texture, traversable
         
+        for val in self.affiches:
+            if len(val) == 4:
+                fichier.write("{0}:{1};{2}:{3};{4};{5}\n".format(val[0], val[1], val[0] + 30, val[1] + 30, val[2], val[3]))
+                # x, y, texture, traversable
+            else:
+                fichier.write("{0}:{1};{2}:{3};{4};{5};{6}:{7};{8}\n".format(val[0], val[1], val[0] + 30, val[1] + 30, val[2], val[3], val[4], val[5], val[6]))
+            
         fichier.close()
         
     def ouvrirCarte(self): 
@@ -309,6 +337,7 @@ class createurMonde(tkinter.Tk):
 
     def chargerCarte(self):
         self.coords = list()
+        self.liste_tp = list()
         self.bloc = list()
         self.textures_fichier = dict()
         self.fichier_carte = open(os.path.join('{}'.format(self.fichier_carte)), "r")
@@ -417,9 +446,14 @@ class createurMonde(tkinter.Tk):
             # print(self.affiches)
             # print([int((x)//30*30), int((y)//30*30), val[2], val[3]])
             for val in self.affiches:
-                if val == [int((x)//30*30), int((y)//30*30), val[2], val[3]]:
-                    # self.affiches.remove((int(x//30*30), int(y//30*30), val[2]))
-                    valeurs.append([val[0], val[1], val[2], val[3]])
+                if len(val) == 4:
+                    if val == [int((x)//30*30), int((y)//30*30), val[2], val[3]]:
+                        # self.affiches.remove((int(x//30*30), int(y//30*30), val[2]))
+                        valeurs.append([val[0], val[1], val[2], val[3]])
+                elif len(val) == 7:
+                    if val == [int((x)//30*30), int((y)//30*30), val[2], val[3], val[4], val[5], val[6]]:
+                        # self.affiches.remove((int(x//30*30), int(y//30*30), val[2]))
+                        valeurs.append([int((x)//30*30), int((y)//30*30), val[2], val[3], val[4], val[5], val[6]])
             # print(valeurs)
             for val in valeurs:
                 self.affiches.remove(val)
@@ -434,6 +468,9 @@ class createurMonde(tkinter.Tk):
                     self.affiches.append([int(x//30*30), int(y//30*30), '{0}'.format(self.texture_actuelle), 0])
                 elif self.radio_carte.get() == 2: # non traversable
                     self.affiches.append([int(x//30*30), int(y//30*30), '{0}'.format(self.texture_actuelle), 1])
+                elif self.radio_carte.get() == 3: # téléporteur
+                    self.affiches.append([int(x//30*30), int(y//30*30), '{0}'.format(self.texture_actuelle), 0, self.tp_x, self.tp_y, self.carte_aide])
+                    # liste_tp, x, y, x dest, y dest, carte
                 # print([int(x//30*30), int(y//30*30), '{0}'.format(self.texture_actuelle), 1])
             else:
                 print("coucou")
