@@ -170,7 +170,7 @@ class createurMonde(tkinter.Tk):
                     self.affiches[i][3] = 0
         elif self.radio_carte.get() == 2: # non traversable
             print("non traversable")
-                for i in range(len(self.affiches)):
+            for i in range(len(self.affiches)):
                 if self.affiches[i] == [x, y, self.affiches[i][2], 0]:
                     self.affiches[i][3] = 1
 
