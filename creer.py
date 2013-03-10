@@ -19,6 +19,7 @@ class createurMonde(tkinter.Tk):
         self.id = None
         self.initialize()
         self.affiches = list()
+        
 
     def initialize(self):
         self.grid()
@@ -40,6 +41,10 @@ class createurMonde(tkinter.Tk):
         # label.grid(column=0,row=1,columnspan=2,sticky='EW')
         # self.labelVariable.set("Hello !")
  
+        self.actif = "carte"
+        self.texture_actuelle = None
+        self.affiches = list()
+        
         ####### MENU
         
         menubar = Menu(self)
@@ -91,18 +96,38 @@ class createurMonde(tkinter.Tk):
         self.fond_carte = Canvas(self, bg='white', bd=1, width=600, height=600, relief='solid')
         self.fond_carte.place(x=10,y=10)
         self.fond_carte.bind("<Button-1>", self.dessinerTexture)
+        self.fond_carte.bind("<Button-2>", self.modifierTexture)
         self.fond_carte.bind("<Button-3>", self.effacerTexture)
 
-        frame = Frame(self, bd=1)
-        yscrollbar = Scrollbar(frame)
+        frame_texture = Frame(self, bd=1)
+        yscrollbar = Scrollbar(frame_texture)
         yscrollbar.grid(row=0, column=1, sticky=N+S)
+        
+        self.fond_textures = Canvas(frame_texture, bd=1, relief='solid', bg='purple', height=600, width=350, scrollregion=(0, 0, 0, 0), yscrollcommand=yscrollbar.set)
+        self.fond_textures.grid(row=0, column=0, sticky=N+S+E+W)
 
-        self.fond_objets = Canvas(frame, bd=1, relief='solid', bg='purple', height=600, width=350, scrollregion=(0, 0, 0, 0), yscrollcommand=yscrollbar.set)
-        self.fond_objets.grid(row=0, column=0, sticky=N+S+E+W)
+        yscrollbar.config(command=self.fond_textures.yview)
+        frame_texture.place(x=630, y=10)
+        self.fond_textures.bind("<Button-1>", self.choixTexture)        
+        
+        
+        
+        
+        frame_bas = Frame(self, bd=1)
+        
+        self.fond_radio_carte = Canvas(frame_bas, bd=1, relief='solid', height=150, width=200)
+        self.fond_radio_carte.grid(row=0, column=0, sticky=N+S+E+W)
+        frame_bas.place(x=10,y=630)
+        
+        label_carte = Label(self.fond_radio_carte, text="Placement et clic du milieu :")
+        label_carte.place(x=10, y=10)
+        
+        self.radio_carte = IntVar()
+        self.radio_carte.set(1)
+         
+        Radiobutton(self.fond_radio_carte, text="Texture traversable", variable=self.radio_carte, value=1).place(x=10,y=50)
+        Radiobutton(self.fond_radio_carte, text="Texture non traversable", variable=self.radio_carte, value=2).place(x=10,y=70)
 
-        yscrollbar.config(command=self.fond_objets.yview)
-        frame.place(x=630, y=10)
-        self.fond_objets.bind("<Button-1>", self.choixTexture)
         
         
         # self.pb = ttk.Progressbar(self,orient ="horizontal",length = 500, mode ="determinate")
@@ -112,11 +137,12 @@ class createurMonde(tkinter.Tk):
         
         # tkinter.Button(self, text = "Browse", command = self.ouvrirCarte, width = 10).pack()
 
-        # self.fond_objets = Canvas(self, bg='purple', bd=1, width=350, height=600, relief='sunken')
-        # self.fond_objets.place(x=630,y=10)
+        # self.fond_textures = Canvas(self, bg='purple', bd=1, width=350, height=600, relief='sunken')
+        # self.fond_textures.place(x=630,y=10)
         
         # self.grid_columnconfigure(0,weight=1)
         self.resizable(False,False)
+        
         # self.update()
         # self.geometry(self.geometry())
         
@@ -132,7 +158,23 @@ class createurMonde(tkinter.Tk):
         # self.labelVariable.set( self.entryVariable.get()+" (You pressed ENTER)" )
         # self.entry.focus_set()
         # self.entry.selection_range(0, tkinter.END)
-    
+
+    def modifierTexture(self, event):
+        x = int(self.fond_carte.canvasx(event.x) // 30 * 30)
+        y = int(self.fond_carte.canvasy(event.y) // 30 * 30)
+        
+        if self.radio_carte.get() == 1: # traversable
+            print(x,y,"traversable")
+            for i in range(len(self.affiches)):
+                if self.affiches[i] == [x, y, self.affiches[i][2], 1]:
+                    self.affiches[i][3] = 0
+        elif self.radio_carte.get() == 2: # non traversable
+            print("non traversable")
+                for i in range(len(self.affiches)):
+                if self.affiches[i] == [x, y, self.affiches[i][2], 0]:
+                    self.affiches[i][3] = 1
+
+        
     def resetCarte(self):
         self.fond_carte.delete("all")
         self.affiches = list()
@@ -154,7 +196,8 @@ class createurMonde(tkinter.Tk):
         fichier.write("gauche:{0}\n\n".format(gauche))
         
         for val in self.affiches:
-            fichier.write("{0}:{1};{2}:{3};{4};1\n".format(val[0], val[1], val[0] + 30, val[1] + 30, val[2]))
+            fichier.write("{0}:{1};{2}:{3};{4};{5}\n".format(val[0], val[1], val[0] + 30, val[1] + 30, val[2], val[3]))
+            # x, y, texture, traversable
         
         fichier.close()
         
@@ -232,19 +275,22 @@ class createurMonde(tkinter.Tk):
         for i in range(len(self.coords)):
             for j in range(0,(int(self.coords[i][1][0]) - int(self.coords[i][0][0])) // 30):
                 for k in range(0,(int(self.coords[i][1][1]) - int(self.coords[i][0][1])) // 30):
-                    self.bloc.append((int(self.coords[i][0][0]) + j * 30, int(self.coords[i][0][1]) + k * 30, self.textures_fichier[self.coords[i][2]], self.coords[i][2]))
+                    self.bloc.append((int(self.coords[i][0][0]) + j * 30, int(self.coords[i][0][1]) + k * 30, self.textures_fichier[self.coords[i][2]], self.coords[i][2], self.coords[i][3]))
                     # print(self.coords[i])
                     
-        # image : self.bloc[i][2], x : self.bloc[i][0], y : self.bloc[i][1], texture : self.bloc[i][3]
+        # image : self.bloc[i][2], x : self.bloc[i][0], y : self.bloc[i][1], texture : self.bloc[i][3], traversable : self.bloc[i][4]
         for i in range(len(self.bloc)):
-            # fenetre.blit(self.bloc[i][2], (self.bloc[i][0], self.bloc[i][1]))
+            # print([int(self.bloc[i][0]), int(self.bloc[i][1]), self.bloc[i][3], int(self.bloc[i][4])])
             self.fond_carte.create_image(self.bloc[i][0]+3,self.bloc[i][1]+3, image=self.bloc[i][2].image, anchor=NW)
-            self.affiches.append(((int(self.bloc[i][0]), int(self.bloc[i][1]), self.bloc[i][3])))
+            self.affiches.append([int(self.bloc[i][0]), int(self.bloc[i][1]), self.bloc[i][3], int(self.bloc[i][4])])
 
     def choixTexture(self, event):
+        x = self.fond_carte.canvasx(event.x)
+        y = self.fond_carte.canvasy(event.y)
+        
         try:
-            # print(list(self.textures.keys())[self.fond_objets.find_overlapping(event.x, event.y, event.x, event.y)[0]-1])
-            self.texture_actuelle = list(self.textures.keys())[self.fond_objets.find_overlapping(event.x, event.y, event.x, event.y)[0]-1]
+            # print(list(self.textures.keys())[self.fond_textures.find_overlapping(event.x, event.y, event.x, event.y)[0]-1])
+            self.texture_actuelle = list(self.textures.keys())[self.fond_textures.find_overlapping(x, y, x, y)[0]-1]
         except:
             pass
      
@@ -254,38 +300,48 @@ class createurMonde(tkinter.Tk):
             # print(self.textures_fichier)
         x = self.fond_carte.canvasx(event.x)
         y = self.fond_carte.canvasy(event.y)
-        
-        continuer = 1
-        while continuer:
-            try: 
-                self.fond_carte.delete(self.fond_carte.find_overlapping(x+3, y+3, x+3, y+3)[0])
-                # print(self.fond_carte.find_overlapping(event.x, event.y, event.x, event.y)[0])
-                print(len(self.affiches))
 
-                valeurs = list()
-                for val in self.affiches:
-                    if val == (int((x)//30*30), int((y)//30*30), val[2]):
-                        # self.affiches.remove((int(x//30*30), int(y//30*30), val[2]))
-                        valeurs.append((val[0], val[1], val[2]))
-                print(valeurs)
-                for val in valeurs:
-                    self.affiches.remove(val)
-            
-            except:
-                continuer = 0
-                pass
+        nb = 0
+        for i in range(len(self.affiches)):
+            # print(self.affiches[i][0], x)
+            # print(self.affiches[i][1], y)
+            if self.affiches[i][0] == int(x//30*30) and self.affiches[i][1] == int(y//30*30):
+                nb +=1
         
+        for i in range(nb):
+            try:
+                self.fond_carte.delete(self.fond_carte.find_overlapping(x+3, y+3, x+3, y+3)[0])
+            except:
+                pass
+            valeurs = list()
+            # print(self.affiches)
+            # print([int((x)//30*30), int((y)//30*30), val[2], val[3]])
+            for val in self.affiches:
+                if val == [int((x)//30*30), int((y)//30*30), val[2], val[3]]:
+                    # self.affiches.remove((int(x//30*30), int(y//30*30), val[2]))
+                    valeurs.append([val[0], val[1], val[2], val[3]])
+            # print(valeurs)
+            for val in valeurs:
+                self.affiches.remove(val)
+
        
         
     def dessinerTexture(self, event):
         x = self.fond_carte.canvasx(event.x)
         y = self.fond_carte.canvasy(event.y)
-        if x < 600 and y < 600:
-            self.fond_carte.create_image(((x)//30) * 30+3,((y)//30) * 30+3, image=self.textures[self.texture_actuelle].image, anchor=NW)
-            self.affiches.append((int(x//30*30), int(y//30*30), '{0}'.format(self.texture_actuelle)))
+        if x < 600 and y < 600 and self.texture_actuelle:
+            if [x//30*30, y//30*30, self.texture_actuelle, 1] not in self.affiches and [x//30*30, y//30*30, self.texture_actuelle, 0] not in self.affiches:
+                self.fond_carte.create_image(((x)//30) * 30+3,((y)//30) * 30+3, image=self.textures[self.texture_actuelle].image, anchor=NW)
+                if self.radio_carte.get() == 1: # traversable
+                    self.affiches.append([int(x//30*30), int(y//30*30), '{0}'.format(self.texture_actuelle), 0])
+                elif self.radio_carte.get() == 2: # non traversable
+                    self.affiches.append([int(x//30*30), int(y//30*30), '{0}'.format(self.texture_actuelle), 1])
+                # print([int(x//30*30), int(y//30*30), '{0}'.format(self.texture_actuelle), 1])
+            else:
+                print("coucou")
         
     def hello(self):
-        # print(self.fond_objets.find_all())
+        # print(self.fond_textures.find_all())
         # print(self.textures.keys())
         # print(self.fichier_carte)
         print(len(self.affiches))
@@ -326,12 +382,12 @@ class createurMonde(tkinter.Tk):
             if i//8 >= 1:
                 i = 0
                 j += 1
-            if len(list(self.textures.keys())) > len(self.fond_objets.find_all()) and key in nouvelles:
-                self.id.append(self.fond_objets.create_image(20 + i*40, 20 + j*40, image=self.textures[key].image, anchor=NW))
+            if len(list(self.textures.keys())) > len(self.fond_textures.find_all()) and key in nouvelles:
+                self.id.append(self.fond_textures.create_image(20 + i*40, 20 + j*40, image=self.textures[key].image, anchor=NW))
                 
                 self.position[key] = (i * 40 , j * 40)
                 i += 1
-        self.fond_objets.config(scrollregion=(0,0,0,self.fond_objets.bbox(ALL)[3]+20))
+        self.fond_textures.config(scrollregion=(0,0,0,self.fond_textures.bbox(ALL)[3]+20))
 if __name__ == "__main__":
     app = createurMonde(None)
     app.title('Créateur et Editeur du jeu')
