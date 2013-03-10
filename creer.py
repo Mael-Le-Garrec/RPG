@@ -62,7 +62,7 @@ class createurMonde(tkinter.Tk):
         cartesmenu = Menu(menubar, tearoff=0)
         optionsmenu.add_cascade(label="Cartes", menu=cartesmenu)
         cartesmenu.add_command(label="Ouvrir", command=self.ouvrirCarte)
-        cartesmenu.add_command(label="Afficher", command=self.hello)
+        cartesmenu.add_command(label="Afficher", command=self.afficherCarteAide)
         cartesmenu.add_command(label="Sauvegarder", command=self.sauvegarderCarte)
         cartesmenu.add_command(label="Reset", command=self.resetCarte)
         # Objets
@@ -114,10 +114,16 @@ class createurMonde(tkinter.Tk):
         
         
         frame_bas = Frame(self, bd=1)
+        frame_bas.place(x=10,y=630)
         
         self.fond_radio_carte = Canvas(frame_bas, bd=1, relief='solid', height=150, width=200)
         self.fond_radio_carte.grid(row=0, column=0, sticky=N+S+E+W)
-        frame_bas.place(x=10,y=630)
+        
+        self.fond_tp = Canvas(frame_bas, bd=1, relief='solid', height=150, width=200)
+        self.fond_tp.grid(row=0, column=1, sticky=N+S+E+W)
+        label_tp = Label(self.fond_tp, text="Téléportation vers :")
+        label_tp.place(x=10, y=10)
+        
         
         label_carte = Label(self.fond_radio_carte, text="Placement et clic du milieu :")
         label_carte.place(x=10, y=10)
@@ -127,6 +133,7 @@ class createurMonde(tkinter.Tk):
          
         Radiobutton(self.fond_radio_carte, text="Texture traversable", variable=self.radio_carte, value=1).place(x=10,y=50)
         Radiobutton(self.fond_radio_carte, text="Texture non traversable", variable=self.radio_carte, value=2).place(x=10,y=70)
+        Radiobutton(self.fond_radio_carte, text="Téléporteur", variable=self.radio_carte, value=3).place(x=10,y=90)
 
         
         
@@ -142,7 +149,10 @@ class createurMonde(tkinter.Tk):
         
         # self.grid_columnconfigure(0,weight=1)
         self.resizable(False,False)
-        
+        self.popup_carte = None
+        self.coords_aide = [0,0]
+        self.rectangle_aide = list()
+
         # self.update()
         # self.geometry(self.geometry())
         
@@ -158,7 +168,98 @@ class createurMonde(tkinter.Tk):
         # self.labelVariable.set( self.entryVariable.get()+" (You pressed ENTER)" )
         # self.entry.focus_set()
         # self.entry.selection_range(0, tkinter.END)
+    
+    
+    def afficherCarteAide(self):
+        fichier = None
+        path = filedialog.askopenfilename(filetypes = (("Tous les fichiers", "*"), ("Fichiers de carte", "*.map")), initialdir="map")
+        if path:
+            fichier = open(path)
+        
+        if self.popup_carte is None:
+            self.popup_carte = Toplevel()  
+            self.popup_carte.geometry("606x626")
+            self.fond_aide = Canvas(self.popup_carte, bd=1, relief='solid', bg="white", height=600, width=600)
+            self.fond_aide.place(x=0,y=20)
+            self.label_var = StringVar()
+            self.label_aide = Label(self.popup_carte, textvariable=self.label_var)
+            self.label_aide.place(x=303, y=10, anchor="center")
 
+        if fichier:
+            self.chargerCarteAide(self.fond_aide, fichier)
+        self.fond_aide.bind("<Motion>", self.afficherCoordonnees)
+        
+        
+    def afficherCoordonnees(self, event):
+        x = int(self.fond_aide.canvasx(event.x)//30*30)
+        y = int(self.fond_aide.canvasy(event.y)//30*30)
+                
+        if x < 600 and y < 600:
+            if self.coords_aide[0] != [x,y]:
+                try:
+                    self.fond_aide.delete(self.rectangle_aide[-1])
+                except:
+                    pass
+                self.rectangle_aide.append(self.fond_aide.create_rectangle(x+3, y+3, x+30+3, y+30+3))
+                self.coords_aide = [x,y]
+                self.label_var.set("{0};{1}".format(x,y))
+                
+                # label = Label(self.fond_aide, text="{};{}".format(x,y))
+                # label.place(x=x, y=y)
+        
+    def chargerCarteAide(self, fond, fichier):
+        coords = list()
+        self.bloc = list()
+        self.textures_aide = dict()
+        self.lignes = fichier.readlines()       
+        fond.delete('all')
+
+        for i in range(len(self.lignes)):
+            if re.match("^[0-9]+:[0-9]+;[0-9]+:[0-9]+;[a-zA-Z0-9_]+;(1|0)$", self.lignes[i]):
+                coords.append(self.lignes[i]) # Si oui, on ajoute la ligne dans la liste des coordonnées
+                coords[-1] = coords[-1].rstrip().split(";") # On split la dernière entrée au niveau des  ; pour diviser la chaine
+                coords[-1][0] = coords[-1][0].split(":") # On split le : du premier point (x:y)
+                coords[-1][1] = coords[-1][1].split(":") # Puis du second
+                
+            # Si la ligne contient également des informations de téléportation, on l'ajoute en splittant les coordonnées
+            elif re.match("[0-9]+:[0-9]+;[0-9]+:[0-9]+;[a-zA-Z0-9_]+;(0|1);[0-9]+:[0-9]+;[0-9]+$", self.lignes[i]):
+                coords.append(self.lignes[i]) # Si oui, on ajoute la ligne dans la liste des coordonnées
+                coords[-1] = coords[-1].rstrip().split(";") # On split la dernière entrée au niveau des  ; pour diviser la chaine
+                coords[-1][0] = coords[-1][0].split(":") # On split le : du premier point (x:y)
+                coords[-1][1] = coords[-1][1].split(":") # Puis du second
+                coords[-1][4] = coords[-1][4].split(":") # Ajout des coordonnées de téléportation
+                
+            elif re.match("[0-9]+:[0-9]+;[0-9]+:[0-9]+;[a-zA-Z0-9_]+;(0|1);[0-9]+:[0-9]+;[0-9]+;[0-9a-zA-Z ]+$", self.lignes[i]):
+                coords.append(self.lignes[i]) # Si oui, on ajoute la ligne dans la liste des coordonnées
+                coords[-1] = coords[-1].rstrip().split(";") # On split la dernière entrée au niveau des  ; pour diviser la chaine
+                coords[-1][0] = coords[-1][0].split(":") # On split le : du premier point (x:y)
+                coords[-1][1] = coords[-1][1].split(":") # Puis du second
+                coords[-1][4] = coords[-1][4].split(":") # Ajout des coordonnées de téléportation
+                
+        # Du genre : {'pot_de_fleur' : 'objet'}
+        
+        for i in range(len(coords)):   
+            # print(os.path.join("textures","{0}.png".format(coords[i][2])))
+            self.textures_aide[coords[i][2]] = PngImageTk(os.path.join("textures","{0}.png".format(coords[i][2])))
+            self.textures_aide[coords[i][2]].convert()
+            
+        # self.tp[i][0] => carte de  destination
+        # self.tp[i][1][0] => x carte actuelle
+        # self.tp[i][1][1] => y carte actuelle 
+        
+        # self.tp[i][2][0] => x carte destination
+        # self.tp[i][2][1] => y carte destination
+        for i in range(len(coords)):
+            for j in range(0,(int(coords[i][1][0]) - int(coords[i][0][0])) // 30):
+                for k in range(0,(int(coords[i][1][1]) - int(coords[i][0][1])) // 30):
+                    self.bloc.append((int(coords[i][0][0]) + j * 30, int(coords[i][0][1]) + k * 30, self.textures_aide[coords[i][2]], coords[i][2], coords[i][3]))
+                    # print(coords[i])
+                    
+        # image : self.bloc[i][2], x : self.bloc[i][0], y : self.bloc[i][1], texture : self.bloc[i][3], traversable : self.bloc[i][4]
+        for i in range(len(self.bloc)):
+            # print([int(self.bloc[i][0]), int(self.bloc[i][1]), self.bloc[i][3], int(self.bloc[i][4])])
+            fond.create_image(self.bloc[i][0]+3,self.bloc[i][1]+3, image=self.bloc[i][2].image, anchor=NW)
+    
     def modifierTexture(self, event):
         x = int(self.fond_carte.canvasx(event.x) // 30 * 30)
         y = int(self.fond_carte.canvasy(event.y) // 30 * 30)
@@ -173,8 +274,7 @@ class createurMonde(tkinter.Tk):
             for i in range(len(self.affiches)):
                 if self.affiches[i] == [x, y, self.affiches[i][2], 0]:
                     self.affiches[i][3] = 1
-
-        
+    
     def resetCarte(self):
         self.fond_carte.delete("all")
         self.affiches = list()
@@ -202,7 +302,7 @@ class createurMonde(tkinter.Tk):
         fichier.close()
         
     def ouvrirCarte(self): 
-        fichier = filedialog.askopenfilename(filetypes = (("Tous les fichiers", "*"), ("Fichiers de carte", "*.map")))
+        fichier = filedialog.askopenfilename(filetypes = (("Tous les fichiers", "*"), ("Fichiers de carte", "*.map")), initialdir="map")
         if fichier:
             self.fichier_carte = fichier
             self.chargerCarte()
@@ -312,7 +412,7 @@ class createurMonde(tkinter.Tk):
             try:
                 self.fond_carte.delete(self.fond_carte.find_overlapping(x+3, y+3, x+3, y+3)[0])
             except:
-                pass
+                continue
             valeurs = list()
             # print(self.affiches)
             # print([int((x)//30*30), int((y)//30*30), val[2], val[3]])
@@ -324,8 +424,6 @@ class createurMonde(tkinter.Tk):
             for val in valeurs:
                 self.affiches.remove(val)
 
-       
-        
     def dessinerTexture(self, event):
         x = self.fond_carte.canvasx(event.x)
         y = self.fond_carte.canvasy(event.y)
