@@ -146,6 +146,11 @@ while continuer == 1:
             if event.key == K_u:
                 pygame.image.save(fenetre, os.path.join("cartes_images", "{0}.png".format(Joueur.carte)))
             
+            if event.key == K_m:
+                try:
+                    Joueur.carte = int(input("carte : "))
+                except:
+                    pass
             
             if event.key == K_f:
                 FightFonctions.Fight.StartFightMob(GameFonctions.MyCharacters.Character1)

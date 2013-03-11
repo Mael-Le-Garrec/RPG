@@ -46,6 +46,9 @@ c.execute("INSERT INTO pnj(nom, nom_entier, position, carte, image, dialogue) VA
 dialogue = "..aidez..moi.. usine... bentz..tue... nous...argent.."
 c.execute("INSERT INTO pnj(nom, nom_entier, position, carte, image, dialogue) VALUES ('Bentz','Bentz usiné','300;210',8, 'homme_maison.png', ?)", (dialogue,))
 
+dialogue = "Information : le cours d'eau à proximité peut-être très dangereux. Il est en outre responsable de la destruction des ponts établis il y a plusieurs années sur celui-ci. On raconte également que les personnes tombant dedans ne reviennent jamais."
+c.execute("INSERT INTO pnj(nom, nom_entier, position, carte, image, dialogue) VALUES ('Pancarte','Pancarte eau','300;330',9, 'pancarte.png', ?)", (dialogue,))
+
 conn.commit()
 conn.close()
 
@@ -91,9 +94,8 @@ c.execute("INSERT INTO dialogues(personnage, quete, avancement, dialogue) VALUES
 dialogue = "C'est cool de m'avoir rapporté ces noix, mais sans un poêle à bois, comment vais-je les cuire ?"
 c.execute("INSERT INTO dialogues(personnage, quete, avancement, dialogue) VALUES (2,4,1, ?)", (dialogue,))
 
-dialogue = "Youpi, des noix de coco poêlées au poêle à bois ! C'est cool !"
+dialogue = "Youpi, des noix de coco poêlées au poêle à bois ! C'est cool ! Pour vous remercier, voici un objet d'une très grande valeur."
 c.execute("INSERT INTO dialogues(personnage, quete, avancement, dialogue) VALUES (2,4,2, ?)", (dialogue,))
-
 
 dialogue = "J'aime beaucoup les fleurs ! Pour pouvoir en observer autant que je veux, j'aimerais un Jardiland. Pensez vous que vous pourriez m'en obtenir un ? D'après ce que j'ai lu dans des articles, un Jardiland ressemblerait à un buisson avec des fleurs. Comprenez que je suis un expert en taillage d'arbre, rien ne me résiste."
 c.execute("INSERT INTO dialogues(personnage, quete, avancement, dialogue) VALUES (8,5,0, ?)", (dialogue,))
@@ -173,7 +175,7 @@ c.execute("INSERT INTO objectifs(quete, personnage, objectif, avancement, requis
 
 objectif = "Ramener un poêle"
 requis = "item:poele"
-recompense = "xp:+500,item:-poele"
+recompense = "xp:+500,item:-poele,item:cle secrete"
 c.execute("INSERT INTO objectifs(quete, personnage, objectif, avancement, requis, recompense) VALUES (4,2,?,2,?,?)", (objectif, requis, recompense))
 
 
