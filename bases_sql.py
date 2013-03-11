@@ -43,6 +43,9 @@ c.execute("INSERT INTO pnj(nom, nom_entier, position, carte, image, dialogue) VA
 dialogue = "Les fleurs, c'est mon dada."
 c.execute("INSERT INTO pnj(nom, nom_entier, position, carte, image, dialogue) VALUES ('BITEmAN','lhomme bite','360;390',0, 'manoir.png', ?)", (dialogue,))
 
+dialogue = "..aidez..moi.. usine... bentz..tue... nous...argent.."
+c.execute("INSERT INTO pnj(nom, nom_entier, position, carte, image, dialogue) VALUES ('Bentz','Bentz usiné','300;210',8, 'homme_maison.png', ?)", (dialogue,))
+
 conn.commit()
 conn.close()
 
@@ -136,7 +139,7 @@ c.execute("INSERT INTO objectifs(quete, personnage, objectif, avancement, requis
 
 objectif = "Trouver une armoire"
 requis = "item:armoire"
-recompense = "xp:+500"
+recompense = "xp:+500,item:-armoire"
 c.execute("INSERT INTO objectifs(quete, personnage, objectif, avancement, requis, recompense) VALUES (1,1,?,2,?,?)", (objectif, requis, recompense))
 
 
@@ -147,36 +150,36 @@ c.execute("INSERT INTO objectifs(quete, personnage, objectif, avancement, requis
 
 objectif = "Trouver des disques"
 requis = "item:disque"
-recompense = "xp:+500"
+recompense = "xp:+500, item:-disque"
 c.execute("INSERT INTO objectifs(quete, personnage, objectif, avancement, requis, recompense) VALUES (2,6,?,1,?,?)", (objectif, requis, recompense))
 
 
 objectif = "Ramener des fleurs"
 requis = "item:fleurs,item:fleurs,item:fleurs"
-recompense = "xp:+500"
+recompense = "xp:+500,item:-fleurs,item:-fleurs,item:-fleurs"
 c.execute("INSERT INTO objectifs(quete, personnage, objectif, avancement, requis, recompense) VALUES (3,4,?,1,?,?)", (objectif, requis, recompense))
 
 
 objectif = "Ramener la fleur rare"
 requis = "item:fleur rare"
-recompense = "xp:+500"
+recompense = "xp:+500, item:-fleur rare"
 c.execute("INSERT INTO objectifs(quete, personnage, objectif, avancement, requis, recompense) VALUES (3,4,?,2,?,?)", (objectif, requis, recompense))
 
 
 objectif = "Ramener des noix de coco"
 requis = "item:noix de coco,item:noix de coco"
-recompense = "xp:+500"
+recompense = "xp:+500, item:-noix de coco,item:-noix de coco"
 c.execute("INSERT INTO objectifs(quete, personnage, objectif, avancement, requis, recompense) VALUES (4,2,?,1,?,?)", (objectif, requis, recompense))
 
 objectif = "Ramener un poêle"
 requis = "item:poele"
-recompense = "xp:+500"
+recompense = "xp:+500,item:-poele"
 c.execute("INSERT INTO objectifs(quete, personnage, objectif, avancement, requis, recompense) VALUES (4,2,?,2,?,?)", (objectif, requis, recompense))
 
 
 objectif = "Ramener un jardiland"
 requis = "item:jardiland"
-recompense = "xp:+500, item:bonhomme, item:-jardiland"
+recompense = "xp:+500,item:-jardiland"
 c.execute("INSERT INTO objectifs(quete, personnage, objectif, avancement, requis, recompense) VALUES (5,8,?,1,?,?)", (objectif, requis, recompense))
 #########################
 

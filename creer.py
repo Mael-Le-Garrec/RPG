@@ -235,7 +235,7 @@ class createurMonde(tkinter.Tk):
         
     def chargerCarteAide(self, fond, fichier):
         coords = list()
-        self.bloc = list()
+        self.bloc2 = list()
         self.textures_aide = dict()
         self.lignes = fichier.readlines()       
         fond.delete('all')
@@ -278,13 +278,13 @@ class createurMonde(tkinter.Tk):
         for i in range(len(coords)):
             for j in range(0,(int(coords[i][1][0]) - int(coords[i][0][0])) // 30):
                 for k in range(0,(int(coords[i][1][1]) - int(coords[i][0][1])) // 30):
-                    self.bloc.append((int(coords[i][0][0]) + j * 30, int(coords[i][0][1]) + k * 30, self.textures_aide[coords[i][2]], coords[i][2], coords[i][3]))
+                    self.bloc2.append((int(coords[i][0][0]) + j * 30, int(coords[i][0][1]) + k * 30, self.textures_aide[coords[i][2]], coords[i][2], coords[i][3]))
                     # print(coords[i])
                     
         # image : self.bloc[i][2], x : self.bloc[i][0], y : self.bloc[i][1], texture : self.bloc[i][3], traversable : self.bloc[i][4]
-        for i in range(len(self.bloc)):
+        for i in range(len(self.bloc2)):
             # print([int(self.bloc[i][0]), int(self.bloc[i][1]), self.bloc[i][3], int(self.bloc[i][4])])
-            fond.create_image(self.bloc[i][0]+3,self.bloc[i][1]+3, image=self.bloc[i][2].image, anchor=NW)
+            fond.create_image(self.bloc2[i][0]+3,self.bloc2[i][1]+3, image=self.bloc2[i][2].image, anchor=NW)
     
     def modifierTexture(self, event):
         x = int(self.fond_carte.canvasx(event.x) // 30 * 30)
@@ -327,7 +327,7 @@ class createurMonde(tkinter.Tk):
             else:
                 fichier.write("{0}:{1};{2}:{3};{4};{5};{6}:{7};{8}\n".format(val[0], val[1], val[0] + 30, val[1] + 30, val[2], val[3], val[4], val[5], val[6]))
             
-        fichier.close()
+        print("Sauvegardé !")
         
     def ouvrirCarte(self): 
         fichier = filedialog.askopenfilename(filetypes = (("Tous les fichiers", "*"), ("Fichiers de carte", "*.map")), initialdir="map")
