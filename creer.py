@@ -193,17 +193,21 @@ class createurMonde(tkinter.Tk):
             path[i] = path[i].split('/')
             
         self.carte_aide = path[0][-1]
-
-        if self.popup_carte is None:
-            self.popup_carte = Toplevel()  
-            self.popup_carte.geometry("606x626")
-            self.fond_aide = Canvas(self.popup_carte, bd=1, relief='solid', bg="white", height=600, width=600)
-            self.fond_aide.place(x=0,y=20)
-            self.fond_aide.bind("<Button-1>", self.choixTeleporteur)   
-            
-            self.label_var = StringVar()
-            self.label_aide = Label(self.popup_carte, textvariable=self.label_var)
-            self.label_aide.place(x=303, y=10, anchor="center")
+        
+        if self.popup_carte:
+            self.popup_carte.destroy()
+            self.popup_carte = Toplevel()
+        else:
+            self.popup_carte = Toplevel()
+        
+        self.popup_carte.geometry("606x626")
+        self.fond_aide = Canvas(self.popup_carte, bd=1, relief='solid', bg="white", height=600, width=600)
+        self.fond_aide.place(x=0,y=20)
+        self.fond_aide.bind("<Button-1>", self.choixTeleporteur)   
+        
+        self.label_var = StringVar()
+        self.label_aide = Label(self.popup_carte, textvariable=self.label_var)
+        self.label_aide.place(x=303, y=10, anchor="center")
 
         if fichier:
             self.chargerCarteAide(self.fond_aide, fichier)
@@ -215,7 +219,6 @@ class createurMonde(tkinter.Tk):
         
         self.label_tp_var.set("{0};{1} sur carte {2}".format(self.tp_x , self.tp_y, self.carte_aide))
         
-    
     def afficherCoordonnees(self, event):
         x = int(self.fond_aide.canvasx(event.x)//30*30)
         y = int(self.fond_aide.canvasy(event.y)//30*30)
@@ -229,9 +232,6 @@ class createurMonde(tkinter.Tk):
                 self.rectangle_aide.append(self.fond_aide.create_rectangle(x+3, y+3, x+30+3, y+30+3, outline="yellow"))
                 self.coords_aide = [x,y]
                 self.label_var.set("{0};{1}".format(x,y))
-                
-                # label = Label(self.fond_aide, text="{};{}".format(x,y))
-                # label.place(x=x, y=y)
         
     def chargerCarteAide(self, fond, fichier):
         coords = list()
@@ -239,6 +239,7 @@ class createurMonde(tkinter.Tk):
         self.textures_aide = dict()
         self.lignes = fichier.readlines()       
         fond.delete('all')
+        fichier.close()
 
         for i in range(len(self.lignes)):
             if re.match("^[0-9]+:[0-9]+;[0-9]+:[0-9]+;[a-zA-Z0-9_]+;(1|0)$", self.lignes[i]):
@@ -253,14 +254,12 @@ class createurMonde(tkinter.Tk):
                 coords[-1] = coords[-1].rstrip().split(";") # On split la dernière entrée au niveau des  ; pour diviser la chaine
                 coords[-1][0] = coords[-1][0].split(":") # On split le : du premier point (x:y)
                 coords[-1][1] = coords[-1][1].split(":") # Puis du second
-                coords[-1][4] = coords[-1][4].split(":") # Ajout des coordonnées de téléportation
                 
             elif re.match("[0-9]+:[0-9]+;[0-9]+:[0-9]+;[a-zA-Z0-9_]+;(0|1);[0-9]+:[0-9]+;[0-9]+;[0-9a-zA-Z ]+$", self.lignes[i]):
                 coords.append(self.lignes[i]) # Si oui, on ajoute la ligne dans la liste des coordonnées
                 coords[-1] = coords[-1].rstrip().split(";") # On split la dernière entrée au niveau des  ; pour diviser la chaine
                 coords[-1][0] = coords[-1][0].split(":") # On split le : du premier point (x:y)
                 coords[-1][1] = coords[-1][1].split(":") # Puis du second
-                coords[-1][4] = coords[-1][4].split(":") # Ajout des coordonnées de téléportation
                 
         # Du genre : {'pot_de_fleur' : 'objet'}
         
@@ -268,13 +267,7 @@ class createurMonde(tkinter.Tk):
             # print(os.path.join("textures","{0}.png".format(coords[i][2])))
             self.textures_aide[coords[i][2]] = PngImageTk(os.path.join("textures","{0}.png".format(coords[i][2])))
             self.textures_aide[coords[i][2]].convert()
-            
-        # self.tp[i][0] => carte de  destination
-        # self.tp[i][1][0] => x carte actuelle
-        # self.tp[i][1][1] => y carte actuelle 
-        
-        # self.tp[i][2][0] => x carte destination
-        # self.tp[i][2][1] => y carte destination
+
         for i in range(len(coords)):
             for j in range(0,(int(coords[i][1][0]) - int(coords[i][0][0])) // 30):
                 for k in range(0,(int(coords[i][1][1]) - int(coords[i][0][1])) // 30):
@@ -318,7 +311,7 @@ class createurMonde(tkinter.Tk):
         fichier.write("bas:{0}\n".format(bas))
         fichier.write("droite:{0}\n".format(droite))
         fichier.write("gauche:{0}\n\n".format(gauche))
-        
+
         
         for val in self.affiches:
             if len(val) == 4:
@@ -326,7 +319,8 @@ class createurMonde(tkinter.Tk):
                 # x, y, texture, traversable
             else:
                 fichier.write("{0}:{1};{2}:{3};{4};{5};{6}:{7};{8}\n".format(val[0], val[1], val[0] + 30, val[1] + 30, val[2], val[3], val[4], val[5], val[6]))
-            
+        
+        fichier.close()
         print("Sauvegardé !")
         
     def ouvrirCarte(self): 
@@ -339,6 +333,12 @@ class createurMonde(tkinter.Tk):
         self.coords = list()
         self.liste_tp = list()
         self.bloc = list()
+        
+        del self.affiches[:]
+        del self.liste_tp[:]
+        del self.coords[:]
+        del self.bloc[:]
+        
         self.textures_fichier = dict()
         self.fichier_carte = open(os.path.join('{}'.format(self.fichier_carte)), "r")
         self.lignes = self.fichier_carte.readlines()
@@ -404,14 +404,22 @@ class createurMonde(tkinter.Tk):
         for i in range(len(self.coords)):
             for j in range(0,(int(self.coords[i][1][0]) - int(self.coords[i][0][0])) // 30):
                 for k in range(0,(int(self.coords[i][1][1]) - int(self.coords[i][0][1])) // 30):
-                    self.bloc.append((int(self.coords[i][0][0]) + j * 30, int(self.coords[i][0][1]) + k * 30, self.textures_fichier[self.coords[i][2]], self.coords[i][2], self.coords[i][3]))
+                    if len(self.coords[i]) > 6:
+                        self.bloc.append((int(self.coords[i][0][0]) + j * 30, int(self.coords[i][0][1]) + k * 30, self.textures_fichier[self.coords[i][2]], self.coords[i][2], self.coords[i][3], self.coords[i][4][0], self.coords[i][4][1], self.coords[i][5]))
+                    else:
+                        self.bloc.append((int(self.coords[i][0][0]) + j * 30, int(self.coords[i][0][1]) + k * 30, self.textures_fichier[self.coords[i][2]], self.coords[i][2], self.coords[i][3]))
                     # print(self.coords[i])
                     
         # image : self.bloc[i][2], x : self.bloc[i][0], y : self.bloc[i][1], texture : self.bloc[i][3], traversable : self.bloc[i][4]
         for i in range(len(self.bloc)):
             # print([int(self.bloc[i][0]), int(self.bloc[i][1]), self.bloc[i][3], int(self.bloc[i][4])])
             self.fond_carte.create_image(self.bloc[i][0]+3,self.bloc[i][1]+3, image=self.bloc[i][2].image, anchor=NW)
-            self.affiches.append([int(self.bloc[i][0]), int(self.bloc[i][1]), self.bloc[i][3], int(self.bloc[i][4])])
+            if len(self.bloc[i]) > 6:
+                # x, y, image, traversable, x dest, y dest, carte
+                print(self.bloc[i])
+                self.affiches.append([int(self.bloc[i][0]), int(self.bloc[i][1]), self.bloc[i][3], int(self.bloc[i][4]), int(self.bloc[i][5]), int(self.bloc[i][6]), int(self.bloc[i][7])])
+            else:
+                self.affiches.append([int(self.bloc[i][0]), int(self.bloc[i][1]), self.bloc[i][3], int(self.bloc[i][4])])
 
     def choixTexture(self, event):
         x = self.fond_carte.canvasx(event.x)
@@ -481,7 +489,10 @@ class createurMonde(tkinter.Tk):
         # print(self.fichier_carte)
         print(len(self.affiches))
         # if len(self.affiches) < 10:
-        print(self.affiches)
+        
+        for val in self.affiches:
+            if len(val) > 6:
+                print(val)
     
     def chargerTextures(self):
         if self.textures is None:

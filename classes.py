@@ -550,7 +550,7 @@ def faire_quete(pnj, inventaire, fenetre):
                             xp = int(recompense)
                         except:
                             pass
-        
+
         for i in range(len(gagnes)):
             gagnes[i] = "«{1}{0}{1}»".format(gagnes[i], b'\xA0'.decode("utf-8", "replace"))
         for i in range(len(perdus)):
@@ -570,10 +570,10 @@ def faire_quete(pnj, inventaire, fenetre):
             dialogue = "Vous obtenez l'objet {0} et laissez l'objet {1}.".format(", ".join(gagnes), ", ".join(perdus))
 
         elif len(gagnes) == 0 and len(perdus) == 1:
-            dialogue = "Vous laissez l'objet {1}.".format(", ".join(perdus))
+            dialogue = "Vous laissez l'objet {0}.".format(", ".join(perdus))
             
         elif len(gagnes) == 0 and len(perdus) > 1:
-            dialogue = "Vous laissez les objets {1}.".format(", ".join(perdus))
+            dialogue = "Vous laissez les objets {0}.".format(", ".join(perdus))
             
         elif len(gagnes) == 1 and len(perdus) == 0:
             dialogue = "Vous obtenez l'objet {0}.".format(", ".join(gagnes))
