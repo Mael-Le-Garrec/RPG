@@ -404,7 +404,8 @@ class createurMonde(tkinter.Tk):
         for i in range(len(self.coords)):
             for j in range(0,(int(self.coords[i][1][0]) - int(self.coords[i][0][0])) // 30):
                 for k in range(0,(int(self.coords[i][1][1]) - int(self.coords[i][0][1])) // 30):
-                    if len(self.coords[i]) > 6:
+                    if len(self.coords[i]) > 5: # si tp, la longueur est de 6, 7 avec objet requis
+                        print(self.coords[i])
                         self.bloc.append((int(self.coords[i][0][0]) + j * 30, int(self.coords[i][0][1]) + k * 30, self.textures_fichier[self.coords[i][2]], self.coords[i][2], self.coords[i][3], self.coords[i][4][0], self.coords[i][4][1], self.coords[i][5]))
                     else:
                         self.bloc.append((int(self.coords[i][0][0]) + j * 30, int(self.coords[i][0][1]) + k * 30, self.textures_fichier[self.coords[i][2]], self.coords[i][2], self.coords[i][3]))
@@ -416,7 +417,7 @@ class createurMonde(tkinter.Tk):
             self.fond_carte.create_image(self.bloc[i][0]+3,self.bloc[i][1]+3, image=self.bloc[i][2].image, anchor=NW)
             if len(self.bloc[i]) > 6:
                 # x, y, image, traversable, x dest, y dest, carte
-                print(self.bloc[i])
+                # print(self.bloc[i])
                 self.affiches.append([int(self.bloc[i][0]), int(self.bloc[i][1]), self.bloc[i][3], int(self.bloc[i][4]), int(self.bloc[i][5]), int(self.bloc[i][6]), int(self.bloc[i][7])])
             else:
                 self.affiches.append([int(self.bloc[i][0]), int(self.bloc[i][1]), self.bloc[i][3], int(self.bloc[i][4])])
