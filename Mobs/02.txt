@@ -2,7 +2,7 @@ name:Ferbi
 HP:200
 lvl:2
 intelligence:0
-strenght:0
+strength:0
 chance:0
 agility:0
 sort:00

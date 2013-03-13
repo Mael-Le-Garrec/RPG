@@ -2,7 +2,7 @@ name:tofu
 HP:30
 lvl:5
 intelligence:50
-strenght:25
+strength:25
 chance:30
 agility:40
 sort:00
