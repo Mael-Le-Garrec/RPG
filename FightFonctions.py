@@ -238,7 +238,7 @@ class Fight:
                 UsableSpell= IA.Attitude_Peureux(MobSpellList)
 
             elif GameFonctions.Mobs.Choix_attitude==2:
-               UsableSpell=IA.Attitude_Aggresif(MobSpellList)
+               UsableSpell=IA.Attitude_Agressif(MobSpellList)
 
             if UsableSpell==[]:
                 return choice (MobSpellList)
@@ -246,7 +246,7 @@ class Fight:
                 return choice (UsableSpell)
 
         def Attitude_Peureux(MobSpellList):
-            """Choisi le sort en fonction du comportement peureux du monstre. Le monstre va principalement se soigner s'il dispose d'un sort de soin """
+            """Choisi le sort en fonction du comportement peureux du monstre. Le monstre va principalement se soigner s'il dispose d'un sort de soin"""
             if GameFonctions.MyCharacters.Character1.HP<=GameFonctions.MyCharacters.Character1.TVitality*0.10:
                 if randrange(1,101)<=10:
                     UsableSpell=MobSpellList
@@ -255,15 +255,25 @@ class Fight:
                         if "-" in Sort.Degat[i]:
                             return UsableSpell.append(i)
 
-        def Attitude_Aggresif(MobSpellList):
-             for i in range(MobSpellList):
-                if not "-" in Sort.Degat[i]:
-                    return UsableSpell.append(i)
+        def Attitude_Agressif(MobSpellList):
+            """Choisi le sort en fonction du comportement agressif du monstre. Le monstre va principalement attaquer s'il dispose d'un d'attaque"""
+            if GameFonctions.MyCharacters.Character1.HP<=GameFonctions.MyCharacters.Character1.TVitality*0.10:
+                for i in range(MobSpellList):
+                        if not "-" in Sort.Degat[i]:
+                            return UsableSpell.append(i)
+            else:
+                if randrange(1,101)<=10:
+                    UsableSpell=MobSpellList
+                else:
+                    for i in range(MobSpellList):
+                        if not "-" in Sort.Degat[i]:
+                            return UsableSpell.append(i)
 
 
 
 
     def StartFightMob(Character):
+        """Lance un combat Joueur vs Monstre"""
         GameFonctions.MyCharacters.CharacterStatsCalc.CalcTotalStatsCharacter(Character)
         Sort.IniSort()
         Etat.IniEtat()
@@ -296,12 +306,27 @@ class Fight:
                 Element=Character.TChance
             elif Sort.Element[int(NbrSort)]=="agility":
                 Element=Character.TAgility
-
+            if randrange(1,101)<=10:
+                CC()
+            elif randrange(1,101)>=90:
+                EC()
             #Formule de calcul des dégats
-            return  randrange(floor(Min * (100 + Element ) / 100),floor((Max * (100 + Element ) / 100)+1))
+            Degat = randrange(floor(Min * (100 + Element ) / 100),floor((Max * (100 + Element ) / 100)+1))
+
+            if randrange(1,101)<=10:
+                Degat = Degat + CC(Degat)
+            elif randrange(1,101)>=90:
+                Degat = Degat - EC(Degat)
+
+            return Degat
         else:
             return 0
 
+    def CC(Degat):
+        return int(Degat/100*randrange(10,31))
+
+    def EC(Degat):
+        return int(Degat/100*randrange(70,101))
 
     def HP(Character,Degat):
         """Actualise les HP après une attaque"""
