@@ -2,7 +2,7 @@ name:bouftout
 HP:100
 lvl:3
 intelligence:0
-strenght:200
+strength:200
 chance:200
 agility:200
 sort:00
