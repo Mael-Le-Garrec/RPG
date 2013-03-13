@@ -1,9 +1,0 @@
-Nickname:superroxxxxxor
-ClanName:Zor
-Lvl:4
-Exp:1785
-Vitality:0
-Intelligence:0
-Strenght:0
-Chance:0
-Agility:0

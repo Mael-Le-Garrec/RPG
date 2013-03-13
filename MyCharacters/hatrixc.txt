@@ -1,9 +1,0 @@
-Nickname:hatrixc
-ClanName:tummy
-Lvl:3
-Exp:1033
-Vitality:0
-Intelligence:0
-Strenght:0
-Chance:0
-Agility:0
