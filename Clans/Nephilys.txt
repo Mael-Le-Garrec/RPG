@@ -2,7 +2,7 @@ name:Nephilys
 description:Aucune
 vitality:100
 intelligence:100
-strenght:200
+strength:200
 chance:200
 agility:200
 sort:0
