@@ -48,8 +48,8 @@ class Etat:
             if Etat.EtatCharacter1[1]==0:
                 print("Player sort de l'état {}".format( Etat.EtatCharacter1[0]))
                 Etat.EtatCharacter1=["",0,0]
- 
- 
+
+
     def ActionMob(Mob):
         """Actionne l'état du monstre"""
         if Etat.EtatMob[1]!=0:
@@ -109,132 +109,177 @@ class Sort:
                     Sort.Cible.append(int(0))
 
 class Fight:
-    class FightStats:
-        Turn=0
+    Turn=0
+    class Mob:
+
+        def MobTurn(Mob,Character):
+            """Tour du monstre"""
+            print("\nTour du mobs :")
+            print(str(Mob.HP)+"/"+str(Mob.TVitality))
+            Etat.ActionMob(Mob)
+            if Mob.HP>0:
+                MobAttaque=int(Fight.IA.Choix_attitude())
+                Degat=Fight.Attaque(GameFonctions.Mobs,MobAttaque)
+                if Sort.Cible[MobAttaque]==1:
+                    Degat=Fight.HP(GameFonctions.MyCharacters.Character1,Degat)
+                else:
+                    Degat=Fight.HP(Mob,Degat)
+                print("Mobs lance {}".format(Sort.Name[int(MobAttaque)]))
+                if Sort.Etat[MobAttaque]!=-1:
+                    Etat.EtatCharacter1=[Etat.Name[Sort.Etat[MobAttaque]],Etat.Turn[Sort.Etat[MobAttaque]],Etat.Effect[Sort.Etat[MobAttaque]]]
+                    print ("Player entre dans l'etat {}".format(Etat.Name[Sort.Etat[MobAttaque]]))
+
+                if Sort.Cible[MobAttaque]==1:
+                    if Degat >= 0:
+                        print ("Joueur perd {} ".format(Degat) + str(Character.HP)+"/"+str(Character.TVitality) )
+                    else:
+                        print ("Joueur gagne {}".format(-Degat)+ str(Character.HP)+"/"+str(Character.TVitality) )
+                else:
+                    if Degat >= 0:
+                        print("Mob perd {} : ".format(Degat) + str(Mob.HP)+"/"+str(Mob.TVitality) )
+                    else:
+                        print("Mob gagne {} : ".format(-Degat) + str(Mob.HP)+"/"+str(Mob.TVitality))
+
+            if Character.HP==0:
+                print("\nMob Win")
+            elif Mob.HP==0:
+               print("\nPlayer Win")
+               Fight.EndFight(Character,Mob,Fight.Turn)
+
+##        def RandomMobAttaque():
+##            """Choix aléatoire de l'attaque du mobs"""
+##            MobSpellList=GameFonctions.Mobs.Sort.split(",")
+##            return choice(MobSpellList)
+
+
+        def MobCombat(Character,Mob):
+            """Gestion des combat contre montres"""
+            #Calcul de l'initiative
+            Fight.Turn=1
+            GameFonctions.Mobs.CalcInitiative(Mob)
+            GameFonctions.MyCharacters.CharacterStatsCalc.CalcInitiative(Character)
+
+            print("Initiative Player 1 "+str(Character.Initiative))
+            print("Initiative Mob "+str(Mob.Initiative))
+
+            while Character.HP>0 and Mob.HP>0:
+                print("==============================")
+                print("Turn "+str(Fight.Turn))
+                if Character.Initiative>Mob.Initiative:
+                    Fight.Player.Player1Turn(Character,Mob)
+
+                    if Character.HP>0 and Mob.HP>0:
+                        Fight.Mob.MobTurn(Mob,Character)
+
+                elif Character.Initiative<Mob.Initiative:
+                     Fight.Mob.MobTurn(Mob,Character)
+
+                     if Character.HP>0 and Mob.HP>0:
+                         Fight.Player.Player1Turn(Character,Mob)
+
+                else:
+                     Fight.Player.Player1Turn(Character,Mob)
+                     if Character.HP>0 and Mob.HP>0:
+                         Fight.Mob.MobTurn(Mob,Character)
+                Fight.Turn=Fight.Turn+1
+                print("==============================\n")
+
+    class Player:
+         def Player1Turn(Character,Mob):
+             """Tour du joueur"""
+             print("Tour du Joueur :")
+             print(str(Character.HP)+"/"+str(Character.TVitality))
+             Etat.ActionCharacter1(Character)
+             if Character.HP>0:
+                 while True:
+                        try:
+                            SortID=int(input("Entrer l'id de votre sort :"))
+                        except ValueError:
+                            continue
+                        else:
+                            if  SortID not in Character.Sort:
+                                print("Vous ne pouvez pas utiliser ce sort !")
+                            else:
+                                break
+
+
+                 Degat=Fight.Attaque(Character,SortID)
+                 if Sort.Cible[SortID]==1:
+                    Degat=Fight.HP(Mob,Degat)
+
+                 else:
+                    Degat=Fight.HP(GameFonctions.MyCharacters.Character1,Degat)
+                 if Sort.Etat[SortID]!=-1:
+                    Etat.EtatMob=[Etat.Name[Sort.Etat[SortID]],Etat.Turn[Sort.Etat[SortID]],Etat.Effect[Sort.Etat[SortID]]]
+                    print ("Mob entre dans l'etat {}".format(Etat.Name[Sort.Etat[SortID]]))
+                 print("Joueur lance {}".format(Sort.Name[int(SortID)]))
+                 if Sort.Cible[SortID]==1:
+                     if Degat >= 0:
+                        print("Mob perd {} : ".format(Degat) + str(Mob.HP)+"/"+str(Mob.TVitality))
+                     else:
+                        print("Mob gagne {} : ".format(-Degat) + str(Mob.HP)+"/"+str(Mob.TVitality))
+                 else:
+                     if Degat >= 0:
+                        print("Joueur perd {} : ".format(Degat) + str(Character.HP)+"/"+str(Character.TVitality))
+                     else:
+                        print("Joueur gagne {} : ".format(-Degat) + str(Character.HP)+"/"+str(Character.TVitality))
+             if Mob.HP==0:
+               print("\nPlayer Win")
+               Fight.EndFight(Character,Mob,Fight.Turn)
+             elif Character.HP==0:
+                print("\nMob Win")
+    class IA:
+        def Choix_attitude():
+            """Choisi le comportement du monstre"""
+            UsableSpell=[]
+            MobSpellList=GameFonctions.Mobs.Sort.split(",")
+            MobSpellList=list(map(int,MobSpellList))
+            if GameFonctions.Mobs.Choix_attitude==0: #Peureux
+                UsableSpell= IA.Attitude_Peureux(MobSpellList)
+
+            elif GameFonctions.Mobs.Choix_attitude==2:
+               UsableSpell=IA.Attitude_Aggresif(MobSpellList)
+
+            if UsableSpell==[]:
+                return choice (MobSpellList)
+            else:
+                return choice (UsableSpell)
+
+        def Attitude_Peureux(MobSpellList):
+            """Choisi le sort en fonction du comportement peureux du monstre. Le monstre va principalement se soigner s'il dispose d'un sort de soin """
+            if GameFonctions.MyCharacters.Character1.HP<=GameFonctions.MyCharacters.Character1.TVitality*0.10:
+                if randrange(1,101)<=10:
+                    UsableSpell=MobSpellList
+                else:
+                    for i in MobSpellList:
+                        if "-" in Sort.Degat[i]:
+                            return UsableSpell.append(i)
+
+        def Attitude_Aggresif(MobSpellList):
+             for i in range(MobSpellList):
+                if not "-" in Sort.Degat[i]:
+                    return UsableSpell.append(i)
+
+
+
+
     def StartFightMob(Character):
         GameFonctions.MyCharacters.CharacterStatsCalc.CalcTotalStatsCharacter(Character)
         Sort.IniSort()
         Etat.IniEtat()
         GameFonctions.Mobs.IniMobs()
         #Affiche la liste des monstres
-        
         for i in range(len(GameFonctions.MobsListe)):
             print(i,GameFonctions.MobsListe[i][0][1])
         #Demande l'id du mob
         Mob=int(input("Entrer l'id de notre mob :"))
         #Calcul les stats du mobs
         GameFonctions.Mobs.MobStats(GameFonctions.MobsListe[Mob])
-        Fight.MobCombat(GameFonctions.MyCharacters.Character1,GameFonctions.Mobs)
+        Fight.Mob.MobCombat(GameFonctions.MyCharacters.Character1,GameFonctions.Mobs)
 
-    def Player1Turn(Character,Mob):
-         """Tour du joueur"""
-         print("Tour du Joueur :")
-         print(str(Character.HP)+"/"+str(Character.TVitality))
-         Etat.ActionCharacter1(Character)
-         if Character.HP>0:
-             while True:
-                    try:
-                        SortID=int(input("Entrer l'id de votre sort :"))
-                    except ValueError:
-                        continue
-                    else:
-                        if  SortID not in Character.Sort:
-                            print("Vous ne pouvez pas utiliser ce sort !")
-                        else:
-                            break
- 
- 
-             Degat=Fight.Attaque(Character,SortID)
-             if Sort.Cible[SortID]==1:
-                Degat=Fight.HP(Mob,Degat)
- 
-             else:
-                Degat=Fight.HP(GameFonctions.MyCharacters.Character1,Degat)
-             if Sort.Etat[SortID]!=-1:
-                Etat.EtatMob=[Etat.Name[Sort.Etat[SortID]],Etat.Turn[Sort.Etat[SortID]],Etat.Effect[Sort.Etat[SortID]]]
-                print ("Mob entre dans l'etat {}".format(Etat.Name[Sort.Etat[SortID]]))
-             print("Joueur lance {}".format(Sort.Name[int(SortID)]))
-             if Sort.Cible[SortID]==1:
-                 if Degat >= 0:
-                    print("Mob perd {}".format(Degat))
-                 else:
-                    print("Mob gagne {}".format(-Degat))
-             else:
-                 if Degat >= 0:
-                    print("Joueur perd {}".format(Degat))
-                 else:
-                    print("Joueur gagne {}".format(-Degat))
-         if Mob.HP==0:
-           print("\nPlayer Win")
-           Fight.EndFight(Character,Mob,Fight.FightStats.Turn)
-         elif Character.HP==0:
-            print("\nMob Win")
- 
-    def MobTurn(Mob,Character):
-        """Tour du monstre"""
-        print("\nTour du mobs :")
-        print(str(Mob.HP)+"/"+str(Mob.TVitality))
-        Etat.ActionMob(Mob)
-        if Mob.HP>0:
-            MobAttaque=int(GameFonctions.Mobs.RandomMobAttaque())
-            Degat=Fight.Attaque(GameFonctions.Mobs,MobAttaque)
-            if Sort.Cible[MobAttaque]==1:
-                Degat=Fight.HP(GameFonctions.MyCharacters.Character1,Degat)
-            else:
-                Degat=Fight.HP(Mob,Degat)
-            print("Mobs lance {}".format(Sort.Name[int(MobAttaque)]))
-            if Sort.Etat[MobAttaque]!=-1:
-                Etat.EtatCharacter1=[Etat.Name[Sort.Etat[MobAttaque]],Etat.Turn[Sort.Etat[MobAttaque]],Etat.Effect[Sort.Etat[MobAttaque]]]
-                print ("Player entre dans l'etat {}".format(Etat.Name[Sort.Etat[MobAttaque]]))
- 
-            if Sort.Cible[MobAttaque]==1:
-                if Degat >= 0:
-                    print ("Joueur perd {}".format(Degat))
-                else:
-                    print ("Joueur gagne {}".format(-Degat))
-            else:
-                if Degat >= 0:
-                    print("Mob perd {}".format(Degat))
-                else:
-                    print("Mob gagne {}".format(-Degat))
- 
-        if Character.HP==0:
-            print("\nMob Win")
-        elif Mob.HP==0:
-           print("\nPlayer Win")
-           Fight.EndFight(Character,Mob,Fight.FightStats.Turn)
 
-    def MobCombat(Character,Mob):
-        """Gestion des combat contre montres"""
-        #Calcul de l'initiative
-        Fight.FightStats.Turn=1
-        GameFonctions.Mobs.CalcInitiative(Mob)
-        GameFonctions.MyCharacters.CharacterStatsCalc.CalcInitiative(Character)
 
-        print("Initiative Player 1 "+str(Character.Initiative))
-        print("Initiative Mob "+str(Mob.Initiative))
 
-        while Character.HP>0 and Mob.HP>0:
-            print("==============================")
-            print("Turn "+str(Fight.FightStats.Turn))
-            if Character.Initiative>Mob.Initiative:
-                Fight.Player1Turn(Character,Mob)
-
-                if Character.HP>0 and Mob.HP>0:
-                    Fight.MobTurn(Mob,Character)
-
-            elif Character.Initiative<Mob.Initiative:
-                 Fight.MobTurn(Mob,Character)
-
-                 if Character.HP>0 and Mob.HP>0:
-                     Fight.Player1Turn(Character,Mob)
-
-            else:
-                 Fight.Player1Turn(Character,Mob)
-                 if Character.HP>0 and Mob.HP>0:
-                     Fight.MobTurn(Mob,Character)
-            Fight.FightStats.Turn=Fight.FightStats.Turn+1
-            print("==============================\n")
 
     def Attaque(Character, NbrSort):
         """Calcul des dégat à infligée"""
@@ -245,8 +290,8 @@ class Fight:
         if Sort.Element[int(NbrSort)]!="error":
             if Sort.Element[int(NbrSort)]=="intelligence":
                 Element=Character.TIntelligence
-            elif Sort.Element[int(NbrSort)]=="strenght":
-                Element=Character.TStrenght
+            elif Sort.Element[int(NbrSort)]=="strength":
+                Element=Character.Tstrength
             elif Sort.Element[int(NbrSort)]=="chance":
                 Element=Character.TChance
             elif Sort.Element[int(NbrSort)]=="agility":
@@ -256,6 +301,8 @@ class Fight:
             return  randrange(floor(Min * (100 + Element ) / 100),floor((Max * (100 + Element ) / 100)+1))
         else:
             return 0
+
+
     def HP(Character,Degat):
         """Actualise les HP après une attaque"""
         if Character.HP-Degat<0:
