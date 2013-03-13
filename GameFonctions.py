@@ -74,7 +74,7 @@ class MyCharacters:
         File.write("Exp:"+str(int(Character.Exp))+"\n")
         File.write("Vitality:"+str(Character.Vitality)+"\n")
         File.write("Intelligence:"+str(Character.Intelligence)+"\n")
-        File.write("Strenght:"+str(Character.Strenght)+"\n")
+        File.write("Strength:"+str(Character.Strength)+"\n")
         File.write("Chance:"+str(Character.Chance)+"\n")
         File.write("Agility:"+str(Character.Agility) +"\n")
         File.write("HP:"+str(Character.HP))
@@ -103,8 +103,8 @@ class MyCharacters:
                 Character.Exp=int(SaveInfo[i][1])
             elif "intelligence"==SaveInfo[i][0].lower():
                 Character.Intelligence=int(SaveInfo[i][1])
-            elif "strenght"==SaveInfo[i][0].lower():
-                 Character.Strenght=int(SaveInfo[i][1])
+            elif "Strength"==SaveInfo[i][0].lower():
+                 Character.Strength=int(SaveInfo[i][1])
             elif "chance"==SaveInfo[i][0].lower():
                 Character.Chance=int(SaveInfo[i][1])
             elif "agility"==SaveInfo[i][0].lower():
@@ -122,12 +122,12 @@ class MyCharacters:
         HP=0
         Vitality=0
         Intelligence=0
-        Strenght=0
+        Strength=0
         Chance=0
         Agility=0
         TVitality=0
         TIntelligence=0
-        TStrenght=0
+        TStrength=0
         TChance=0
         TAgility=0
         Initiative=0
@@ -147,8 +147,8 @@ class MyCharacters:
                                         Config.LogFile.Information("Le fichier clan " + Clans[i] + " est corrompu",1)
                                 elif "intelligence"==ClansStats[i][e][0].lower():
                                     Character.TIntelligence=Character.Intelligence+int(ClansStats[i][e][1])
-                                elif "strenght"==ClansStats[i][e][0].lower():
-                                    Character.TStrenght=Character.Strenght+int(ClansStats[i][e][1])
+                                elif "Strength"==ClansStats[i][e][0].lower():
+                                    Character.TStrength=Character.Strength+int(ClansStats[i][e][1])
                                 elif "chance"==ClansStats[i][e][0].lower():
                                     Character.TChance=Character.Chance+int(ClansStats[i][e][1])
                                 elif "agility"==ClansStats[i][e][0].lower():
@@ -169,7 +169,7 @@ class MyCharacters:
             """Calcul de l'initiative"""
             C=Character
             try:
-                C.Initiative=floor((C.TIntelligence+C.TAgility+C.TChance+C.TStrenght)*(C.HP/C.TVitality))
+                C.Initiative=floor((C.TIntelligence+C.TAgility+C.TChance+C.TStrength)*(C.HP/C.TVitality))
             except ZeroDivisionError:
                 Config.LogFile.Information("Une erreur est survenu dans la calcul de l'initiative !",1)
                 exit()
@@ -183,7 +183,7 @@ class Mobs:
     HP=0
     TVitality=0
     TIntelligence=0
-    TStrenght=0
+    TStrength=0
     TChance=0
     TAgility=0
     Initiative=0
@@ -193,16 +193,16 @@ class Mobs:
         del MobsListe[:]
         """Initialise les différents sorts & vérifie si les fichiers d'information sont entier et sans erreur & récupère les infos des sorts"""
         Mobs=os.listdir("Mobs")
-         
-        for i in range (len(Mobs)):           
+
+        for i in range (len(Mobs)):
             File = open(os.path.join("Mobs", Mobs[i]), "r")
             MobsListe.append(File.readlines())
-            
+
             for e in range(len(MobsListe[i])):
                 MobsListe[i][e]=MobsListe[i][e].replace("\n","").lower().split(":")
 
             File.close()
-            
+
     def MobStats(Mob):
         for i in range (len(Mob)):
             if "hp"==Mob[i][0]:
@@ -212,8 +212,8 @@ class Mobs:
                 Mobs.Lvl=int(Mob[i][1])
             elif "intelligence"==Mob[i][0]:
                 Mobs.TIntelligence=int(Mob[i][1])
-            elif "strenght"==Mob[i][0]:
-                Mobs.TStrenght=int(Mob[i][1])
+            elif "Strength"==Mob[i][0]:
+                Mobs.TStrength=int(Mob[i][1])
             elif "chance"==Mob[i][0]:
                 Mobs.TChance=int(Mob[i][1])
             elif "agility"==Mob[i][0]:
@@ -226,12 +226,7 @@ class Mobs:
     def CalcInitiative(Mob):
             """Calcul de l'initiative"""
             C=Mob
-            C.Initiative=floor(C.TIntelligence+C.TAgility+C.TChance+C.TStrenght)
-
-    def RandomMobAttaque():
-        """Choix aléatoire de l'attaque du mobs"""
-        MobAttaqueListe=Mobs.Sort.split(",")
-        return choice(MobAttaqueListe)
+            C.Initiative=floor(C.TIntelligence+C.TAgility+C.TChance+C.TStrength)
 
 class Exp:
     def EXPNeed(Lvl):
@@ -240,7 +235,7 @@ class Exp:
 
     def CalcXP(Character,Mob,Turn):
         C=Mob
-        return int(abs(Turn*0.25*(abs(C.TIntelligence)+abs(C.TAgility)+abs(C.TChance)+abs(C.TStrenght)+100)*((Character.HP/Character.TVitality)*Mob.Lvl/Character.Lvl)))
+        return int(abs(Turn*0.25*(abs(C.TIntelligence)+abs(C.TAgility)+abs(C.TChance)+abs(C.TStrength)+100)*((Character.HP/Character.TVitality)*Mob.Lvl/Character.Lvl)))
 
     def LvlUp(Character,Mob,MobExp):
         """"Gestion de l'xp et des lvl"""
