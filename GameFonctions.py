@@ -258,7 +258,7 @@ class Exp:
 
                 if XP!=0:
 
-                    Exp.LvlUp(Character,XP)
+                    Exp.NewXP(Character,XP)
                 else:
                     print("Lvl actuel : "+str(Character.Lvl))
                     print("Prochain niveau dans : "+ str(Exp.EXPNeed(Character.Lvl)-Character.Exp) + "xp")
