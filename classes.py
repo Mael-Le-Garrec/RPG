@@ -1140,7 +1140,7 @@ def selection_personnage(fenetre):
                         GameFonctions.MyCharacters.Character1.Exp = 0
                         GameFonctions.MyCharacters.Character1.Vitality = 0
                         GameFonctions.MyCharacters.Character1.Intelligence = 0
-                        GameFonctions.MyCharacters.Character1.Strenght = 0
+                        GameFonctions.MyCharacters.Character1.Strength = 0
                         GameFonctions.MyCharacters.Character1.Chance = 0
                         GameFonctions.MyCharacters.Character1.Agility = 0
                         GameFonctions.MyCharacters.Character1.HP = int(stats_clan(clan)["vitality"])
@@ -1206,7 +1206,7 @@ def afficher_personnage(fenetre, actuel):
     
     fenetre.blit(myfont.render(str(GameFonctions.MyCharacters.Character1.Nickname), 1, (0,0,0)), (210, 210))
     fenetre.blit(myfont.render("Clan : " + str(GameFonctions.MyCharacters.Character1.ClanName), 1, (0,0,0)), (210, 210+2*20))
-    fenetre.blit(myfont.render("Force : " + str(GameFonctions.MyCharacters.Character1.Strenght), 1, (0,0,0)), (210, 210+3*20))
+    fenetre.blit(myfont.render("Force : " + str(GameFonctions.MyCharacters.Character1.Strength), 1, (0,0,0)), (210, 210+3*20))
     fenetre.blit(myfont.render("Agilité : " + str(GameFonctions.MyCharacters.Character1.Agility), 1, (0,0,0)), (210, 210+4*20))
     fenetre.blit(myfont.render("Chance : " + str(GameFonctions.MyCharacters.Character1.Chance), 1, (0,0,0)), (210, 210+5*20))
     fenetre.blit(myfont.render("Intelligence : " + str(GameFonctions.MyCharacters.Character1.Intelligence), 1, (0,0,0)), (210, 210+6*20))
@@ -1239,7 +1239,7 @@ def afficher_clan(fenetre, actuel):
     fenetre.blit(myfont.render(stats["name"], 1, (0,0,0)), (210, 210))
     # fenetre.blit(myfont.render("Description : " + stats["description"], 1, (0,0,0)), (210, 210+2*20))
     fenetre.blit(myfont.render("Description : H", 1, (0,0,0)), (210, 210+2*20))
-    fenetre.blit(myfont.render("Force : " + stats["strenght"], 1, (0,0,0)), (210, 210+3*20))
+    fenetre.blit(myfont.render("Force : " + stats["Strength"], 1, (0,0,0)), (210, 210+3*20))
     fenetre.blit(myfont.render("Agilité : " + stats["agility"], 1, (0,0,0)), (210, 210+4*20))
     fenetre.blit(myfont.render("Chance : " + stats["chance"], 1, (0,0,0)), (210, 210+5*20))
     fenetre.blit(myfont.render("Intelligence : " + stats["intelligence"], 1, (0,0,0)), (210, 210+6*20))
@@ -1270,8 +1270,8 @@ def stats_clan(clan):
             stats["vitality"] = contenu[i].split(":")[1].strip()
         if re.match("^intelligence:", contenu[i]):
             stats["intelligence"] = contenu[i].split(":")[1].strip()
-        if re.match("^strenght:", contenu[i]):
-            stats["strenght"] = contenu[i].split(":")[1].strip()
+        if re.match("^Strength:", contenu[i]):
+            stats["Strength"] = contenu[i].split(":")[1].strip()
         if re.match("^chance:", contenu[i]):
             stats["chance"] = contenu[i].split(":")[1].strip()
         if re.match("^agility:", contenu[i]):
