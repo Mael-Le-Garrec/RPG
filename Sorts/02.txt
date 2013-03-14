@@ -1,5 +1,5 @@
 name:Badaboum
 degat:25;30
-type:strenght
+type:strength
 etat:-1
 cible:1

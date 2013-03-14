@@ -1,5 +1,5 @@
 name:Heal
 degat:-30;-25
-type:strenght
+type:strength
 etat:-1
 cible:0
