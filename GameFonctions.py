@@ -159,9 +159,9 @@ class MyCharacters:
                                         Character.Sort[i]=int(Character.Sort[i])
                              break
 
-            def LvlUpStats(Character,Caracteristique,Nbr):
-                """Actualise les caractéristique après un LvlUp"""
-                Character.Caracteristique=Character.Caracterisque+Nbr
+        def LvlUpStats(Character,Caracteristique,Nbr):
+            """Actualise les caractéristique après un LvlUp"""
+            Character.Caracteristique=Character.Caracterisque+Nbr
 
 
 
@@ -188,6 +188,7 @@ class Mobs:
     TAgility=0
     Initiative=0
     Sort=""
+    Attitude=0
 
     def IniMobs():
         del MobsListe[:]
@@ -204,6 +205,7 @@ class Mobs:
             File.close()
 
     def MobStats(Mob):
+        """Charge les caractéristiques du monstre"""
         for i in range (len(Mob)):
             if "hp"==Mob[i][0]:
                 Mobs.HP=int(Mob[i][1])
@@ -222,6 +224,9 @@ class Mobs:
                 Mobs.Sort=Mob[i][1]
             elif "name"==Mob[i][0]:
                 Mobs.Name=Mob[i][1]
+            elif "attitude"==Mob[i][0]:
+                Mobs.Attitude=Mob[i][1]
+
 
     def CalcInitiative(Mob):
             """Calcul de l'initiative"""
@@ -233,32 +238,33 @@ class Exp:
         """XP en fonction du niveau du personnage"""
         return floor(((1500*Lvl)/50**(-Lvl/100)*(Lvl*30)/3)/100) #Provisoire
 
-    def CalcXP(Character,Mob,Turn):
+    def CalcXPMob(Character,Mob,Turn):
+        """Calcul l'xp que le monstre donne"""
         C=Mob
         return int(abs(Turn*0.25*(abs(C.TIntelligence)+abs(C.TAgility)+abs(C.TChance)+abs(C.TStrength)+100)*((Character.HP/Character.TVitality)*Mob.Lvl/Character.Lvl)))
 
-    def LvlUp(Character,Mob,MobExp):
+    def NewXP(Character,XP):
         """"Gestion de l'xp et des lvl"""
 
         LvlExp=Exp.EXPNeed(Character.Lvl)
         LvlExp=LvlExp-Character.Exp
 
-        if MobExp==0:
-            Config.LogFile.Information("Le monstre : \""+ Mob.Name + "\" ne donne pas d'expérience. Le fichier est peut être corrompu!",1)
-        else:
-            if MobExp>LvlExp:
+        if XP!=0:
+            if XP>LvlExp:
                 Character.Exp=Character.Exp+(Exp.EXPNeed(Character.Lvl)-Character.Exp)
-                MobExp=MobExp-LvlExp
+                XP=XP-LvlExp
                 Character.Lvl=Character.Lvl+1
                 print("Lvl UP")
 
-                if MobExp!=0:
+                if XP!=0:
 
-                    Exp.LvlUp(Character,Mob,MobExp)
+                    Exp.LvlUp(Character,XP)
                 else:
                     print("Lvl actuel : "+str(Character.Lvl))
                     print("Prochain niveau dans : "+ str(Exp.EXPNeed(Character.Lvl)-Character.Exp) + "xp")
             else:
-                Character.Exp=Character.Exp+MobExp
+                Character.Exp=Character.Exp+XP
                 print("Lvl actuel : "+str(Character.Lvl))
                 print("Prochain niveau dans : "+ str(Exp.EXPNeed(Character.Lvl)-Character.Exp) + "xp")
+        else:
+            Config.LogFile.Information("Votre joueur a gagné 0 d'expérience. Ceci est peut être erreur du jeu.",2)
