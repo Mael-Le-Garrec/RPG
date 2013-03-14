@@ -423,8 +423,8 @@ class createurMonde(tkinter.Tk):
                 self.affiches.append([int(self.bloc[i][0]), int(self.bloc[i][1]), self.bloc[i][3], int(self.bloc[i][4])])
 
     def choixTexture(self, event):
-        x = self.fond_carte.canvasx(event.x)
-        y = self.fond_carte.canvasy(event.y)
+        x = self.fond_textures.canvasx(event.x)
+        y = self.fond_textures.canvasy(event.y)
         
         try:
             # print(list(self.textures.keys())[self.fond_textures.find_overlapping(event.x, event.y, event.x, event.y)[0]-1])
