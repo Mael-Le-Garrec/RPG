@@ -120,7 +120,7 @@ class Fight:
             if Mob.HP>0:
                 MobAttaque=int(Fight.IA.Choix_attitude())
                 Degat,Cible=Fight.Attaque(GameFonctions.Mobs,MobAttaque,Sort.Cible)
-                if Sort.Cible[MobAttaque]==1:
+                if Cible==1:
                     Degat=Fight.HP(GameFonctions.MyCharacters.Character1,Degat)
                 else:
                     Degat=Fight.HP(Mob,Degat)
@@ -129,7 +129,7 @@ class Fight:
                     Etat.EtatCharacter1=[Etat.Name[Sort.Etat[MobAttaque]],Etat.Turn[Sort.Etat[MobAttaque]],Etat.Effect[Sort.Etat[MobAttaque]]]
                     print ("Player entre dans l'etat {}".format(Etat.Name[Sort.Etat[MobAttaque]]))
 
-                if Sort.Cible[MobAttaque]==1:
+                if Cible==1:
                     if Degat >= 0:
                         print ("Joueur perd {} ".format(Degat) + str(Character.HP)+"/"+str(Character.TVitality) )
                     else:
@@ -203,8 +203,8 @@ class Fight:
                                 break
 
 
-                 Degat=Fight.Attaque(Character,SortID)
-                 if Sort.Cible[SortID]==1:
+                 Degat, Cible=Fight.Attaque(Character,SortID, Sort.Cible[SortID])
+                 if Cible==1:
                     Degat=Fight.HP(Mob,Degat)
 
                  else:
@@ -213,7 +213,7 @@ class Fight:
                     Etat.EtatMob=[Etat.Name[Sort.Etat[SortID]],Etat.Turn[Sort.Etat[SortID]],Etat.Effect[Sort.Etat[SortID]]]
                     print ("Mob entre dans l'etat {}".format(Etat.Name[Sort.Etat[SortID]]))
                  print("Joueur lance {}".format(Sort.Name[int(SortID)]))
-                 if Sort.Cible[SortID]==1:
+                 if Cible==1:
                      if Degat >= 0:
                         print("Mob perd {} : ".format(Degat) + str(Mob.HP)+"/"+str(Mob.TVitality))
                      else:
@@ -255,11 +255,11 @@ class Fight:
             UsableSpell=[]
             MobSpellList=GameFonctions.Mobs.Sort.split(",")
             MobSpellList=list(map(int,MobSpellList))
-            if GameFonctions.Mobs.Choix_attitude==0: #Peureux
-                UsableSpell= IA.Attitude_Peureux(MobSpellList)
+            if GameFonctions.Mobs.Attitude==0: #Peureux
+                UsableSpell= Fight.IA.Attitude_Peureux(MobSpellList)
 
-            elif GameFonctions.Mobs.Choix_attitude==2:
-               UsableSpell=IA.Attitude_Agressif(MobSpellList)
+            elif GameFonctions.Mobs.Attitude==2:
+               UsableSpell=Fight.IA.Attitude_Agressif(MobSpellList)
 
             if UsableSpell==[]:
                 return choice (MobSpellList)
@@ -268,16 +268,24 @@ class Fight:
 
         def Attitude_Peureux(MobSpellList):
             """Choisi le sort en fonction du comportement peureux du monstre. Le monstre va principalement se soigner s'il dispose d'un sort de soin"""
-            if GameFonctions.MyCharacters.Character1.HP<=GameFonctions.MyCharacters.Character1.TVitality*0.10:
+            UsableSpell=[]
+            if GameFonctions.MyCharacters.Character1.HP>GameFonctions.MyCharacters.Character1.TVitality*0.10:
                 if randrange(1,101)<=10:
                     UsableSpell=MobSpellList
                 else:
                     for i in MobSpellList:
                         if "-" in Sort.Degat[i]:
-                            return UsableSpell.append(i)
+                            UsableSpell.append(i)
+            else:
+                    for i in MobSpellList:
+                        if "-" in Sort.Degat[i]:
+                            UsableSpell.append(i)
+
+            return UsableSpell
 
         def Attitude_Agressif(MobSpellList):
             """Choisi le sort en fonction du comportement agressif du monstre. Le monstre va principalement attaquer s'il dispose d'un d'attaque"""
+            UsableSpell=[]
             if GameFonctions.Mobs.HP<=GameFonctions.Mobs.TVitality*0.25:
                 #Le monstre avec la comportement agressif va lancer son attaque la plus fort s'il est sous la bare des 25% de vie.
                 #Plus le monstres est frappé, plus le monstre devient dangereux et agressif
@@ -293,7 +301,8 @@ class Fight:
                 #Le monstre se sent légérement en danger est choisi uniquement d'attaquer quand il est entre 25% et 75% de vie
                 for i in MobSpellList:
                     if not "-" in Sort.Degat[i]:
-                        return UsableSpell.append(i)
+                        UsableSpell.append(i)
+                return UsableSpell
             else:
                 #Le monstre n'a que 10% de chance de choisir une attaque qui soigne mais il va préférer dans 90% des cas d'attaquer.
                 if randrange(1,101)<=10:
@@ -301,7 +310,9 @@ class Fight:
                 else:
                     for i in MobSpellList:
                         if not "-" in Sort.Degat[i]:
-                            return UsableSpell.append(i)
+                             UsableSpell.append(i)
+                    return UsableSpell
+
 
 
 
@@ -332,10 +343,11 @@ class Fight:
         Min=int((Sort.Degat[int(NbrSort)].split(";")[0]))
         Max=int((Sort.Degat[int(NbrSort)].split(";")[1]))
         if Sort.Element[int(NbrSort)]!="error":
+##            print(Sort.Element[int(NbrSort)])
             if Sort.Element[int(NbrSort)]=="intelligence":
                 Element=Character.TIntelligence
             elif Sort.Element[int(NbrSort)]=="strength":
-                Element=Character.Tstrength
+                Element=Character.TStrength
             elif Sort.Element[int(NbrSort)]=="chance":
                 Element=Character.TChance
             elif Sort.Element[int(NbrSort)]=="agility":
@@ -346,14 +358,14 @@ class Fight:
             #Formule de calcul des dégats
             Degat = randrange(floor(Min * (100 + Element ) / 100),floor((Max * (100 + Element ) / 100)+1))
 
-            if randrange(1,101)<=10:
-                NewDegat = Degat + CC(Degat)
-            elif randrange(1,101)>=90:
-                NewDegat = Degat - EC(Degat)
+            if randrange(1,101)<=5:
+                NewDegat = Degat + Fight.CC(Degat)
+            elif randrange(1,101)>=95:
+                NewDegat = Degat - Fight.EC(Degat)
             else:
                 NewDegat=Degat
 
-            Cible=Change_Cible(Degat,NewDegat,Cible)
+            Cible=Fight.Change_Cible(Degat,NewDegat,Cible)
 
             return NewDegat,Cible
         else:
@@ -370,11 +382,11 @@ class Fight:
     def CC(Degat):
         """Retourne la valeur du bonus de coup critique en fonction des degats"""
         CCType=int(randrange(1,101))
-        if ECType<=10: #CC Majeur
+        if CCType<=10: #CC Majeur
             return int(Degat/100*randrange(1,6))
-        elif ECType<90 and ECType>10: #CC Moyen
+        elif CCType<90 and CCType>10: #CC Moyen
             return int(Degat/100*randrange(5,16))
-        elif ECType>=90: #CC Mineur
+        elif CCType>=90: #CC Mineur
             return int(Degat/100*randrange(15,31))
 
     def EC(Degat):
