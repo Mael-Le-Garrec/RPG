@@ -56,9 +56,16 @@ class createurMonde(tkinter.Tk):
         filemenu.add_separator()
         filemenu.add_command(label="Quitter", command=self.quit)
 
+         # Menu pour selectionner la vue
+        vuemenu = Menu(menubar, tearoff=0)
+        menubar.add_cascade(label="Vue", menu=vuemenu)
+        vuemenu.add_command(label="Cartes", command=self.vueCarte)
+        vuemenu.add_command(label="Objets", command=self.hello)
+        vuemenu.add_command(label="PNJs", command=self.vuePNJ)
+        
         optionsmenu = Menu(menubar, tearoff=0)
         menubar.add_cascade(label="Edition", menu=optionsmenu)
-        # carte
+        # Carte
         cartesmenu = Menu(menubar, tearoff=0)
         optionsmenu.add_cascade(label="Cartes", menu=cartesmenu)
         cartesmenu.add_command(label="Ouvrir", command=self.ouvrirCarte)
@@ -71,7 +78,7 @@ class createurMonde(tkinter.Tk):
         objetsmenu.add_command(label="Afficher", command=self.hello)
         objetsmenu.add_command(label="Sauvegarder", command=self.hello)
         objetsmenu.add_command(label="Reset", command=self.hello)
-            
+        # PNJ
         pnjmenu = Menu(menubar, tearoff=0)
         optionsmenu.add_cascade(label="PNJs", menu=pnjmenu)
         pnjmenu.add_command(label="Afficher", command=self.hello)
@@ -116,6 +123,7 @@ class createurMonde(tkinter.Tk):
         frame_bas = Frame(self, bd=1)
         frame_bas.place(x=10,y=630)
         
+        # CARTE
         self.fond_radio_carte = Canvas(frame_bas, bd=1, relief='solid', height=150, width=200)
         self.fond_radio_carte.grid(row=0, column=0, sticky=N+S+E+W)
         
@@ -127,9 +135,7 @@ class createurMonde(tkinter.Tk):
         self.label_tp_var = StringVar()
         self.label_aide = Label(self.fond_tp, textvariable=self.label_tp_var)
         self.label_aide.place(x=10, y=40)
-        
-        
-        
+
         
         label_carte = Label(self.fond_radio_carte, text="Placement et clic du milieu :")
         label_carte.place(x=10, y=10)
@@ -140,7 +146,39 @@ class createurMonde(tkinter.Tk):
         Radiobutton(self.fond_radio_carte, text="Texture traversable", variable=self.radio_carte, value=1).place(x=10,y=50)
         Radiobutton(self.fond_radio_carte, text="Texture non traversable", variable=self.radio_carte, value=2).place(x=10,y=70)
         Radiobutton(self.fond_radio_carte, text="Téléporteur", variable=self.radio_carte, value=3).place(x=10,y=90)
-
+        
+        
+        
+        # PNJ
+        self.fond_pnj = Canvas(frame_bas, bd=1, relief='solid', height=150, width=200)
+        self.fond_pnj.grid(row=0, column=0, sticky=N+S+E+W)
+        self.fond_pnj.grid_forget()
+        
+        label_entry = Label(self.fond_pnj, text="Nom :")
+        label_entry.place(x=10,y=10)
+        self.entry_pnj_nom = tkinter.Entry(self.fond_pnj,textvariable=None)
+        self.entry_pnj_nom.place(x=10,y=30)
+        
+        label_entry = Label(self.fond_pnj, text="Nom entier:")
+        label_entry.place(x=10,y=60)
+        self.entry_pnj_n_e = tkinter.Entry(self.fond_pnj,textvariable=None)
+        self.entry_pnj_n_e.place(x=10,y=80)
+        
+        
+        
+        self.fond_pnj_dial = Canvas(frame_bas, bd=1, relief='solid', height=150, width=200)
+        self.fond_pnj_dial.grid(row=0, column=1, sticky=N+S+E+W)
+        self.fond_pnj_dial.grid_forget()
+        
+        label_entry = Label(self.fond_pnj_dial, text="Dialogue :")
+        label_entry.place(x=10,y=10)
+        self.entry_pnj_dial = tkinter.Text(self.fond_pnj_dial, width=20, height=10)
+        self.entry_pnj_dial.place(x=10,y=30)
+        self.entry_pnj_dial.grid_propagate(False)
+        
+        # self.entry_pnj.grid(column=0,row=0,sticky='EW')
+        # self.entry_pnj.bind("<Return>", None)
+        
         
         
         # self.pb = ttk.Progressbar(self,orient ="horizontal",length = 500, mode ="determinate")
@@ -158,6 +196,7 @@ class createurMonde(tkinter.Tk):
         self.popup_carte = None
         self.coords_aide = [0,0]
         self.rectangle_aide = list()
+        self.vue_actuelle = "carte"
         
         self.liste_tp = list()
         
@@ -181,6 +220,24 @@ class createurMonde(tkinter.Tk):
         # self.entry.focus_set()
         # self.entry.selection_range(0, tkinter.END)
     
+    def vuePNJ(self):
+        # on fait tout disparaitre
+        self.effacerFrameBas()
+        self.fond_pnj.grid(row=0, column=0, sticky=N+S+E+W)
+        self.fond_pnj_dial.grid(row=0, column=1, sticky=N+S+E+W)
+        self.vue_actuelle = "pnj"
+    
+    def vueCarte(self):
+        self.effacerFrameBas()
+        self.fond_radio_carte.grid(row=0, column=0, sticky=N+S+E+W)
+        self.fond_tp.grid(row=0, column=1, sticky=N+S+E+W)
+        self.vue_actuelle = "carte"
+        
+    def effacerFrameBas(self):
+        self.fond_radio_carte.grid_forget()
+        self.fond_tp.grid_forget()
+        self.fond_pnj.grid_forget()
+        self.fond_pnj_dial.grid_forget()
     
     def afficherCarteAide(self):
         fichier = None
@@ -471,18 +528,19 @@ class createurMonde(tkinter.Tk):
         x = self.fond_carte.canvasx(event.x)
         y = self.fond_carte.canvasy(event.y)
         if x < 600 and y < 600 and self.texture_actuelle:
-            if [x//30*30, y//30*30, self.texture_actuelle, 1] not in self.affiches and [x//30*30, y//30*30, self.texture_actuelle, 0] not in self.affiches:
-                self.fond_carte.create_image(((x)//30) * 30+3,((y)//30) * 30+3, image=self.textures[self.texture_actuelle].image, anchor=NW)
-                if self.radio_carte.get() == 1: # traversable
-                    self.affiches.append([int(x//30*30), int(y//30*30), '{0}'.format(self.texture_actuelle), 0])
-                elif self.radio_carte.get() == 2: # non traversable
-                    self.affiches.append([int(x//30*30), int(y//30*30), '{0}'.format(self.texture_actuelle), 1])
-                elif self.radio_carte.get() == 3: # téléporteur
-                    self.affiches.append([int(x//30*30), int(y//30*30), '{0}'.format(self.texture_actuelle), 0, self.tp_x, self.tp_y, self.carte_aide])
-                    # liste_tp, x, y, x dest, y dest, carte
-                # print([int(x//30*30), int(y//30*30), '{0}'.format(self.texture_actuelle), 1])
-            else:
-                print("coucou")
+            if self.vue_actuelle == "carte":
+                if [x//30*30, y//30*30, self.texture_actuelle, 1] not in self.affiches and [x//30*30, y//30*30, self.texture_actuelle, 0] not in self.affiches:
+                    self.fond_carte.create_image(((x)//30) * 30+3,((y)//30) * 30+3, image=self.textures[self.texture_actuelle].image, anchor=NW)
+                    if self.radio_carte.get() == 1: # traversable
+                        self.affiches.append([int(x//30*30), int(y//30*30), '{0}'.format(self.texture_actuelle), 0])
+                    elif self.radio_carte.get() == 2: # non traversable
+                        self.affiches.append([int(x//30*30), int(y//30*30), '{0}'.format(self.texture_actuelle), 1])
+                    elif self.radio_carte.get() == 3: # téléporteur
+                        self.affiches.append([int(x//30*30), int(y//30*30), '{0}'.format(self.texture_actuelle), 0, self.tp_x, self.tp_y, self.carte_aide])
+                        # liste_tp, x, y, x dest, y dest, carte
+                    # print([int(x//30*30), int(y//30*30), '{0}'.format(self.texture_actuelle), 1])
+                else:
+                    print("coucou")
         
     def hello(self):
         # print(self.fond_textures.find_all())
@@ -535,6 +593,8 @@ class createurMonde(tkinter.Tk):
                 self.position[key] = (i * 40 , j * 40)
                 i += 1
         self.fond_textures.config(scrollregion=(0,0,0,self.fond_textures.bbox(ALL)[3]+20))
+
+
 if __name__ == "__main__":
     app = createurMonde(None)
     app.title('Créateur et Editeur du jeu')

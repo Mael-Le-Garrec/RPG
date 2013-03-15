@@ -1,6 +1,7 @@
 import pygame
 from pygame.locals import *
 import math
+import sys
 
 def crop(path, output, size_x, size_y):
     pygame.display.set_mode((1,1), pygame.NOFRAME)
@@ -18,4 +19,10 @@ def crop(path, output, size_x, size_y):
             nb+=1
         
 if __name__ == '__main__':
-    crop("maison.png", "maison", 30, 30)
+    try:
+        texture = sys.argv[1]
+        output = sys.argv[2]
+    except:
+        print("Error : No argument supplied.")
+        exit()
+    crop(texture, output, 30, 30)
