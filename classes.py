@@ -401,7 +401,7 @@ class PNJ:
         
         self.nom = reponse[1]
         self.nom_entier = reponse[2]
-        self.image = pygame.image.load(os.path.join('pnj', 'images', '{0}'.format(reponse[5]))).convert_alpha()
+        self.image = pygame.image.load(os.path.join('textures', '{0}'.format(reponse[5]))).convert_alpha()
         
         self.position = reponse[3].split(";")
         self.pos_x = int(self.position[0])
@@ -433,9 +433,9 @@ class Item:
 
     def charger_item(self):
         try:
-            self.image = pygame.image.load(os.path.join('items', 'images', '{0}.png'.format(self.nom))).convert_alpha()
+            self.image = pygame.image.load(os.path.join('textures', '{0}.png'.format(self.nom))).convert_alpha()
         except:
-            self.image = pygame.image.load(os.path.join('items', 'images', 'defaut.png')).convert_alpha()
+            self.image = pygame.image.load(os.path.join('textures', 'defaut.png')).convert_alpha()
         
         
         self.fichier = open(os.path.join('items', '{0}.txt'.format(self.nom)), "r")
@@ -681,9 +681,9 @@ class Obstacle:
         self.nom = reponse[1]
         
         try:
-            self.image = pygame.image.load(os.path.join('items', 'images', '{0}'.format(reponse[3]))).convert_alpha()
+            self.image = pygame.image.load(os.path.join('textures', '{0}'.format(reponse[3]))).convert_alpha()
         except:
-            self.image = pygame.image.load(os.path.join('items', 'images', 'arbre.png')).convert_alpha()
+            self.image = pygame.image.load(os.path.join('textures', 'arbre.png')).convert_alpha()
         
         self.position = reponse[4].split(";")
         self.pos_x = int(self.position[0])
