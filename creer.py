@@ -6,6 +6,7 @@ import tkinter.ttk
 from tkinter import *
 from tkinter_png import *
 import os
+import sqlite3
 from collections import OrderedDict
 from tkinter import filedialog
 import re
@@ -81,8 +82,8 @@ class createurMonde(tkinter.Tk):
         # PNJ
         pnjmenu = Menu(menubar, tearoff=0)
         optionsmenu.add_cascade(label="PNJs", menu=pnjmenu)
-        pnjmenu.add_command(label="Afficher", command=self.hello)
-        pnjmenu.add_command(label="Sauvegarder", command=self.hello)
+        pnjmenu.add_command(label="Ouvrir", command=self.ouvrirPNJ)
+        pnjmenu.add_command(label="Sauvegarder", command=self.sauvegarderPNJ)
         pnjmenu.add_command(label="Reset", command=self.hello)
         
         optionsmenu.add_separator()
@@ -150,18 +151,24 @@ class createurMonde(tkinter.Tk):
         
         
         # PNJ
+        
+        self.entry_nom_pnj = StringVar()
+        self.entry_nom_entier = StringVar()
+        self.entry_dialogue = StringVar()
+        
+        
         self.fond_pnj = Canvas(frame_bas, bd=1, relief='solid', height=150, width=200)
         self.fond_pnj.grid(row=0, column=0, sticky=N+S+E+W)
         self.fond_pnj.grid_forget()
         
         label_entry = Label(self.fond_pnj, text="Nom :")
         label_entry.place(x=10,y=10)
-        self.entry_pnj_nom = tkinter.Entry(self.fond_pnj,textvariable=None)
+        self.entry_pnj_nom = tkinter.Entry(self.fond_pnj,textvariable=self.entry_nom_pnj)
         self.entry_pnj_nom.place(x=10,y=30)
         
         label_entry = Label(self.fond_pnj, text="Nom entier:")
         label_entry.place(x=10,y=60)
-        self.entry_pnj_n_e = tkinter.Entry(self.fond_pnj,textvariable=None)
+        self.entry_pnj_n_e = tkinter.Entry(self.fond_pnj,textvariable=self.entry_nom_entier)
         self.entry_pnj_n_e.place(x=10,y=80)
         
         
@@ -172,9 +179,10 @@ class createurMonde(tkinter.Tk):
         
         label_entry = Label(self.fond_pnj_dial, text="Dialogue :")
         label_entry.place(x=10,y=10)
-        self.entry_pnj_dial = tkinter.Text(self.fond_pnj_dial, width=20, height=10)
+        self.entry_pnj_dial = tkinter.Text(self.fond_pnj_dial, width=20, height=5)
+        # self.entry_pnj_dial = tkinter.Entry(self.fond_pnj_dial, width=20, textvariable=self.entry_dialogue)        
+    
         self.entry_pnj_dial.place(x=10,y=30)
-        self.entry_pnj_dial.grid_propagate(False)
         
         # self.entry_pnj.grid(column=0,row=0,sticky='EW')
         # self.entry_pnj.bind("<Return>", None)
@@ -200,6 +208,8 @@ class createurMonde(tkinter.Tk):
         
         self.liste_tp = list()
         
+        self.pnjs_affiches = list()
+        
         self.tp_x = 0
         self.tp_y = 0
         self.carte_aide = 0
@@ -219,6 +229,48 @@ class createurMonde(tkinter.Tk):
         # self.labelVariable.set( self.entryVariable.get()+" (You pressed ENTER)" )
         # self.entry.focus_set()
         # self.entry.selection_range(0, tkinter.END)
+    
+    def ouvrirPNJ(self):
+        # self.carte_actuelle 
+        conn = sqlite3.connect(os.path.join('pnj','PNJs.db'))
+        c = conn.cursor()
+        c.execute("SELECT * FROM pnj WHERE carte = ?", (self.carte_actuelle,))
+        reponse = c.fetchall()
+        conn.close()
+        print(reponse)
+        
+        for i in range(len(reponse)):
+            x = int(reponse[i][3].split(";")[0])
+            y = int(reponse[i][3].split(";")[1])
+
+            texture = reponse[i][5].replace(".png", "")
+            nom = reponse[i][1]
+            nom_entier = reponse[i][2]
+            carte = reponse[i][4]
+            dialogue = reponse[i][6]
+            
+            self.fond_carte.create_image(x+3,y+3, image=self.textures[texture].image, anchor=NW)
+            self.pnjs_affiches.append([x, y, texture, nom, nom_entier, dialogue])
+        
+    
+    def sauvegarderPNJ(self):
+        conn = sqlite3.connect(os.path.join('pnj','PNJs.db'))
+        c = conn.cursor()
+        
+        carte = int(input("Entrez le numéro de carte : "))
+        #x, y, image + png, nom, nom_entier, dialogue
+        for val in self.pnjs_affiches:
+            position = "{0};{1}".format(val[0], val[1])
+            image = "{0}.png".format(val[2])
+            nom = val[3]
+            nom_entier = val[4]
+            dialogue = val[5]
+
+            c.execute("INSERT INTO pnj(nom, nom_entier, position, carte, image, dialogue) VALUES (?, ?, ?, ?, ?, ?)", (nom, nom_entier, position, carte, image, dialogue,))            
+            print("Sauvegardé !")
+        
+        conn.commit()
+        conn.close()
     
     def vuePNJ(self):
         # on fait tout disparaitre
@@ -245,11 +297,11 @@ class createurMonde(tkinter.Tk):
         if path:
             fichier = open(path)
         
-        path = path.split('\\')
-        for i in range(len(path)):
-            path[i] = path[i].split('/')
+        path = path.split('/')
+        # for i in range(len(path)):
+            # path[i] = path[i].split('/')
             
-        self.carte_aide = path[0][-1]
+        self.carte_aide = path[-1]
         
         if self.popup_carte:
             self.popup_carte.destroy()
@@ -352,15 +404,15 @@ class createurMonde(tkinter.Tk):
     def resetCarte(self):
         self.fond_carte.delete("all")
         self.affiches = list()
-        print(self.affiches)
+        self.carte_actuelle = None
         
     def sauvegarderCarte(self):
-        nom = input("Entrez un nom de map : ")
+        nom = input("Entrez un nom de map : ").strip()
                 
-        haut = input("Entrez le numéro de la map adjacente en haut de celle crée : ")
-        bas = input("Entrez le numéro de la map adjacente en bas de celle crée : ")
-        droite = input("Entrez le numéro de la map adjacente en droite de celle crée : ")
-        gauche = input("Entrez le numéro de la map adjacente en gauche de celle crée : ")
+        haut = input("Entrez le numéro de la map adjacente en haut de celle crée : ").strip()
+        bas = input("Entrez le numéro de la map adjacente en bas de celle crée : ").strip()
+        droite = input("Entrez le numéro de la map adjacente en droite de celle crée : ").strip()
+        gauche = input("Entrez le numéro de la map adjacente en gauche de celle crée : ").strip()
 
         fichier = open(os.path.join("map","{0}".format(nom)), "w+")
 
@@ -385,6 +437,9 @@ class createurMonde(tkinter.Tk):
         if fichier:
             self.fichier_carte = fichier
             self.chargerCarte()
+            
+            path = self.fichier_carte.name.split('/')
+            self.carte_actuelle = path[-1]
 
     def chargerCarte(self):
         self.coords = list()
@@ -541,7 +596,24 @@ class createurMonde(tkinter.Tk):
                     # print([int(x//30*30), int(y//30*30), '{0}'.format(self.texture_actuelle), 1])
                 else:
                     print("coucou")
-        
+            
+                       
+            elif self.vue_actuelle == "pnj":
+                existe = 0 
+                for val in self.pnjs_affiches:
+                    if [x//30*30, y//30*30, val[2], val[3], val[4], val[5]] == val:
+                        existe = 1
+                if not existe:
+                    if self.entry_nom_pnj.get() and self.entry_nom_entier.get() and self.entry_pnj_dial.get('1.0', 'end'):
+                        print("placement pnj")
+                        self.fond_carte.create_image(((x)//30) * 30+3,((y)//30) * 30+3, image=self.textures[self.texture_actuelle].image, anchor=NW)
+                        self.pnjs_affiches.append([int(x//30*30), int(y//30*30), self.texture_actuelle, self.entry_nom_pnj.get(), self.entry_nom_entier.get(), self.entry_pnj_dial.get('1.0', 'end').strip()])
+                        #x, y, image, nom, nom_entier, dialogue
+                    else:
+                        print("renseigner nom, nom entier et dialogue")
+                else:
+                    print("déjà placé !")
+           
     def hello(self):
         # print(self.fond_textures.find_all())
         # print(self.textures.keys())
