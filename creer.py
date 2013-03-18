@@ -264,6 +264,7 @@ class createurMonde(tkinter.Tk):
         self.rectangle_aide = list()
         self.vue_actuelle = "carte"        
         self.liste_tp = list()
+        self.fond_save = None
         
         self.pnjs_affiches = list()
         
@@ -728,35 +729,28 @@ class createurMonde(tkinter.Tk):
             # print(self.textures_fichier)
         x = self.fond_carte.canvasx(event.x)
         y = self.fond_carte.canvasy(event.y)
-
-        nb = 0
-        for i in range(len(self.affiches)):
-            # print(self.affiches[i][0], x)
-            # print(self.affiches[i][1], y)
-            if self.affiches[i][0] == int(x//30*30) and self.affiches[i][1] == int(y//30*30):
-                nb +=1
         
-        for i in range(nb):
-            try:
-                self.fond_carte.delete(self.fond_carte.find_overlapping(x+3, y+3, x+3, y+3)[0])
-                self.fond_carte.create_image((x)//30*30+3, (y)//30*30+3, image=self.textures[self.fond_save].image, anchor=NW)
-            except:
-                continue
-            valeurs = list()
-            # print(self.affiches)
-            # print([int((x)//30*30), int((y)//30*30), val[2], val[3]])
-            for val in self.affiches:
-                if len(val) == 4:
-                    if val == [int((x)//30*30), int((y)//30*30), val[2], val[3]]:
-                        # self.affiches.remove((int(x//30*30), int(y//30*30), val[2]))
-                        valeurs.append([val[0], val[1], val[2], val[3]])
-                elif len(val) == 7:
-                    if val == [int((x)//30*30), int((y)//30*30), val[2], val[3], val[4], val[5], val[6]]:
-                        # self.affiches.remove((int(x//30*30), int(y//30*30), val[2]))
-                        valeurs.append([int((x)//30*30), int((y)//30*30), val[2], val[3], val[4], val[5], val[6]])
-            # print(valeurs)
-            for val in valeurs:
-                self.affiches.remove(val)
+        for i in range(len(self.fond_carte.find_overlapping(x+3, y+3, x+3, y+3))):
+            self.fond_carte.delete(self.fond_carte.find_overlapping(x+3, y+3, x+3, y+3)[-1])     
+                
+        if self.fond_save:
+            self.fond_carte.create_image((x)//30*30+3, (y)//30*30+3, image=self.textures[self.fond_save].image, anchor=NW)
+        
+        valeurs = list()
+        # print(self.affiches)
+        # print([int((x)//30*30), int((y)//30*30), val[2], val[3]])
+        for val in self.affiches:
+            if len(val) == 4:
+                if val == [int((x)//30*30), int((y)//30*30), val[2], val[3]]:
+                    # self.affiches.remove((int(x//30*30), int(y//30*30), val[2]))
+                    valeurs.append([val[0], val[1], val[2], val[3]])
+            elif len(val) == 7:
+                if val == [int((x)//30*30), int((y)//30*30), val[2], val[3], val[4], val[5], val[6]]:
+                    # self.affiches.remove((int(x//30*30), int(y//30*30), val[2]))
+                    valeurs.append([int((x)//30*30), int((y)//30*30), val[2], val[3], val[4], val[5], val[6]])
+        # print(valeurs)
+        for val in valeurs:
+            self.affiches.remove(val)
 
     def dessinerTexture(self, event):
         x = self.fond_carte.canvasx(event.x)
@@ -797,7 +791,7 @@ class createurMonde(tkinter.Tk):
         # print(self.fond_textures.find_all())
         # print(self.textures.keys())
         # print(self.fichier_carte)
-        print(self.affiches)
+        print(len(self.affiches))
 
     def chargerTextures(self):
         if self.textures is None:
