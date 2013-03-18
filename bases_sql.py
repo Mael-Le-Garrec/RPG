@@ -108,7 +108,7 @@ c.execute("INSERT INTO dialogues(personnage, quete, avancement, dialogue) VALUES
 
 ########################## Quetes
 c.execute("DROP TABLE IF EXISTS quetes")
-c.execute('CREATE TABLE quetes (id integer primary key, nom text)') 
+c.execute('CREATE TABLE quetes (id integer primary key, nom text)')
 
 nom = "Aider le monsieur"
 c.execute("INSERT INTO quetes(nom) VALUES (?)", (nom,))
@@ -120,11 +120,11 @@ nom = "Ramener des fleurs"
 c.execute("INSERT INTO quetes(nom) VALUES (?)", (nom,))
 
 nom = "Trouver des noix de coco"
-c.execute("INSERT INTO quetes(nom) VALUES (?)", (nom,)) 
+c.execute("INSERT INTO quetes(nom) VALUES (?)", (nom,))
 
 
 nom = "jardiland"
-c.execute("INSERT INTO quetes(nom) VALUES (?)", (nom,)) 
+c.execute("INSERT INTO quetes(nom) VALUES (?)", (nom,))
 #########################
 
 
@@ -215,7 +215,74 @@ c.execute('CREATE TABLE obstacles (id integer primary key, nom text, quete integ
 # c.execute("INSERT INTO obstacles (nom, quete, image, position, carte) VALUES (?,?,?,?,?)", ("Arbre couché", "5", "arbre.png", "420;360", "0"))
 c.execute("INSERT INTO obstacles (nom, quete, image, position, carte) VALUES (?,?,?,?,?)", ("tronc couché", "5", "tronc.png", "510;270", "1"))
 
-######################################################################################################################################################################################### 
+conn.commit()
+conn.close()
+#########################################################################################################################################################################################
+
+
+######################################################################################################################################################################################### OBSTACLES
+
+conn = sqlite3.connect(os.path.join('MyCharacters','Characters.db'))
+c = conn.cursor()
+
+######################### Quetes en cours
+c.execute("DROP TABLE IF EXISTS caracteristiques")
+c.execute('CREATE TABLE caracteristiques (id integer primary key, nickname text, clanname text, lvl int, exp int, hp int, vitality int, intelligence int, strength int, chance int, agility int, sort_1 int, sort_2 int)')
 
 conn.commit()
 conn.close()
+#########################################################################################################################################################################################
+
+######################################################################################################################################################################################### OBSTACLES
+
+conn = sqlite3.connect(os.path.join('Mobs','Mobs.db'))
+c = conn.cursor()
+
+######################### Quetes en cours
+c.execute("DROP TABLE IF EXISTS caracteristiques")
+c.execute('CREATE TABLE caracteristiques (id integer primary key, name text, lvl int, hp int, intelligence int, strength int, chance int, agility int, sort_1 int, sort_2 int, sort_3 int, sort_4 int, attitude int)')
+
+conn.commit()
+conn.close()
+#########################################################################################################################################################################################
+
+######################################################################################################################################################################################### OBSTACLES
+
+conn = sqlite3.connect(os.path.join('Sorts','Sorts.db'))
+c = conn.cursor()
+
+######################### Quetes en cours
+c.execute("DROP TABLE IF EXISTS caracteristiques")
+c.execute('CREATE TABLE caracteristiques (id integer primary key, name text, degat_mini int, degat_maxi int,element text, etat int, cible int)')
+
+conn.commit()
+conn.close()
+#########################################################################################################################################################################################
+
+######################################################################################################################################################################################### OBSTACLES
+
+conn = sqlite3.connect(os.path.join('Clans','Clans.db'))
+c = conn.cursor()
+
+######################### Quetes en cours
+c.execute("DROP TABLE IF EXISTS caracteristiques")
+c.execute('CREATE TABLE caracteristiques (id integer primary key, name text, description text, vitality int, intelligence int, strength int, chance int, agility int, sort_1 int, sort_2 int)')
+c.execute("INSERT INTO caracteristiques (name, description, vitality, intelligence, strength,chance,agility,sort_1,sort_2) VALUES (?,?,?,?,?,?,?,?,?)", ("Nephylis", "Test", 100, 100,100,100,100,0,1 ))
+
+conn.commit()
+conn.close()
+#########################################################################################################################################################################################
+
+######################################################################################################################################################################################### OBSTACLES
+
+conn = sqlite3.connect(os.path.join('Etat','Etats.db'))
+c = conn.cursor()
+
+######################### Quetes en cours
+c.execute("DROP TABLE IF EXISTS caracteristiques")
+c.execute('CREATE TABLE caracteristiques (id integer primary key, name text, effect text, turn int)')
+##c.execute("INSERT INTO caracteristiques (name, effect, turn) VALUES (?,?,?)", ("Nephylis", "Test", 100, 100,100,100,100,0,1 ))
+
+conn.commit()
+conn.close()
+#########################################################################################################################################################################################
