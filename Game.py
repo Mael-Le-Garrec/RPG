@@ -14,21 +14,15 @@ import FightFonctions
 from random import choice
 
 GameFonctions.ClansInfo.Ini_Clans()
-GameFonctions.ClansInfo.OpenClansStats()
 GameFonctions.MyCharacters.Character1.Nickname=input("Entrer votre pseudo :")
-if GameFonctions.MyCharacters.SaveExist(GameFonctions.MyCharacters.Character1.Nickname)==True:
-    GameFonctions.MyCharacters.ReadSave(GameFonctions.MyCharacters.Character1.Nickname,GameFonctions.MyCharacters.Character1)
-else:
-    GameFonctions.MyCharacters.Character1.ClanName=input("Entrer votre clan :")
-    GameFonctions.MyCharacters.CreateSave(GameFonctions.MyCharacters.Character1)
+
+GameFonctions.MyCharacters.Character1.ClanName=input("Entrer votre clan :")
 
 GameFonctions.MyCharacters.CreateSave(GameFonctions.MyCharacters.Character1)
 
 FightFonctions.Fight.StartFightMob(GameFonctions.MyCharacters.Character1)
 
-GameFonctions.MyCharacters.CreateSave(GameFonctions.MyCharacters.Character1)
-
-
+GameFonctions.MyCharacters.UpdateSave(GameFonctions.MyCharacters.Character1)
 
 
 
