@@ -23,6 +23,7 @@ class Carte:
         self.collisions = []
         self.bloc = []
         self.tp = []
+        self.fond = None
     
     def charger_carte(self):
         '''On charge une carte en fonction du nom donné (0, 1, etc)'''
@@ -76,8 +77,11 @@ class Carte:
                 self.coords[-1][0] = self.coords[-1][0].split(":") # On split le : du premier point (x:y)
                 self.coords[-1][1] = self.coords[-1][1].split(":") # Puis du second
                 self.coords[-1][4] = self.coords[-1][4].split(":") # Ajout des coordonnées de téléportation
-                
-                
+             
+            elif re.match("^fond:[a-zA-Z0-9_\-]", self.lignes[i]):
+                # print(self.lignes[i].split(":")[1].strip())
+                self.fond = pygame.image.load(os.path.join("textures", self.lignes[i].split(":")[1].strip()+".png"))
+            
         # On ajoute pour chaque clé ayant le nom de de la texture son image chargée
         # Du genre : {'pot_de_fleur' : 'objet'}
         
@@ -121,6 +125,11 @@ class Carte:
         # On réaffiche le fond
         # fenetre.blit(self.fond, (0, 0))
         fenetre.fill((240, 240, 240))
+        
+        if self.fond:
+            for i in range(20):
+                for j in range(20):
+                    fenetre.blit(self.fond, (i*30, j*30))
         
         # Puis chaque bloc un par un, contenus dans la liste des blocs
         for i in range(len(self.bloc)):
