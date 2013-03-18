@@ -11,7 +11,6 @@ from collections import OrderedDict
 from tkinter import filedialog
 import re
 
-
 class createurMonde(tkinter.Tk):
     def __init__(self,parent):
         tkinter.Tk.__init__(self,parent)
@@ -44,6 +43,7 @@ class createurMonde(tkinter.Tk):
  
         self.actif = "carte"
         self.texture_actuelle = None
+        self.carte_actuelle = None
         self.affiches = list()
         
         ####### MENU
@@ -52,8 +52,8 @@ class createurMonde(tkinter.Tk):
 
         filemenu = Menu(menubar, tearoff=0)
         menubar.add_cascade(label="Fichier", menu=filemenu)
-        filemenu.add_command(label="Ouvrir", command=self.hello)
-        filemenu.add_command(label="Sauvegarder", command=self.hello)
+        filemenu.add_command(label="Ouvrir", command=self.ouvrirTout)
+        filemenu.add_command(label="Sauvegarder", command=self.sauvegarderTout)
         filemenu.add_separator()
         filemenu.add_command(label="Quitter", command=self.quit)
 
@@ -125,19 +125,11 @@ class createurMonde(tkinter.Tk):
         frame_bas.place(x=10,y=630)
         
         # CARTE
+        
+        # Selection de texture traversable ou non + téléporteur
         self.fond_radio_carte = Canvas(frame_bas, bd=1, relief='solid', height=150, width=200)
         self.fond_radio_carte.grid(row=0, column=0, sticky=N+S+E+W)
-        
-        self.fond_tp = Canvas(frame_bas, bd=1, relief='solid', height=150, width=200)
-        self.fond_tp.grid(row=0, column=1, sticky=N+S+E+W)
-        label_tp = Label(self.fond_tp, text="Téléportation vers :")
-        label_tp.place(x=10, y=10)
-        
-        self.label_tp_var = StringVar()
-        self.label_aide = Label(self.fond_tp, textvariable=self.label_tp_var)
-        self.label_aide.place(x=10, y=40)
 
-        
         label_carte = Label(self.fond_radio_carte, text="Placement et clic du milieu :")
         label_carte.place(x=10, y=10)
         
@@ -148,6 +140,72 @@ class createurMonde(tkinter.Tk):
         Radiobutton(self.fond_radio_carte, text="Texture non traversable", variable=self.radio_carte, value=2).place(x=10,y=70)
         Radiobutton(self.fond_radio_carte, text="Téléporteur", variable=self.radio_carte, value=3).place(x=10,y=90)
         
+        
+        # Affichage des coordonnées de téléportation
+        self.fond_tp = Canvas(frame_bas, bd=1, relief='solid', height=150, width=200)
+        self.fond_tp.grid(row=0, column=1, sticky=N+S+E+W)
+        label_tp = Label(self.fond_tp, text="Téléportation vers :")
+        label_tp.place(x=10, y=10)
+        
+        self.label_tp_var = StringVar()
+        self.label_aide = Label(self.fond_tp, textvariable=self.label_tp_var)
+        self.label_aide.place(x=10, y=40)     
+
+        # Affichage du numéro de la carte en cours d'édition
+        label = Label(self.fond_tp, text="Numéro de la carte actuelle :")
+        label.place(x=10, y=80)
+        
+        self.carte_var = IntVar()        
+        self.label_carte_nb = Label(self.fond_tp, textvariable=self.carte_var)
+        self.carte_var.set("Aucune")
+        self.label_carte_nb.place(x=100, y=120, anchor=CENTER)
+        
+        
+        # Affichage et sélection du fond de la carte
+        self.fond_fond_carte = Canvas(frame_bas, bd=1, relief='solid', height=150, width=200)
+        self.fond_fond_carte.grid(row=0, column=2, sticky=N+S+E+W)
+        label_fond = Label(self.fond_fond_carte, text="Fond de la carte : ")
+        label_fond.place(x=10, y=10)
+        self.fond_fond_carte.bind("<Button-1>", self.choisirFond)
+        self.fond_fond_carte.bind("<Button-3>", self.effacerFond)
+        
+        
+        # Directions de la carte
+        self.direction_haut = StringVar() 
+        self.direction_bas = StringVar() 
+        self.direction_droite = StringVar() 
+        self.direction_gauche = StringVar()
+        
+        self.direction_haut.set("0")
+        self.direction_bas.set("0")
+        self.direction_droite.set("0")
+        self.direction_gauche.set("0")
+        
+        self.fond_directions = Canvas(frame_bas, bd=1, relief='solid', height=150, width=200)
+        self.fond_directions.grid(row=0, column=3, sticky=N+S+E+W)
+        
+        label = Label(self.fond_directions, text="Directions :")
+        label.place(x=10, y=10)
+        
+        label = Label(self.fond_directions, text="Haut :")
+        label.place(x=10, y=50)
+        entry_haut = tkinter.Entry(self.fond_directions,textvariable=self.direction_haut,width=10)
+        entry_haut.place(x=80,y=50)
+        
+        label = Label(self.fond_directions, text="Bas :")
+        label.place(x=10, y=70)
+        entry_bas = tkinter.Entry(self.fond_directions,textvariable=self.direction_bas,width=10)
+        entry_bas.place(x=80,y=70)
+        
+        label = Label(self.fond_directions, text="Droite :")
+        label.place(x=10, y=90)
+        entry_droite = tkinter.Entry(self.fond_directions,textvariable=self.direction_droite,width=10)
+        entry_droite.place(x=80,y=90)
+        
+        label = Label(self.fond_directions, text="Gauche :")
+        label.place(x=10, y=110)
+        entry_gauche = tkinter.Entry(self.fond_directions,textvariable=self.direction_gauche,width=10)
+        entry_gauche.place(x=80,y=110)
         
         
         # PNJ
@@ -192,7 +250,7 @@ class createurMonde(tkinter.Tk):
         # self.pb = ttk.Progressbar(self,orient ="horizontal",length = 500, mode ="determinate")
         # self.pb.pack()
 
-        # self.chargerTextures()
+        self.chargerTextures()
         
         # tkinter.Button(self, text = "Browse", command = self.ouvrirCarte, width = 10).pack()
 
@@ -204,8 +262,7 @@ class createurMonde(tkinter.Tk):
         self.popup_carte = None
         self.coords_aide = [0,0]
         self.rectangle_aide = list()
-        self.vue_actuelle = "carte"
-        
+        self.vue_actuelle = "carte"        
         self.liste_tp = list()
         
         self.pnjs_affiches = list()
@@ -213,7 +270,7 @@ class createurMonde(tkinter.Tk):
         self.tp_x = 0
         self.tp_y = 0
         self.carte_aide = 0
-        self.label_tp_var.set("{0};{1} sur carte {2}".format(self.tp_x , self.tp_y, self.carte_aide))
+        self.label_tp_var.set("{0};{1} sur carte {2}".format(self.tp_x, self.tp_y, self.carte_aide))
         # self.update()
         # self.geometry(self.geometry())
         
@@ -229,6 +286,89 @@ class createurMonde(tkinter.Tk):
         # self.labelVariable.set( self.entryVariable.get()+" (You pressed ENTER)" )
         # self.entry.focus_set()
         # self.entry.selection_range(0, tkinter.END)
+        
+        
+    def sauvegarderTout(self):
+        nom = filedialog.asksaveasfilename(title="Sauvegarder la carte", initialdir="map", initialfile=self.carte_actuelle).split("/")[-1]
+        print(nom)
+        
+    def effacerFond(self, event):
+        self.fond_fond_carte.delete("all")
+        self.fond_carte.delete("all")
+        self.fond_save = None
+        
+        # si l'on change de fond, on supprime de la liste des textures affichées l'ancien
+        try:
+            for j in self.liste_fond:
+                for i in self.affiches:
+                    if j == i:
+                        self.affiches.remove(i)
+        except:
+            pass
+            
+        # suppression des textures à afficher
+        ancien = list(self.affiches)        
+        del self.affiches[:]
+        
+        # création/suppression de la liste des textures du fond
+        self.liste_fond = list()
+        del self.liste_fond[:]
+        
+        # replacement des textures d'avant
+        # rajout des textures dans la liste de celles à afficher
+        for i in range(len(ancien)):
+            x = ancien[i][0]+3
+            y = ancien[i][1]+3
+            image = self.textures[ancien[i][2]].image
+            self.fond_carte.create_image(x, y, image=image, anchor=NW)
+            self.affiches.append(ancien[i])
+            
+    def choisirFond(self, event=None):    
+        if self.texture_actuelle:
+            self.fond_fond_carte.delete("all")
+            self.fond_fond_carte.create_image(200//2-15,60, image=self.textures[self.texture_actuelle].image, anchor=NW)
+            self.fond_carte.delete("all")
+            
+            # si l'on change de fond, on supprime de la liste des textures affichées l'ancien
+            try:
+                for j in self.liste_fond:
+                    for i in self.affiches:
+                        if j == i:
+                            self.affiches.remove(i)
+            except:
+                pass
+            
+            # suppression des textures à afficher
+            ancien = list(self.affiches)        
+            del self.affiches[:]
+            
+            self.fond_save = self.texture_actuelle
+            
+            # creation du fond
+            for i in range(20):
+                for j in range(20):
+                    self.fond_carte.create_image(i*30+3,j*30+3, image=self.textures[self.texture_actuelle].image, anchor=NW)
+
+            # replacement des textures d'avant
+            for i in range(len(ancien)):
+                x = ancien[i][0]+3
+                y = ancien[i][1]+3
+                image = self.textures[ancien[i][2]].image
+                self.fond_carte.create_image(x, y, image=image, anchor=NW)
+                
+            # ajout du fond dans la liste des textures à afficher
+            # for i in range(len(self.liste_fond)):
+                # self.affiches.append(self.liste_fond[i])
+            
+            # rajout des textures dans la liste de celles à afficher
+            for i in range(len(ancien)):
+                self.affiches.append(ancien[i])
+        
+    def ouvrirTout(self):
+        self.ouvrirCarte()
+        
+        del self.pnjs_affiches[:]
+        self.ouvrirPNJ()
     
     def ouvrirPNJ(self):
         # self.carte_actuelle 
@@ -252,12 +392,13 @@ class createurMonde(tkinter.Tk):
             self.fond_carte.create_image(x+3,y+3, image=self.textures[texture].image, anchor=NW)
             self.pnjs_affiches.append([x, y, texture, nom, nom_entier, dialogue])
         
-    
     def sauvegarderPNJ(self):
         conn = sqlite3.connect(os.path.join('pnj','PNJs.db'))
         c = conn.cursor()
         
         carte = int(input("Entrez le numéro de carte : "))
+        c.execute("DELETE FROM pnj where carte=?", (carte,))       
+        
         #x, y, image + png, nom, nom_entier, dialogue
         for val in self.pnjs_affiches:
             position = "{0};{1}".format(val[0], val[1])
@@ -283,6 +424,8 @@ class createurMonde(tkinter.Tk):
         self.effacerFrameBas()
         self.fond_radio_carte.grid(row=0, column=0, sticky=N+S+E+W)
         self.fond_tp.grid(row=0, column=1, sticky=N+S+E+W)
+        self.fond_fond_carte.grid(row=0, column=2, sticky=N+S+E+W)
+        self.fond_directions.grid(row=0, column=3, sticky=N+S+E+W)
         self.vue_actuelle = "carte"
         
     def effacerFrameBas(self):
@@ -290,6 +433,8 @@ class createurMonde(tkinter.Tk):
         self.fond_tp.grid_forget()
         self.fond_pnj.grid_forget()
         self.fond_pnj_dial.grid_forget()
+        self.fond_directions.grid_forget()
+        self.fond_fond_carte.grid_forget()
     
     def afficherCarteAide(self):
         fichier = None
@@ -405,21 +550,35 @@ class createurMonde(tkinter.Tk):
         self.fond_carte.delete("all")
         self.affiches = list()
         self.carte_actuelle = None
+        self.carte_var.set("Aucune")
+        del self.liste_fond [:]
         
     def sauvegarderCarte(self):
-        nom = input("Entrez un nom de map : ").strip()
+        haut = self.direction_haut.get()
+        bas = self.direction_bas.get()
+        droite = self.direction_droite.get()
+        gauche = self.direction_gauche.get()
+    
+        # nom = input("Entrez un nom de map : ").strip()
                 
-        haut = input("Entrez le numéro de la map adjacente en haut de celle crée : ").strip()
-        bas = input("Entrez le numéro de la map adjacente en bas de celle crée : ").strip()
-        droite = input("Entrez le numéro de la map adjacente en droite de celle crée : ").strip()
-        gauche = input("Entrez le numéro de la map adjacente en gauche de celle crée : ").strip()
+        # haut = input("Entrez le numéro de la map adjacente en haut de celle crée : ").strip()
+        # bas = input("Entrez le numéro de la map adjacente en bas de celle crée : ").strip()
+        # droite = input("Entrez le numéro de la map adjacente en droite de celle crée : ").strip()
+        # gauche = input("Entrez le numéro de la map adjacente en gauche de celle crée : ").strip()
 
+        nom = filedialog.asksaveasfilename(title="Sauvegarder la carte", initialdir="map", initialfile=self.carte_actuelle).split("/")[-1]
+        
         fichier = open(os.path.join("map","{0}".format(nom)), "w+")
 
         fichier.write("haut:{0}\n".format(haut))
         fichier.write("bas:{0}\n".format(bas))
         fichier.write("droite:{0}\n".format(droite))
         fichier.write("gauche:{0}\n\n".format(gauche))
+        
+        try:
+            fichier.write("fond:" + self.fond_save + "\n")
+        except:
+            pass
 
         
         for val in self.affiches:
@@ -432,19 +591,21 @@ class createurMonde(tkinter.Tk):
         fichier.close()
         print("Sauvegardé !")
         
-    def ouvrirCarte(self): 
+    def ouvrirCarte(self):
         fichier = filedialog.askopenfilename(filetypes = (("Tous les fichiers", "*"), ("Fichiers de carte", "*.map")), initialdir="map")
         if fichier:
             self.fichier_carte = fichier
             self.chargerCarte()
             
             path = self.fichier_carte.name.split('/')
-            self.carte_actuelle = path[-1]
+            self.carte_actuelle = path[-1] 
+            self.carte_var.set(path[-1])
 
     def chargerCarte(self):
         self.coords = list()
         self.liste_tp = list()
         self.bloc = list()
+        self.directions = {}
         
         del self.affiches[:]
         del self.liste_tp[:]
@@ -457,6 +618,11 @@ class createurMonde(tkinter.Tk):
         self.fichier_carte.close()
         
         self.fond_carte.delete('all')
+
+        # haut : 2
+        for i in range(4):
+            self.directions[self.lignes[i].rstrip().split(":")[0]] = self.lignes[i].rstrip().split(":")[1]
+        
         # self.fond_carte.destroy()
         # self.fond_carte = Canvas(self, bg='white', bd=1, width=600, height=600, relief='solid')
         # self.fond_carte.place(x=10,y=10)
@@ -500,6 +666,10 @@ class createurMonde(tkinter.Tk):
                 self.coords[-1][1] = self.coords[-1][1].split(":") # Puis du second
                 self.coords[-1][4] = self.coords[-1][4].split(":") # Ajout des coordonnées de téléportation
                 
+            elif re.match("^fond:[a-zA-Z0-9_\-]", self.lignes[i]):
+                # print(self.lignes[i].split(":")[1].strip())
+                fond_carte_chargee = self.lignes[i].split(":")[1].strip()
+                
         # Du genre : {'pot_de_fleur' : 'objet'}
         
         for i in range(len(self.coords)):   
@@ -533,7 +703,15 @@ class createurMonde(tkinter.Tk):
                 self.affiches.append([int(self.bloc[i][0]), int(self.bloc[i][1]), self.bloc[i][3], int(self.bloc[i][4]), int(self.bloc[i][5]), int(self.bloc[i][6]), int(self.bloc[i][7])])
             else:
                 self.affiches.append([int(self.bloc[i][0]), int(self.bloc[i][1]), self.bloc[i][3], int(self.bloc[i][4])])
-
+        
+        
+        try:
+            self.texture_actuelle = fond_carte_chargee
+            self.choisirFond()
+            self.texture_actuelle = None
+        except:
+            pass
+        
     def choixTexture(self, event):
         x = self.fond_textures.canvasx(event.x)
         y = self.fond_textures.canvasy(event.y)
@@ -561,6 +739,7 @@ class createurMonde(tkinter.Tk):
         for i in range(nb):
             try:
                 self.fond_carte.delete(self.fond_carte.find_overlapping(x+3, y+3, x+3, y+3)[0])
+                self.fond_carte.create_image((x)//30*30+3, (y)//30*30+3, image=self.textures[self.fond_save].image, anchor=NW)
             except:
                 continue
             valeurs = list()
@@ -618,13 +797,8 @@ class createurMonde(tkinter.Tk):
         # print(self.fond_textures.find_all())
         # print(self.textures.keys())
         # print(self.fichier_carte)
-        print(len(self.affiches))
-        # if len(self.affiches) < 10:
-        
-        for val in self.affiches:
-            if len(val) > 6:
-                print(val)
-    
+        print(self.affiches)
+
     def chargerTextures(self):
         if self.textures is None:
             self.textures = OrderedDict()
