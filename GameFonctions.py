@@ -3,51 +3,42 @@ import Config
 from time import localtime, strftime
 from random import choice
 from math import floor
-ClansStats=[]
-Clans=[]
-MobsListe=[]
+import sqlite3
+#ClansStats=[]
+#Clans=[]
+##MobsListe=[]
 class ClansInfo:
+    Name=[]
+    Description=[]
+    Vitality=[]
+    Intelligence=[]
+    Strength=[]
+    Chance=[]
+    Agility=[]
+    Sort_1=[]
+    Sort_2=[]
+
 
     def Ini_Clans():
-        """Initialise les différents clans & vérifie si les fichiers d'information sont entier et sans erreur"""
-        global Clans
-        #Récupère le nom de chaque fichier
-        ClansL=os.listdir("Clans")
-        #Revoir la gestion des fichiers.
-        for i in range (len(ClansL)):
-            #Supprime l'extension des noms
-            ClansL[i]=ClansL[i].replace(".txt","")
-
-            #Ouvre un fichier
-            File = open(os.path.join("Clans", ClansL[i] + ".txt"), "r")
-            #Lis les lignes du fichier
-            TestFileClan=File.readlines()
-            File.close
-
-            #Vérification que le fichier est complet : A revoir. Il vérifie actuellement que si on trouve le nom dans le fichier
-            if "name" in TestFileClan:
-                Clans.append(ClansL[i])
-                Config.LogFile.Information("Le fichier clan " + ClansL[i] + " est correctement chargé.",0)
-            else:
-                Clans.append(ClansL[i])
-                #Config.LogFile.Information("Le fichier clan " + ClansL[i] + " est corrompu",1)
+        """Initialise les clans """
 
 
-    def OpenClansStats():
-        """Charge dans le jeu les différentes caractéristique des clans"""
+        conn = sqlite3.connect(os.path.join('Clans','Clans.db'))
+        c = conn.cursor()
+        c.execute("SELECT * FROM caracteristiques")
+        reponse = c.fetchall()
+        conn.close()
+        for i in reponse:
+            ClansInfo.Name.append(i[1])
+            ClansInfo.Description.append(i[2])
+            ClansInfo.Vitality.append(i[3])
+            ClansInfo.Intelligence.append(i[4])
+            ClansInfo.Strength.append(i[5])
 
-        for i in range (len(Clans)):
-            #Ouvre un fichier
-            File = open(os.path.join("Clans", Clans[i] + ".txt"), "r")
-            #Lis les lignes du fichier et les ajoutes dans une liste
-            ClansStats.append(File.readlines())
-            #Supprime le retour à la ligne de chaque ellement de la liste, le met en minuscule et le coupe quand il trouve un ":"
-            ClansStats[i]=[x.replace("\n","").lower().split(":") for x in  ClansStats[i]]
-##            for e in range(len(ClansStats[i])):
-##
-##                ClansStats[i][e]=ClansStats[i][e].replace("\n","").lower().split(":")
-            File.close()
-
+            ClansInfo.Chance.append(i[6])
+            ClansInfo.Agility.append(i[7])
+            ClansInfo.Sort_1.append(i[8])
+            ClansInfo.Sort_2.append(i[9])
 
 
 class MyCharacters:
@@ -62,57 +53,65 @@ class MyCharacters:
 
     def CreateSave(Character):
         """Créer la save du personnage"""
-        try:
-            File = open(os.path.join("MyCharacters", Character.Nickname + ".txt"), "w+")
-        except:
-            os.mkdir("MyCharacters")
-            File = open(os.path.join("MyCharacters", Character.Nickname + ".txt"), "w+")
 
-        File.write("Nickname:"+Character.Nickname+"\n")
-        File.write("ClanName:"+Character.ClanName+"\n")
-        File.write("Lvl:"+str(Character.Lvl)+"\n")
-        File.write("Exp:"+str(int(Character.Exp))+"\n")
-        File.write("Vitality:"+str(Character.Vitality)+"\n")
-        File.write("Intelligence:"+str(Character.Intelligence)+"\n")
-        File.write("Strength:"+str(Character.Strength)+"\n")
-        File.write("Chance:"+str(Character.Chance)+"\n")
-        File.write("Agility:"+str(Character.Agility) +"\n")
-        File.write("HP:"+str(Character.HP))
-        File.close()
+        for i in range(len(ClansInfo.Name)):
+            if Character.ClanName==ClansInfo.Name[i]:
+
+                conn = sqlite3.connect(os.path.join('MyCharacters','Characters.db'))
+                c = conn.cursor()
+                c.execute("SELECT nickname FROM caracteristiques")
+                reponse = c.fetchall()
+                if reponse==Character.Nickname:
+                    print("Ce nom exist deja")
+                else:
+                    c.execute("INSERT INTO caracteristiques (nickname, clanname, lvl, exp, hp, vitality, intelligence, strength,chance,agility,sort_1,sort_2) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)", (Character.Nickname, Character.ClanName, Character.Lvl, Character.Exp ,ClansInfo.Vitality[i], Character.Bonus_Vitality, Character.Bonus_Intelligence, Character.Bonus_Strength, Character.Bonus_Chance,Character.Bonus_Agility, Character.Sort[0], Character.Sort[1] ))
+
+                conn.commit()
+                conn.close()
+                Character.HP= ClansInfo.Vitality[i]
+
+                break
+
+    def UpdateSave(Character):
+        conn = sqlite3.connect(os.path.join('MyCharacters','Characters.db'))
+        c = conn.cursor()
+        c.execute("UPDATE caracteristiques  SET nickname=?, clanname=?, lvl=?, exp=?, hp=?, vitality=?, intelligence=?, strength=?,chance=?,agility=?,sort_1=?,sort_2=? WHERE nickname=?",(Character.Nickname, Character.ClanName, Character.Lvl, Character.Exp ,Character.HP, Character.Bonus_Vitality, Character.Bonus_Intelligence, Character.Bonus_Strength, Character.Bonus_Chance,Character.Bonus_Agility, Character.Sort[0], Character.Sort[1],Character.Nickname ))
+
+        conn.commit()
+        conn.close()
 
     def ReadSave(Nickname,Character):
         """Lis la sauvegarde du personnage"""
-        File = open(os.path.join("MyCharacters", str(Nickname) + ".txt"), "r")
-        SaveInfo=File.readlines()
-        File.close
-        for i in range (len(SaveInfo)):
-            SaveInfo[i]=SaveInfo[i].replace("\n","").split(":")
 
-        for i in range (len(SaveInfo)):
-            if "nickname"==SaveInfo[i][0].lower():
-                Character.Nickname=SaveInfo[0][1]
-            elif "clanname"==SaveInfo[i][0].lower():
-                Character.ClanName=SaveInfo[i][1]
-            elif "lvl"==SaveInfo[i][0].lower():
-                Character.Lvl=int(SaveInfo[i][1])
-            elif "hp"==SaveInfo[i][0].lower():
-                Character.HP=int(SaveInfo[i][1])
-            elif "vitality"==SaveInfo[i][0].lower():
-                Character.Vitality=int(SaveInfo[i][1])
-            elif "exp"==SaveInfo[i][0].lower():
-                Character.Exp=int(SaveInfo[i][1])
-            elif "intelligence"==SaveInfo[i][0].lower():
-                Character.Intelligence=int(SaveInfo[i][1])
-            elif "Strength"==SaveInfo[i][0].lower():
-                 Character.Strength=int(SaveInfo[i][1])
-            elif "chance"==SaveInfo[i][0].lower():
-                Character.Chance=int(SaveInfo[i][1])
-            elif "agility"==SaveInfo[i][0].lower():
-                Character.Agility=int(SaveInfo[i][1])
-            elif "sort"==SaveInfo[i][0].lower():
-                Character.Sort=int(SaveInfo[i][1])
-            elif "hp"==SaveInfo[i][0].lower():
-                Character.HP=int(SaveInfo[i][1])
+        conn = sqlite3.connect(os.path.join('items','items.db'))
+        c = conn.cursor()
+        c.execute("SELECT * FROM caracteristiques")
+        reponse = c.fetchall()[0]
+        conn.close()
+
+        Character.Nickname=reponse[1]
+
+        Character.ClanName=reponse[2]
+
+        Character.Lvl=reponse[3]
+
+        Character.HP=reponse[5]
+
+        Character.Vitality=reponse[6]
+
+        Character.Exp=reponse[4]
+
+        Character.Bonus_Intelligence=reponse[7]
+
+        Character.Bonus_Strength=reponse[8]
+
+        Character.Bonus_Chance=reponse[10]
+
+        Character.Bonus_Agility=reponse[9]
+        Character.Sort.append(reponse[10])
+        Character.Sort.append(reponse[11])
+
+
 
     class Character1:
         Nickname=""
@@ -120,44 +119,42 @@ class MyCharacters:
         Lvl=1
         Exp=0
         HP=0
-        Vitality=0
-        Intelligence=0
-        Strength=0
-        Chance=0
-        Agility=0
+        Bonus_Vitality=0
+        Bonus_Intelligence=0
+        Bonus_Strength=0
+        Bonus_Chance=0
+        Bonus_Agility=0
         TVitality=0
         TIntelligence=0
         TStrength=0
         TChance=0
         TAgility=0
         Initiative=0
-        Sort=[]
+        Sort=[-1,-1]
 
 
-    class CharacterStatsCalc:
-        def CalcTotalStatsCharacter(Character):
+
+    class StatsCalc:
+        def CalcTotalStats(Character):
             """Calcul du total des caractéristique"""
-            for i in range (len(ClansStats)):
-                    for j in range (len(ClansStats[i])):
-                        if Character.ClanName.lower()==ClansStats[i][j][1].lower():
-                             for e in range (len(ClansStats[i])):
-                                if "vitality"==ClansStats[i][e][0].lower():
-                                    Character.TVitality=Character.Vitality+int(ClansStats[i][e][1])
-                                    if Character.TVitality==0:
-                                        Config.LogFile.Information("Le fichier clan " + Clans[i] + " est corrompu",1)
-                                elif "intelligence"==ClansStats[i][e][0].lower():
-                                    Character.TIntelligence=Character.Intelligence+int(ClansStats[i][e][1])
-                                elif "Strength"==ClansStats[i][e][0].lower():
-                                    Character.TStrength=Character.Strength+int(ClansStats[i][e][1])
-                                elif "chance"==ClansStats[i][e][0].lower():
-                                    Character.TChance=Character.Chance+int(ClansStats[i][e][1])
-                                elif "agility"==ClansStats[i][e][0].lower():
-                                    Character.TAgility=Character.Agility+int(ClansStats[i][e][1])
-                                elif "sort"==ClansStats[i][e][0].lower():
-                                    Character.Sort.extend(ClansStats[i][e][1].split(","))
-                                    for i in range(len(Character.Sort)):
-                                        Character.Sort[i]=int(Character.Sort[i])
-                             break
+
+            for i in range (len(ClansInfo.Name)):
+                if ClansInfo.Name[i]==Character.ClanName:
+
+                    Character.TStrength=Character.Bonus_Strength+ClansInfo.Strength[i]
+                    Character.TChance=Character.Bonus_Chance+ClansInfo.Chance[i]
+                    Character.TAgility=Character.Bonus_Agility+ClansInfo.Agility[i]
+                    Character.TIntelligence=Character.Bonus_Intelligence+ClansInfo.Intelligence[i]
+                    Character.TVitality=Character.Bonus_Vitality+ClansInfo.Vitality[i]
+                    Character.Sort.extend(ClansInfo.Sort_1)
+                    Character.Sort.extend(ClansInfo.Sort_2)
+
+                    break
+
+
+
+
+
 
         def LvlUpStats(Character,Caracteristique,Nbr):
             """Actualise les caractéristique après un LvlUp"""
@@ -190,42 +187,32 @@ class Mobs:
     Sort=""
     Attitude=0
 
-    def IniMobs():
-        del MobsListe[:]
+    def IniMobs(IDMOB):
+
         """Initialise les différents sorts & vérifie si les fichiers d'information sont entier et sans erreur & récupère les infos des sorts"""
-        Mobs=os.listdir("Mobs")
 
-        for i in range (len(Mobs)):
-            File = open(os.path.join("Mobs", Mobs[i]), "r")
-            MobsListe.append(File.readlines())
 
-            for e in range(len(MobsListe[i])):
-                MobsListe[i][e]=MobsListe[i][e].replace("\n","").lower().split(":")
+        conn = sqlite3.connect(os.path.join('Mobs','Mobs.db'))
+        c = conn.cursor()
+        c.execute("SELECT * FROM caracteristiques")
+        reponse = c.fetchall()[IDMOB-1]
+        conn.close()
+        return reponse
 
-            File.close()
-
-    def MobStats(Mob):
+    def MobStats(x):
         """Charge les caractéristiques du monstre"""
-        for i in range (len(Mob)):
-            if "hp"==Mob[i][0]:
-                Mobs.HP=int(Mob[i][1])
-                Mobs.TVitality=int(Mob[i][1])
-            elif "lvl"==Mob[i][0]:
-                Mobs.Lvl=int(Mob[i][1])
-            elif "intelligence"==Mob[i][0]:
-                Mobs.TIntelligence=int(Mob[i][1])
-            elif "Strength"==Mob[i][0]:
-                Mobs.TStrength=int(Mob[i][1])
-            elif "chance"==Mob[i][0]:
-                Mobs.TChance=int(Mob[i][1])
-            elif "agility"==Mob[i][0]:
-                Mobs.TAgility=int(Mob[i][1])
-            elif "sort"==Mob[i][0]:
-                Mobs.Sort=Mob[i][1]
-            elif "name"==Mob[i][0]:
-                Mobs.Name=Mob[i][1]
-            elif "attitude"==Mob[i][0]:
-                Mobs.Attitude=Mob[i][1]
+
+        Mobs.Name=x[1]
+        Mobs.Lvl=x[2]
+        Mobs.HP=x[3]
+        Mobs.TVitality=x[3]
+        Mobs.TIntelligence=x[4]
+        Mobs.TStrength=x[5]
+        Mobs.TChance=x[6]
+        Mobs.TAgility=x[7]
+        Mobs.Sort=str(x[8])+","+str(x[9])+","+str(x[10])+","+str(x[11])
+        Mobs.Sort=Mobs.Sort.replace(",-1","").replace("-1,","")
+        Mobs.Attitude=x[12]
 
 
     def CalcInitiative(Mob):
