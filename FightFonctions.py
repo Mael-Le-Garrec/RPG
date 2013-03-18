@@ -4,6 +4,7 @@ import Config
 import os
 from random import choice
 from math import floor
+import sqlite3
 
 class Etat:
     Name=[]
@@ -13,22 +14,17 @@ class Etat:
     EtatCharacter1=["",0,0]
     def IniEtat():
          """Récupère les différents Etats"""
-         EtatInfo=[]
-         AllEtat=os.listdir("Etat")
-         for i in range (len(AllEtat)):
-            File = open(os.path.join("Etat", AllEtat[i]), "r")
-            EtatInfo.append(File.readlines())
-            for e in range(len(EtatInfo[i])):
-                EtatInfo[i][e]=EtatInfo[i][e].replace("\n","").lower().split(":")
-            File.close()
-         for e in range (len(EtatInfo)):
-            for j in range (len(EtatInfo[e])):
-                if "name"==EtatInfo[e][j][0]:
-                    Etat.Name.append(EtatInfo[e][j][1])
-                elif "effect"==EtatInfo[e][j][0]:
-                    Etat.Effect.append(int(EtatInfo[e][j][1]))
-                elif "turn"==EtatInfo[e][j][0]:
-                    Etat.Turn.append(int(EtatInfo[e][j][1]))
+
+         conn = sqlite3.connect(os.path.join('Etat','Etats.db'))
+         c = conn.cursor()
+         c.execute("SELECT * FROM caracteristiques")
+         reponse = c.fetchall()
+         conn.close()
+         for i in reponse:
+             Sort.Name.append(i[1])
+             Sort.Effect.append(str(i[2])+";"+str(i[3]))
+             Sort.Turn.append(i[4])
+
 
     def ActionCharacter1(Character):
         """Actionne l'état du joueur"""
@@ -77,36 +73,20 @@ class Sort:
     Etat=[]
     Cible=[]
     def IniSort():
-        SortInfo=[]
-        """Initialise les différents sorts & vérifie si les fichiers d'information sont entier et sans erreur & récupère les infos des sorts"""
-        AllSort=os.listdir("Sorts")
+        """Initialise les sorts"""
 
-        for i in range (len(AllSort)):
-            File = open(os.path.join("Sorts", AllSort[i]), "r")
-            SortInfo.append(File.readlines())
-            for e in range(len(SortInfo[i])):
-                SortInfo[i][e]=SortInfo[i][e].replace("\n","").lower().split(":")
-            File.close()
-        for e in range (len(SortInfo)):
-            for j in range (len(SortInfo[e])):
-                if len(SortInfo[e])==5:
-                    if "name"==SortInfo[e][j][0]:
-                        Sort.Name.append(SortInfo[e][j][1].lower())
-                    elif "degat"==SortInfo[e][j][0]:
-                        Sort.Degat.append(SortInfo[e][j][1])
-                    elif "type"==SortInfo[e][j][0]:
-                        Sort.Element.append(SortInfo[e][j][1].lower())
-                    elif "etat"==SortInfo[e][j][0]:
-                        Sort.Etat.append(int(SortInfo[e][j][1]))
-                    elif "cible"==SortInfo[e][j][0]:
-                        Sort.Cible.append(int(SortInfo[e][j][1]))
-                else:
-                    Config.LogFile.Information("Le sort " + str(e)+ " semble être corrompu. Vérifier le fichier",1)
-                    Sort.Name.append("error")
-                    Sort.Degat.append("0;0")
-                    Sort.Element.append("error")
-                    Sort.Etat.append(int(-1))
-                    Sort.Cible.append(int(0))
+        conn = sqlite3.connect(os.path.join('Sorts','Sorts.db'))
+        c = conn.cursor()
+        c.execute("SELECT * FROM caracteristiques")
+        reponse = c.fetchall()
+        conn.close()
+        for i in reponse:
+            Sort.Name.append(i[1].lower())
+            Sort.Degat.append(str(i[2])+";"+str(i[3]))
+            Sort.Element.append(i[4d].lower())
+            Sort.Etat.append(i[5])
+            Sort.Cible.append(i[6])
+
 
 class Fight:
     Turn=0
@@ -119,7 +99,7 @@ class Fight:
             Etat.ActionMob(Mob)
             if Mob.HP>0:
                 MobAttaque=int(Fight.IA.Choix_attitude())
-                Degat,Cible=Fight.Attaque(GameFonctions.Mobs,MobAttaque,Sort.Cible)
+                Degat,Cible=Fight.Attaque(GameFonctions.Mobs,MobAttaque,Sort.Cible[MobAttaque])
                 if Cible==1:
                     Degat=Fight.HP(GameFonctions.MyCharacters.Character1,Degat)
                 else:
@@ -142,6 +122,7 @@ class Fight:
 
             if Character.HP==0:
                 print("\nMob Win")
+                GameFonctions.MyCharacters.Character1.HP=1
             elif Mob.HP==0:
                print("\nPlayer Win")
                Fight.EndFight(Character,Mob,Fight.Turn)
@@ -157,7 +138,7 @@ class Fight:
             #Calcul de l'initiative
             Fight.Turn=1
             GameFonctions.Mobs.CalcInitiative(Mob)
-            GameFonctions.MyCharacters.CharacterStatsCalc.CalcInitiative(Character)
+            GameFonctions.MyCharacters.StatsCalc.CalcInitiative(Character)
 
             print("Initiative Player 1 "+str(Character.Initiative))
             print("Initiative Mob "+str(Mob.Initiative))
@@ -202,7 +183,6 @@ class Fight:
                             else:
                                 break
 
-
                  Degat, Cible=Fight.Attaque(Character,SortID, Sort.Cible[SortID])
                  if Cible==1:
                     Degat=Fight.HP(Mob,Degat)
@@ -227,44 +207,28 @@ class Fight:
                print("\nPlayer Win")
                Fight.EndFight(Character,Mob,Fight.Turn)
              elif Character.HP==0:
+                Character.HP=1
                 print("\nMob Win")
     class IA:
-
-        def Try_Attaque(Character, NbrSort):
-            """Calcul les dégat infligée par les attaques"""
-
-            Min=int((Sort.Degat[int(NbrSort)].split(";")[0]))
-            Max=int((Sort.Degat[int(NbrSort)].split(";")[1]))
-            if Sort.Element[int(NbrSort)]!="error":
-                if Sort.Element[int(NbrSort)]=="intelligence":
-                    Element=Character.TIntelligence
-                elif Sort.Element[int(NbrSort)]=="strength":
-                    Element=Character.Tstrength
-                elif Sort.Element[int(NbrSort)]=="chance":
-                    Element=Character.TChance
-                elif Sort.Element[int(NbrSort)]=="agility":
-                    Element=Character.TAgility
-
-                #Formule de calcul des dégats
-            for i in range(10):
-                Degat = Degat + randrange(floor(Min * (100 + Element ) / 100),floor((Max * (100 + Element ) / 100)+1))
-            return Degat
 
         def Choix_attitude():
             """Choisi le comportement du monstre"""
             UsableSpell=[]
+
             MobSpellList=GameFonctions.Mobs.Sort.split(",")
             MobSpellList=list(map(int,MobSpellList))
-            if GameFonctions.Mobs.Attitude==0: #Peureux
-                UsableSpell= Fight.IA.Attitude_Peureux(MobSpellList)
 
-            elif GameFonctions.Mobs.Attitude==2:
-               UsableSpell=Fight.IA.Attitude_Agressif(MobSpellList)
+            if GameFonctions.Mobs.Attitude==0: #Peureux
+                UsableSpell=Fight.IA.Attitude_Peureux(MobSpellList)
+
+            elif GameFonctions.Mobs.Attitude==2: #Agressif
+                UsableSpell=Fight.IA.Attitude_Agressif(MobSpellList)
 
             if UsableSpell==[]:
                 return choice (MobSpellList)
             else:
                 return choice (UsableSpell)
+
 
         def Attitude_Peureux(MobSpellList):
             """Choisi le sort en fonction du comportement peureux du monstre. Le monstre va principalement se soigner s'il dispose d'un sort de soin"""
@@ -286,55 +250,99 @@ class Fight:
         def Attitude_Agressif(MobSpellList):
             """Choisi le sort en fonction du comportement agressif du monstre. Le monstre va principalement attaquer s'il dispose d'un d'attaque"""
             UsableSpell=[]
-            if GameFonctions.Mobs.HP<=GameFonctions.Mobs.TVitality*0.25:
-                #Le monstre avec la comportement agressif va lancer son attaque la plus fort s'il est sous la bare des 25% de vie.
-                #Plus le monstres est frappé, plus le monstre devient dangereux et agressif
-                for i in MobSpellList:
-                    if not "-" in Sort.Degat[i]:
-                        UsableSpell.append(i)
-                for i in range(len(UsableSpell)):
-                        UsableSpell[i]=Try_Attaque(GameFonctions.Mobs,UsableSpell[i])
-                        Max=UsableSpell.index(UsableSpell.max())
-                        UsableSpell[:]=[]
-                        USableSpell.append(Max)
-            elif GameFonctions.Mobs.HP>GameFonctions.Mobs.TVitality*0.25 and GameFonctions.Mobs.HP<=GameFonctions.Mobs.TVitality*0.75:
-                #Le monstre se sent légérement en danger est choisi uniquement d'attaquer quand il est entre 25% et 75% de vie
-                for i in MobSpellList:
-                    if not "-" in Sort.Degat[i]:
-                        UsableSpell.append(i)
-                return UsableSpell
+            if Fight.Turn>15 and Fight.Turn<=25:
+                 if GameFonctions.Mobs.HP<=GameFonctions.Mobs.TVitality*0.50:
+                    #Le monstre avec la comportement agressif va lancer son attaque la plus fort s'il est sous la bare des 50% de vie et que le nombre de tour est supérieur à 15.
+                    UsableSpell=Fight.IA.Spell.Strongest_Spell(MobSpellList)
+            elif Fight.Turn>25 and Fight.Turn<=30:
+                 if GameFonctions.Mobs.HP<=GameFonctions.Mobs.TVitality*0.80:
+                    #Le monstre avec la comportement agressif va lancer son attaque la plus fort s'il est sous la bare des 80% de vie et que le nombre de tour est supérieur à 25.
+                    UsableSpell=Fight.IA.Spell.Strongest_Spell(MobSpellList)
+            elif Fight.Turn>30:
+                    #Le monstre avec la comportement agressif va lancer son attaque la plus fort si le nombre de tour est supérieur à 30.
+                    UsableSpell=Fight.IA.Spell.Strongest_Spell(MobSpellList)
             else:
-                #Le monstre n'a que 10% de chance de choisir une attaque qui soigne mais il va préférer dans 90% des cas d'attaquer.
-                if randrange(1,101)<=10:
-                    UsableSpell=MobSpellList
-                else:
+                if GameFonctions.Mobs.HP<=GameFonctions.Mobs.TVitality*0.25:
+                    #Le monstre avec la comportement agressif va lancer son attaque la plus fort s'il est sous la bare des 25% de vie.
+                    #Plus le monstres est frappé, plus le monstre devient dangereux et agressif
+                    USableSpell=Fight.IA.Spell.Strongest_Spell(MobSpellList)
+                elif GameFonctions.Mobs.HP>GameFonctions.Mobs.TVitality*0.25 and GameFonctions.Mobs.HP<=GameFonctions.Mobs.TVitality*0.75:
+                    #Le monstre se sent légérement en danger est choisi uniquement d'attaquer quand il est entre 25% et 75% de vie
                     for i in MobSpellList:
                         if not "-" in Sort.Degat[i]:
-                             UsableSpell.append(i)
-                    return UsableSpell
+                            UsableSpell.append(i)
+                else:
+                    #Le monstre n'a que 10% de chance de choisir une attaque qui soigne mais il va préférer dans 90% des cas d'attaquer.
+                    if randrange(1,101)<=10:
+                        UsableSpell=MobSpellList
+                    else:
+                        for i in MobSpellList:
+                            if not "-" in Sort.Degat[i]:
+                                 UsableSpell.append(i)
+
+            return UsableSpell
+
+        class Spell():
+            def Strongest_Spell(Spell):
+                """Trouve le sort le plus puissant"""
+                UsableSpell=[]
+                MaxSpell=[]
+
+                #Filtre le sorts soignant et les sorts infligeant des degats.
+                for i in Spell:
+                        if not "-" in Sort.Degat[i]:
+                            UsableSpell.append(i)
+                #Convertie le sort en degats
+                for i in range(len(UsableSpell)):
+                            MaxSpell.append(Fight.IA.Spell.Try_Attaque(GameFonctions.Mobs,UsableSpell[i]))
+                #Obtient l'ID du sort le plus puissant des sorts disponible
+                Max=UsableSpell[MaxSpell.index(max(MaxSpell))]
+                UsableSpell[:]=[]
+                UsableSpell.append(Max)
+
+                return UsableSpell
 
 
+            def Try_Attaque(Character, NbrSort):
+                """Calcul les dégat infligée par les attaques"""
+                Degat=0
 
+                Min=int((Sort.Degat[int(NbrSort)].split(";")[0]))
+                Max=int((Sort.Degat[int(NbrSort)].split(";")[1]))
 
+                if Sort.Element[int(NbrSort)]!="error":
+                    if Sort.Element[int(NbrSort)]=="intelligence":
+                        Element=Character.TIntelligence
+                    elif Sort.Element[int(NbrSort)]=="strength":
+                        Element=Character.TStrength
+                    elif Sort.Element[int(NbrSort)]=="chance":
+                        Element=Character.TChance
+                    elif Sort.Element[int(NbrSort)]=="agility":
+                        Element=Character.TAgility
 
+                    #Formule de calcul des dégats
+                for i in range(10):
+                    Degat = Degat + randrange(floor(Min * (100 + Element ) / 100),floor((Max * (100 + Element ) / 100)+1))
+
+                return Degat
 
     def StartFightMob(Character):
         """Lance un combat Joueur vs Monstre"""
-        GameFonctions.MyCharacters.CharacterStatsCalc.CalcTotalStatsCharacter(Character)
+        #Calcul les caractéristique du personnage
+        GameFonctions.MyCharacters.StatsCalc.CalcTotalStats(Character)
+        #Initialise les sorts
         Sort.IniSort()
+        #Initialise les Etats
         Etat.IniEtat()
-        GameFonctions.Mobs.IniMobs()
-        #Affiche la liste des monstres
-        for i in range(len(GameFonctions.MobsListe)):
-            print(i,GameFonctions.MobsListe[i][0][1])
+
         #Demande l'id du mob
         Mob=int(input("Entrer l'id de notre mob :"))
+        #Initialise le montre
+        Carac = GameFonctions.Mobs.IniMobs(Mob)
         #Calcul les stats du mobs
-        GameFonctions.Mobs.MobStats(GameFonctions.MobsListe[Mob])
+        GameFonctions.Mobs.MobStats(Carac)
+        #Lance le combat contre le monstre
         Fight.Mob.MobCombat(GameFonctions.MyCharacters.Character1,GameFonctions.Mobs)
-
-
-
 
 
     def Attaque(Character, NbrSort, Cible):
@@ -342,8 +350,9 @@ class Fight:
 
         Min=int((Sort.Degat[int(NbrSort)].split(";")[0]))
         Max=int((Sort.Degat[int(NbrSort)].split(";")[1]))
+
+        #Cherche l'element du sort
         if Sort.Element[int(NbrSort)]!="error":
-##            print(Sort.Element[int(NbrSort)])
             if Sort.Element[int(NbrSort)]=="intelligence":
                 Element=Character.TIntelligence
             elif Sort.Element[int(NbrSort)]=="strength":
@@ -354,46 +363,52 @@ class Fight:
                 Element=Character.TAgility
 
 
-
             #Formule de calcul des dégats
             Degat = randrange(floor(Min * (100 + Element ) / 100),floor((Max * (100 + Element ) / 100)+1))
 
+            #Gestion des EC et CC
+            #5% de chance d'avoir un coup critique où un echec critique
             if randrange(1,101)<=5:
                 NewDegat = Degat + Fight.CC(Degat)
             elif randrange(1,101)>=95:
-                NewDegat = Degat - Fight.EC(Degat)
+                NewDegat= Degat-Fight.EC(Degat,Cible)
             else:
                 NewDegat=Degat
 
-            Cible=Fight.Change_Cible(Degat,NewDegat,Cible)
-
             return NewDegat,Cible
         else:
-            return 0
-    def Change_Cible(Degat, NewDegat, Cible):
-        """Change la cible de l'attaque"""
-        if Degat>0 and NewDegat<0 and Cible==0:
-                return 1
-        elif Degat>0 and NewDegat<0 and Cible==1:
-                return 0
-        else:
-            return Cible
+            return 0,0
+
+##    def Change_Cible(Degat, NewDegat, Cible):
+## Fonction inutile ??
+##        """Change la cible de l'attaque"""
+##        if Degat>0 and NewDegat<0 and Cible==0:
+##                return 1
+##        elif Degat>0 and NewDegat<0 and Cible==1:
+##                return 0
+##        else:
+##            return Cible
 
     def CC(Degat):
         """Retourne la valeur du bonus de coup critique en fonction des degats"""
         CCType=int(randrange(1,101))
-        if CCType<=10: #CC Majeur
+        if CCType<=10: #CC Mineur
             return int(Degat/100*randrange(1,6))
         elif CCType<90 and CCType>10: #CC Moyen
             return int(Degat/100*randrange(5,16))
-        elif CCType>=90: #CC Mineur
+        elif CCType>=90: #CC Majeur
             return int(Degat/100*randrange(15,31))
 
-    def EC(Degat):
+    def EC(Degat,Cible):
         """Retourne la valeur du bonus d'echec critique en fonction des degats"""
         ECType=int(randrange(1,101)+GameFonctions.MyCharacters.Character1.Lvl/10)
         if ECType<=10: #EC Majeur
-            return int(Degat/100*randrange(100,201))
+            if Cible==0:
+                Cible= 1
+            elif Cible==1:
+                Cible= 0
+            return int(Degat/100*randrange(0,101))
+
         elif ECType<90 and ECType>10: #EC Moyen
             return int(Degat/100*randrange(70,101))
         elif ECType>=90: #EC Mineur
@@ -401,6 +416,8 @@ class Fight:
 
     def HP(Character,Degat):
         """Actualise les HP après une attaque"""
+
+        #Gestion de degat supérieur à la vitalité du personnage
         if Character.HP-Degat<0:
             Degat=Character.HP
 
@@ -408,6 +425,7 @@ class Fight:
             Degat=-(Character.TVitality-Character.HP)
 
         Character.HP=Character.HP-Degat
+
         return Degat
 
     def EndFight(Character,Mob,Turn):
