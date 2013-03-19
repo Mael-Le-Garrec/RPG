@@ -624,6 +624,11 @@ class createurMonde(tkinter.Tk):
         for i in range(4):
             self.directions[self.lignes[i].rstrip().split(":")[0]] = self.lignes[i].rstrip().split(":")[1]
         
+        self.direction_haut.set(self.directions["haut"])
+        self.direction_bas.set(self.directions["bas"])
+        self.direction_droite.set(self.directions["droite"])
+        self.direction_gauche.set(self.directions["gauche"])
+        
         # self.fond_carte.destroy()
         # self.fond_carte = Canvas(self, bg='white', bd=1, width=600, height=600, relief='solid')
         # self.fond_carte.place(x=10,y=10)
