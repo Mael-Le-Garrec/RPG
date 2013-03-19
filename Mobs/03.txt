@@ -1,8 +1,0 @@
-name:Bob
-HP:700
-lvl:5
-intelligence:-50
-strength:50
-chance:200
-agility:-100
-sort:01,02
