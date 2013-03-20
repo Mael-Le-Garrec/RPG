@@ -44,8 +44,8 @@ for i in Listes.liste_quetes.keys():
 Listes.liste_pnjs = creer_liste_pnj()
 for i in Listes.liste_pnjs.keys():
     Listes.liste_pnjs[i].charger_pnj()
-    
-Listes.liste_obstacles = creer_liste_obstacles()    
+
+Listes.liste_obstacles = creer_liste_obstacles()
 for i in Listes.liste_obstacles.keys():
     Listes.liste_obstacles[i].charger_obs()
 
@@ -64,15 +64,14 @@ for val in Listes.liste_items.keys():
 
 # Chargement de tous les fichiers nécessaires
 GameFonctions.ClansInfo.Ini_Clans()
-GameFonctions.ClansInfo.OpenClansStats()
+##GameFonctions.ClansInfo.OpenClansStats()
 
 Listes.liste_persos = []
+
 for val in os.listdir("MyCharacters"):
-    Listes.liste_persos.append(val.replace(".txt", ""))
+    Listes.liste_persos = creer_liste_perso()
 
 selection_personnage(fenetre)
-
-
 
 Quete.charger_quete_en_cours()
 
@@ -101,7 +100,7 @@ for val in Listes.liste_items.values():
 for i in Listes.liste_obstacles.keys():
     if Listes.liste_obstacles[i].carte == Joueur.carte:
         Listes.liste_obstacles[i].afficher_obstacle(fenetre)
-            
+
 pygame.display.flip() # Un petit peu d'eau, faut rafraichir
 
 continuer = 1
@@ -112,20 +111,20 @@ while continuer == 1:
     for event in pygame.event.get():
         if event.type == QUIT:
             continuer = 0
-        
+
         if event.type == MOUSEBUTTONDOWN and event.button == 1:
             # if event.pos[0] > 10 and event.pos[0] < 610 and event.pos[1] > 10 and event.pos[1] < 610:
-            Joueur.position_x = event.pos[0]//30*30            
+            Joueur.position_x = event.pos[0]//30*30
             Joueur.position_y = event.pos[1]//30*30
             print(Joueur.position_x, Joueur.position_y)
             afficher_monde(fenetre)
-            
+
         # Si on a pressé une touche
         if event.type == KEYDOWN:
             # Soit elle se trouve dans les clés de déplacement et on bouge le perso
             if event.key in cle_deplacement:
                 Joueur.bouger_perso(event.key, fenetre, inventaire);
-                
+
             # Soit c'est "Entrée" et on fait parler le personnage
             if event.key == K_RETURN:
                 Joueur.parler_pnj(fenetre, inventaire)
@@ -137,25 +136,25 @@ while continuer == 1:
             if event.key == K_i:
                 # pprint(inventaire)
                 afficher_inventaire(fenetre, inventaire)
-            
+
             if event.key == K_h:
                 print("Quêtes en cours : {0}".format(Quete.en_cours))
                 print("Quêtes finies : {0}".format(Quete.quetes_finies))
                 print("\n")
-            
+
             if event.key == K_u:
                 pygame.image.save(fenetre, os.path.join("cartes_images", "{0}.png".format(Joueur.carte)))
-            
+
             if event.key == K_m:
                 try:
                     Joueur.carte = int(input("carte : "))
                 except:
                     pass
-            
+
             if event.key == K_f:
                 FightFonctions.Fight.StartFightMob(GameFonctions.MyCharacters.Character1)
 
-                GameFonctions.MyCharacters.CreateSave(GameFonctions.MyCharacters.Character1)
+                GameFonctions.MyCharacters.UpdateSave(GameFonctions.MyCharacters.Character1)
 
 
         # if event.type == MOUSEMOTION: # Décommenter pour avoir la position de la souris.
