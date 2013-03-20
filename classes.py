@@ -745,12 +745,15 @@ def options(fenetre, inventaire):
 
     label_personnage =  myfont.render("Personnage", 1, (0,0,0))
     fenetre.blit(label_personnage, (560-80, 300+cst_y))
+    
+    label_personnage =  myfont.render("Quêtes", 1, (0,0,0))
+    fenetre.blit(label_personnage, (560-80, 340+cst_y))
 
     label_sauvegarder =  myfont.render("Sauvegarder", 1, (0,0,0))
-    fenetre.blit(label_sauvegarder, (560-80, 340+cst_y))
+    fenetre.blit(label_sauvegarder, (560-80, 380+cst_y))
 
     label_retour =  myfont.render("Retour", 1, (0,0,0))
-    fenetre.blit(label_retour, (560-80, 380+cst_y))
+    fenetre.blit(label_retour, (560-80, 420+cst_y))
 
     # label_curseur =  curseur_font.render(">>", 1, (0,0,0))
     # fenetre.blit(label_curseur, (curseur_x+cst_c, curseur_y))
@@ -774,7 +777,7 @@ def options(fenetre, inventaire):
                     continuer = 0
 
                 if event.key == K_DOWN:
-                    if curseur_y < (380-150):
+                    if curseur_y < (420-150):
                         curseur += 1
                         fenetre.blit(pygame.image.load(os.path.join("images", "blanc_curseur.png")), (curseur_x+cst,curseur_y))
                         curseur_y += 40
@@ -803,11 +806,21 @@ def options(fenetre, inventaire):
                         # print(inventaire)
                         afficher_inventaire(fenetre, inventaire)
                         continuer = 0
+                        
+                    # Quêtes
+                    if curseur == 3:
+                        afficher_quetes_status(fenetre)
+                        continuer = 0
 
-
+                    # Sauvegarder
                     if curseur == 4:
+                        pass
+                        
+                    # Retour
+                    if curseur == 5:
                         afficher_monde(fenetre)
                         continuer = 0
+
 
 def afficher_monde(fenetre):
     Listes.liste_cartes[Joueur.carte].afficher_carte(fenetre)
@@ -893,6 +906,76 @@ def fenetre_dialogue(fenetre, dialogue):
                     afficher_monde(fenetre)
 
 
+def afficher_quetes_status(fenetre):
+    # Quete.quetes_finies
+    # Quete.en_cours
+    fond = pygame.image.load(os.path.join("images", "quetes.png"))
+    fenetre.blit(fond, (0,0))
+    
+    myfont = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 16)
+    
+    taille = myfont.render("En cours", 1, (0,0,0)).get_rect().width
+    fenetre.blit(myfont.render("En cours ", 1, (0,0,0)), ((425)/2/2-taille/2, 80))
+    
+    taille = myfont.render("Finies", 1, (0,0,0)).get_rect().width
+    fenetre.blit(myfont.render("Finies ", 1, (0,0,0)), ((425)/2+(425)/2/2-taille/2, 80))
+    
+    
+    font_quetes = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 14)
+    font_objectif = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 12)
+    
+    y = 140
+    for i in range(len(Quete.en_cours)-1,-1,-1):
+        print(i)
+        if y < 550:
+            texte = textwrap.wrap(Listes.liste_quetes[Quete.en_cours[i]].nom, 35)
+            nom = texte[0]
+            numero = Listes.liste_quetes[Quete.en_cours[i]].id
+            objectif = Listes.liste_quetes[Quete.en_cours[i]].objectif
+            actuel = Listes.liste_quetes[Quete.en_cours[i]].actuel
+            nombre = Listes.liste_quetes[Quete.en_cours[i]].nombre
+            
+            if len(texte) == 1:
+                # fenetre.blit(font_quetes.render("{0} : {1}".format(numero, nom), 1, (0,0,0)), (50, y))
+                fenetre.blit(font_quetes.render("{0} : {1}".format("Quête", nom), 1, (0,0,0)), (50, y))
+            else:
+                # fenetre.blit(font_quetes.render("{0} : {1}...".format(numero, nom), 1, (0,0,0)), (50, y))
+                fenetre.blit(font_quetes.render("{0} : {1}...".format("Quête", nom), 1, (0,0,0)), (50, y))
+           
+            for j in range(len(objectif)):
+                if objectif[j]["avancement"] == actuel+1:
+                    texte = textwrap.wrap(objectif[j]["objectif"],35)
+                    nom = texte[0]
+                    personnage = Listes.liste_pnjs[objectif[j]["personnage"]].nom_entier
+                    
+                    if len(texte) == 1:
+                        fenetre.blit(font_objectif.render("{0}/{2} : {1}".format(objectif[j]["avancement"], nom, nombre), 1, (0,0,0)), (70, y+20))
+                    else:
+                        fenetre.blit(font_objectif.render("{0}/{2} : {1}...".format(objectif[j]["avancement"], nom, nombre), 1, (0,0,0)), (70, y+20))
+                    
+                    texte = textwrap.wrap(personnage,30)
+                    nom = texte[0]
+                    
+                    if len(texte) == 1:
+                        fenetre.blit(font_objectif.render("-> {0}".format(nom), 1, (0,0,0)), (90, y+35))
+                    else:
+                        fenetre.blit(font_objectif.render("-> {0}...".format(nom), 1, (0,0,0)), (90, y+35))
+
+            y += 60
+    pygame.display.flip()     
+    
+    continuer = 1
+    while continuer:
+        pygame.time.Clock().tick(300)
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                quit()
+
+            if event.type == KEYDOWN:
+                if event.key == K_ESCAPE:
+                    continuer = 0
+                    afficher_monde(fenetre)
+                    
 def afficher_inventaire(fenetre, inventaire):
     image_inventaire = pygame.image.load(os.path.join("images", "inventaire.png"))
     myfont = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 16)
