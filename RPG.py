@@ -29,6 +29,18 @@ fenetre.fill((240, 240, 240))
 # On crée une liste contenant chaque carte
 Listes.liste_cartes = list()
 
+# Chargement de tous les fichiers nécessaires
+GameFonctions.ClansInfo.Ini_Clans()
+##GameFonctions.ClansInfo.OpenClansStats()
+
+Listes.liste_persos = []
+
+for val in os.listdir("MyCharacters"):
+    Listes.liste_persos = creer_liste_perso()
+
+# Selection du personnage
+selection_personnage(fenetre)
+
 # On lit le dossier "map" et on crée associe l'objet Carte à chaque indice qui correspond à son nom (Ainsi la carte 6 se trouvera à Listes.liste_cartes[6])
 for i in range(len(os.listdir("map"))):
     Listes.liste_cartes.append(Carte(i))
@@ -62,16 +74,7 @@ for val in Listes.liste_items.keys():
 # print(Listes.liste_items)
 # print(inventaire)
 
-# Chargement de tous les fichiers nécessaires
-GameFonctions.ClansInfo.Ini_Clans()
-##GameFonctions.ClansInfo.OpenClansStats()
-
-Listes.liste_persos = []
-
-for val in os.listdir("MyCharacters"):
-    Listes.liste_persos = creer_liste_perso()
-
-selection_personnage(fenetre)
+# selection_personnage(fenetre)
 
 Quete.charger_quete_en_cours()
 
