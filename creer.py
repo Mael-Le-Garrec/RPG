@@ -84,7 +84,7 @@ class createurMonde(tkinter.Tk):
         optionsmenu.add_cascade(label="PNJs", menu=pnjmenu)
         pnjmenu.add_command(label="Ouvrir", command=self.ouvrirPNJ)
         pnjmenu.add_command(label="Sauvegarder", command=self.sauvegarderPNJ)
-        pnjmenu.add_command(label="Reset", command=self.hello)
+        pnjmenu.add_command(label="Reset", command=self.resetPNJ)
         
         optionsmenu.add_separator()
         optionsmenu.add_command(label="Charger textures", command=self.chargerTextures)
@@ -265,6 +265,7 @@ class createurMonde(tkinter.Tk):
         self.vue_actuelle = "carte"        
         self.liste_tp = list()
         self.fond_save = None
+        self.liste_fond = list()
         
         self.pnjs_affiches = list()
         
@@ -324,6 +325,9 @@ class createurMonde(tkinter.Tk):
             self.fond_carte.create_image(x, y, image=image, anchor=NW)
             self.affiches.append(ancien[i])
             
+        for val in self.pnjs_affiches:
+            self.fond_carte.create_image(val[0]+3, val[1]+3, image=self.textures[val[2]].image, anchor=NW)    
+                      
     def choisirFond(self, event=None):    
         if self.texture_actuelle:
             self.fond_fond_carte.delete("all")
@@ -356,7 +360,10 @@ class createurMonde(tkinter.Tk):
                 y = ancien[i][1]+3
                 image = self.textures[ancien[i][2]].image
                 self.fond_carte.create_image(x, y, image=image, anchor=NW)
-                
+            
+            for val in self.pnjs_affiches:
+                self.fond_carte.create_image(val[0]+3, val[1]+3, image=self.textures[val[2]].image, anchor=NW)
+            
             # ajout du fond dans la liste des textures à afficher
             # for i in range(len(self.liste_fond)):
                 # self.affiches.append(self.liste_fond[i])
@@ -379,6 +386,8 @@ class createurMonde(tkinter.Tk):
         reponse = c.fetchall()
         conn.close()
         print(reponse)
+        
+        del self.pnjs_affiches[:]
         
         for i in range(len(reponse)):
             x = int(reponse[i][3].split(";")[0])
@@ -553,7 +562,23 @@ class createurMonde(tkinter.Tk):
         self.carte_actuelle = None
         self.carte_var.set("Aucune")
         del self.liste_fond [:]
+        self.afficherPNJ()
         
+      
+    def resetPNJ(self):
+        del self.pnjs_affiches[:]
+        self.fond_carte.delete("all")
+        self.afficher_carte()
+        
+    def afficher_carte(self):
+        for val in self.affiches:
+            self.fond_carte.create_image(val[0]+3,val[1]+3, image=self.textures[val[2]].image, anchor=NW)
+    
+    def afficherPNJ(self):
+        for val in self.pnjs_affiches:
+            self.fond_carte.create_image(val[0]+3,val[1]+3, image=self.textures[val[2]].image, anchor=NW)
+    
+      
     def sauvegarderCarte(self):
         haut = self.direction_haut.get()
         bas = self.direction_bas.get()
@@ -735,28 +760,49 @@ class createurMonde(tkinter.Tk):
         x = self.fond_carte.canvasx(event.x)
         y = self.fond_carte.canvasy(event.y)
         
-        for i in range(len(self.fond_carte.find_overlapping(x+3, y+3, x+3, y+3))):
-            self.fond_carte.delete(self.fond_carte.find_overlapping(x+3, y+3, x+3, y+3)[-1])     
-                
-        if self.fond_save:
-            self.fond_carte.create_image((x)//30*30+3, (y)//30*30+3, image=self.textures[self.fond_save].image, anchor=NW)
-        
-        valeurs = list()
-        # print(self.affiches)
-        # print([int((x)//30*30), int((y)//30*30), val[2], val[3]])
-        for val in self.affiches:
-            if len(val) == 4:
-                if val == [int((x)//30*30), int((y)//30*30), val[2], val[3]]:
-                    # self.affiches.remove((int(x//30*30), int(y//30*30), val[2]))
-                    valeurs.append([val[0], val[1], val[2], val[3]])
-            elif len(val) == 7:
-                if val == [int((x)//30*30), int((y)//30*30), val[2], val[3], val[4], val[5], val[6]]:
-                    # self.affiches.remove((int(x//30*30), int(y//30*30), val[2]))
-                    valeurs.append([int((x)//30*30), int((y)//30*30), val[2], val[3], val[4], val[5], val[6]])
-        # print(valeurs)
-        for val in valeurs:
-            self.affiches.remove(val)
+        if self.vue_actuelle == "carte":
+            for i in range(len(self.fond_carte.find_overlapping(x+3, y+3, x+3, y+3))):
+                self.fond_carte.delete(self.fond_carte.find_overlapping(x+3, y+3, x+3, y+3)[-1])
+                    
+            if self.fond_save:
+                self.fond_carte.create_image((x)//30*30+3, (y)//30*30+3, image=self.textures[self.fond_save].image, anchor=NW)
+            
+            for val in self.pnjs_affiches:
+                if val[0] == x//30*30 and val[1] == y//30*30:
+                    self.fond_carte.create_image(val[0]+3, val[1]+3, image=self.textures[val[2]].image, anchor=NW)
+            
+            valeurs = list()
+            # print(self.affiches)
+            # print([int((x)//30*30), int((y)//30*30), val[2], val[3]])
+            for val in self.affiches:
+                if len(val) == 4:
+                    if val == [int((x)//30*30), int((y)//30*30), val[2], val[3]]:
+                        # self.affiches.remove((int(x//30*30), int(y//30*30), val[2]))
+                        valeurs.append([val[0], val[1], val[2], val[3]])
+                elif len(val) == 7:
+                    if val == [int((x)//30*30), int((y)//30*30), val[2], val[3], val[4], val[5], val[6]]:
+                        # self.affiches.remove((int(x//30*30), int(y//30*30), val[2]))
+                        valeurs.append([int((x)//30*30), int((y)//30*30), val[2], val[3], val[4], val[5], val[6]])
+            # print(valeurs)
+            for val in valeurs:
+                self.affiches.remove(val)
 
+        elif self.vue_actuelle == "pnj":
+            for i in range(len(self.fond_carte.find_overlapping(x+3, y+3, x+3, y+3))):
+                self.fond_carte.delete(self.fond_carte.find_overlapping(x+3, y+3, x+3, y+3)[-1])
+                    
+            if self.fond_save:
+                self.fond_carte.create_image((x)//30*30+3, (y)//30*30+3, image=self.textures[self.fond_save].image, anchor=NW)
+            
+            for val in self.affiches:
+                if val[0] == x//30*30 and val[1] == y//30*30:
+                    self.fond_carte.create_image((x)//30*30+3, (y)//30*30+3, image=self.textures[val[2]].image, anchor=NW)
+            
+            for val in self.pnjs_affiches:
+                print(val)
+                if val[0] == x//30*30 and val[1] == y//30*30:
+                    self.pnjs_affiches.remove(val)
+                
     def dessinerTexture(self, event):
         x = self.fond_carte.canvasx(event.x)
         y = self.fond_carte.canvasy(event.y)
