@@ -562,8 +562,7 @@ class createurMonde(tkinter.Tk):
         self.carte_actuelle = None
         self.carte_var.set("Aucune")
         del self.liste_fond [:]
-        self.afficherPNJ()
-        
+        self.afficherPNJ()    
       
     def resetPNJ(self):
         del self.pnjs_affiches[:]
@@ -571,14 +570,17 @@ class createurMonde(tkinter.Tk):
         self.afficher_carte()
         
     def afficher_carte(self):
+        for i in range(20):
+            for j in range(20):
+                self.fond_carte.create_image(i*30+3,j*30+3, image=self.textures[self.fond_save].image, anchor=NW)
+    
         for val in self.affiches:
             self.fond_carte.create_image(val[0]+3,val[1]+3, image=self.textures[val[2]].image, anchor=NW)
     
     def afficherPNJ(self):
         for val in self.pnjs_affiches:
             self.fond_carte.create_image(val[0]+3,val[1]+3, image=self.textures[val[2]].image, anchor=NW)
-    
-      
+         
     def sauvegarderCarte(self):
         haut = self.direction_haut.get()
         bas = self.direction_bas.get()
@@ -738,6 +740,7 @@ class createurMonde(tkinter.Tk):
         
         try:
             self.texture_actuelle = fond_carte_chargee
+            self.fond_save = self.texture_actuelle
             self.choisirFond()
             self.texture_actuelle = None
         except:
