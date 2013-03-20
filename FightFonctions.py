@@ -83,7 +83,7 @@ class Sort:
         for i in reponse:
             Sort.Name.append(i[1].lower())
             Sort.Degat.append(str(i[2])+";"+str(i[3]))
-            Sort.Element.append(i[4d].lower())
+            Sort.Element.append(i[4].lower())
             Sort.Etat.append(i[5])
             Sort.Cible.append(i[6])
 

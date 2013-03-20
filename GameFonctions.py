@@ -83,10 +83,11 @@ class MyCharacters:
     def ReadSave(Nickname,Character):
         """Lis la sauvegarde du personnage"""
 
-        conn = sqlite3.connect(os.path.join('items','items.db'))
+        conn = sqlite3.connect(os.path.join('MyCharacters','Characters.db'))
         c = conn.cursor()
-        c.execute("SELECT * FROM caracteristiques")
+        c.execute("SELECT * FROM caracteristiques WHERE nickname=?",(Nickname,))
         reponse = c.fetchall()[0]
+        print(reponse)
         conn.close()
 
         Character.Nickname=reponse[1]
