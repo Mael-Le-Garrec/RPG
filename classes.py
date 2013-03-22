@@ -554,7 +554,7 @@ def faire_quete(pnj, inventaire, fenetre):
                 for val2 in val['recompense']:
                     type = val2.split(":")[0].strip()
                     recompense = val2.split(":")[1].strip()
-
+                    
                     if type == 'item' and recompense[0] == "-":
                         if recompense[1:] in inventaire:
                             if inventaire[recompense[1:]] > 0:
@@ -571,7 +571,7 @@ def faire_quete(pnj, inventaire, fenetre):
                             xp = int(recompense)
                         except:
                             pass
-
+                                        
         for i in range(len(gagnes)):
             gagnes[i] = "«{1}{0}{1}»".format(gagnes[i], b'\xA0'.decode("utf-8", "replace"))
         for i in range(len(perdus)):
@@ -604,7 +604,7 @@ def faire_quete(pnj, inventaire, fenetre):
 
         if xp > 0 and dialogue:
             dialogue = dialogue + " Vous gagnez également {0} d'expérience.".format(xp)
-        else:
+        elif xp != 0:
             dialogue = "Vous gagnez {0} d'expérience.".format(xp)
 
         if Listes.liste_quetes[numero_quete].actuel == Listes.liste_quetes[numero_quete].nombre:
@@ -957,9 +957,9 @@ def afficher_quetes_status(fenetre):
                     nom = texte[0]
                     
                     if len(texte) == 1:
-                        fenetre.blit(font_objectif.render("-> {0}".format(nom), 1, (0,0,0)), (90, y+35))
+                        fenetre.blit(font_objectif.render("PNJ : {0}".format(nom), 1, (0,0,0)), (90, y+35))
                     else:
-                        fenetre.blit(font_objectif.render("-> {0}...".format(nom), 1, (0,0,0)), (90, y+35))
+                        fenetre.blit(font_objectif.render("PNJ : {0}...".format(nom), 1, (0,0,0)), (90, y+35))
 
             y += 60
     pygame.display.flip()     
