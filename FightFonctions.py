@@ -148,6 +148,7 @@ class Fight:
                 print("Turn "+str(Fight.Turn))
                 if Character.Initiative>Mob.Initiative:
                     if Fight.Action_choice(Character,Mob,int(input("1 : Attaquer ; 2 : Fuir ")))==1:
+                        print("Fin du combat (fuite)")
                         break
                     else:
                         if Character.HP>0 and Mob.HP>0:
@@ -158,6 +159,7 @@ class Fight:
 
                      if Character.HP>0 and Mob.HP>0:
                          if Fight.Action_choice(Character,Mob,int(input("1 : Attaquer ; 2 : Fuir ")))==1:
+                            print("Fin du combat (fuite)")
                             break
                          else:
                             Fight.Player.Player1Turn(Character,Mob)
@@ -462,7 +464,7 @@ class Fight:
         if IDAction==1:
             Fight.Player.Player1Turn(Character,Mob)
         elif IDAction==2:
-            if Fight.Fuite==0: #Arrive pas a fuir
+            if Fight.Fuite(Character, Mob)==1:
                 return 1
 
 
