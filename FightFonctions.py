@@ -122,7 +122,7 @@ class Fight:
 
             if Character.HP==0:
                 print("\nMob Win")
-                GameFonctions.MyCharacters.Character1.HP=1
+
             elif Mob.HP==0:
                print("\nPlayer Win")
                Fight.EndFight(Character,Mob,Fight.Turn)
@@ -170,7 +170,8 @@ class Fight:
                          Fight.Mob.MobTurn(Mob,Character)
                 Fight.Turn=Fight.Turn+1
                 print("==============================\n")
-
+            if Character.HP==0:
+                GameFonctions.MyCharacters.Character1.HP=1
     class Player:
          def Player1Turn(Character,Mob):
              """Tour du joueur"""
