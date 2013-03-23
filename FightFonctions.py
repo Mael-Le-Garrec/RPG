@@ -326,7 +326,7 @@ class Fight:
 
                 return Degat
 
-    def StartFightMob(Character):
+    def StartFightMob(Character, Mob=None):
         """Lance un combat Joueur vs Monstre"""
         #Calcul les caractéristique du personnage
         GameFonctions.MyCharacters.StatsCalc.CalcTotalStats(Character)
@@ -336,7 +336,8 @@ class Fight:
         Etat.IniEtat()
 
         #Demande l'id du mob
-        Mob=int(input("Entrer l'id de notre mob :"))
+        if Mob is None:
+            Mob=int(input("Entrer l'id de notre mob :"))
         #Initialise le montre
         Carac = GameFonctions.Mobs.IniMobs(Mob)
         #Calcul les stats du mobs

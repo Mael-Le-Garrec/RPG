@@ -10,6 +10,7 @@ from pygame import gfxdraw
 import math
 from pprint import pprint
 import sqlite3
+from random import randrange
 
 # Classe de carte contenant son nom, les cartes adjacentes, les objets dessus, les collisions, les zones de tps.
 class Carte:
@@ -24,6 +25,7 @@ class Carte:
         self.bloc = []
         self.tp = []
         self.fond = None
+        self.aggro = []
 
     def charger_carte(self):
         '''On charge une carte en fonction du nom donné (0, 1, etc)'''
@@ -82,6 +84,22 @@ class Carte:
                 # print(self.lignes[i].split(":")[1].strip())
                 self.fond = pygame.image.load(os.path.join("textures", self.lignes[i].split(":")[1].strip()+".png"))
 
+            elif re.match("[0-9]+:[0-9]+;[0-9]+:[0-9]+;[0-9]+(;[0-9]+:[0-9]+)+", self.lignes[i]):
+                x1 = int(self.lignes[i].split(";")[0].split(":")[0])
+                y1 = int(self.lignes[i].split(";")[0].split(":")[1])
+                x2 = int(self.lignes[i].split(";")[1].split(":")[0])
+                y2 = int(self.lignes[i].split(";")[1].split(":")[1])
+                
+                proba = int(self.lignes[i].split(";")[2])
+                mobs = self.lignes[i].split(";")[3].strip().split(",")
+                
+                
+                self.aggro.append([x1, y1, x2, y2, proba, mobs])
+                print(self.aggro)
+                
+                # self.mobs.append(x1,y1,x2,y2,proba, )
+                
+            
         # On ajoute pour chaque clé ayant le nom de de la texture son image chargée
         # Du genre : {'pot_de_fleur' : 'objet'}
 
@@ -165,7 +183,8 @@ class Joueur:
     def bouger_perso(key, fenetre, inventaire):
         '''Cette fonction sert à bouger le personnage en fonction de la touche pressée (up/down/left/right)'''
         # On prend en paramères la touche envoyée, la surface pygame, la liste des Joueur.cartes et pnjs pour pouvoir les afficher et le personnage
-
+        monstres = None
+        
         if key == K_DOWN:
             # Si l'Joueur.orientation actuelle est la même que celle du bas, on peut avancer
             if Joueur.perso_b == Joueur.orientation:
@@ -178,6 +197,7 @@ class Joueur:
                         Joueur.ancienne_y = Joueur.position_y
                         Joueur.ancienne_x = Joueur.position_x
                         Joueur.position_y += 30
+
                     # Sinon on change de Joueur.carte
                     else:
                         # Joueur.carte = numéro de Joueur.carte
@@ -201,6 +221,7 @@ class Joueur:
                         Joueur.ancienne_y = Joueur.position_y
                         Joueur.ancienne_x = Joueur.position_x
                         Joueur.position_y -= 30
+
                     else:
                         Listes.liste_cartes[int(Listes.liste_cartes[Joueur.carte].directions['haut'])].afficher_carte(fenetre)
                         Joueur.carte = int(Listes.liste_cartes[Joueur.carte].directions['haut'])
@@ -217,6 +238,7 @@ class Joueur:
                         Joueur.ancienne_y = Joueur.position_y
                         Joueur.ancienne_x = Joueur.position_x
                         Joueur.position_x -= 30
+
                     else:
                         Listes.liste_cartes[int(Listes.liste_cartes[Joueur.carte].directions["gauche"])].afficher_carte(fenetre)
                         Joueur.carte = int(Listes.liste_cartes[Joueur.carte].directions["gauche"])
@@ -233,6 +255,7 @@ class Joueur:
                         Joueur.ancienne_y = Joueur.position_y
                         Joueur.ancienne_x = Joueur.position_x
                         Joueur.position_x += 30
+
                     else:
                         Listes.liste_cartes[int(Listes.liste_cartes[Joueur.carte].directions["droite"])].afficher_carte(fenetre)
                         Joueur.carte = int(Listes.liste_cartes[Joueur.carte].directions["droite"])
@@ -265,8 +288,44 @@ class Joueur:
                     Joueur.position_y = Listes.liste_cartes[Joueur.carte].tp[i][2][1]
                     Joueur.carte = Listes.liste_cartes[Joueur.carte].tp[i][0]
         # print(Joueur.carte)
-
-
+        
+        for i in range(len(Listes.liste_cartes[Joueur.carte].aggro)):
+            x1 = Listes.liste_cartes[Joueur.carte].aggro[i][0]
+            y1 = Listes.liste_cartes[Joueur.carte].aggro[i][1]
+            x2 = Listes.liste_cartes[Joueur.carte].aggro[i][2]
+            y2 = Listes.liste_cartes[Joueur.carte].aggro[i][3]
+            proba = Listes.liste_cartes[Joueur.carte].aggro[i][4]
+        
+            # Si on est dans la zone de monstres
+            if Joueur.position_x >= x1 and Joueur.position_x < x2 and Joueur.position_y >= y1 and Joueur.position_y < y2:
+                # print(proba)
+                if randrange(0,100) <= proba:
+                    monstres = Listes.liste_cartes[Joueur.carte].aggro[i][5]
+                    break
+        
+        
+        monstre_choisi = None
+        if monstres:
+            rand = randrange(0,101)
+            for val in monstres:
+                monstre = int(val.split(":")[0])
+                proba = int(val.split(":")[1]) # probabilité que le monstre apparaisse /100
+                
+                if monstre in Listes.liste_mobs:
+                    if 100-proba <= rand:
+                        monstre_choisi = monstre
+                        break
+                    else:
+                        rand = rand + proba
+      
+            if monstre_choisi:
+                FightFonctions.Fight.StartFightMob(GameFonctions.MyCharacters.Character1, monstre_choisi)
+                if monstre_choisi in Listes.mob_prob.keys():
+                    Listes.mob_prob[monstre_choisi] += 1
+                else:
+                    Listes.mob_prob[monstre_choisi] = 1
+        
+        
         # On affiche la Joueur.carte
         afficher_monde(fenetre)
 
@@ -375,6 +434,17 @@ def choisir_dialogue(pnj, fenetre):
     else:
         fenetre_dialogue(fenetre, pnj.dialogues)
 
+def creer_liste_mobs():
+    conn = sqlite3.connect(os.path.join('Mobs','Mobs.db'))
+    c = conn.cursor()
+    c.execute("SELECT id FROM caracteristiques")
+    reponse = c.fetchall()
+    conn.close()
+    
+    for i in range(len(reponse)):
+        reponse[i] = reponse[i][0]
+    return reponse
+        
 def creer_liste_pnj():
     conn = sqlite3.connect(os.path.join('pnj','PNJs.db'))
     c = conn.cursor()
@@ -662,12 +732,14 @@ class Quete:
             self.actuel = 0
 
 class Listes:
+    mob_prob = {}
     liste_persos = list()
     liste_quetes = list()
     liste_items = list()
     liste_pnjs = list()
     liste_cartes = list()
     liste_obstacles = list()
+    liste_mobs = list()
 
 def creer_liste_obstacles():
     conn = sqlite3.connect(os.path.join('items','items.db'))

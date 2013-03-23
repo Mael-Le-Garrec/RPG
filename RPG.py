@@ -78,9 +78,7 @@ for val in Listes.liste_items.keys():
 
 Quete.charger_quete_en_cours()
 
-
-
-
+Listes.liste_mobs = creer_liste_mobs()
 
 
 # On définit quels événements permettent de se déplacer
@@ -139,7 +137,15 @@ while continuer == 1:
             if event.key == K_i:
                 # pprint(inventaire)
                 afficher_inventaire(fenetre, inventaire)
-
+            
+            if event.key == K_g:
+                nb = 0
+                for val in Listes.mob_prob.values():
+                    nb += val
+                
+                for val in Listes.mob_prob.keys():
+                    print(val, Listes.mob_prob[val]/nb*100)
+            
             if event.key == K_h:
                 print("Quêtes en cours : {0}".format(Quete.en_cours))
                 print("Quêtes finies : {0}".format(Quete.quetes_finies))
