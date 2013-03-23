@@ -147,16 +147,20 @@ class Fight:
                 print("==============================")
                 print("Turn "+str(Fight.Turn))
                 if Character.Initiative>Mob.Initiative:
-                    Fight.Player.Player1Turn(Character,Mob)
-
-                    if Character.HP>0 and Mob.HP>0:
-                        Fight.Mob.MobTurn(Mob,Character)
+                    if Fight.Action_choice(Character,Mob,int(input("1 : Attaquer ; 2 : Fuir ")))==1:
+                        break
+                    else:
+                        if Character.HP>0 and Mob.HP>0:
+                            Fight.Mob.MobTurn(Mob,Character)
 
                 elif Character.Initiative<Mob.Initiative:
                      Fight.Mob.MobTurn(Mob,Character)
 
                      if Character.HP>0 and Mob.HP>0:
-                         Fight.Player.Player1Turn(Character,Mob)
+                         if Fight.Action_choice(Character,Mob,int(input("1 : Attaquer ; 2 : Fuir ")))==1:
+                            break
+                         else:
+                            Fight.Player.Player1Turn(Character,Mob)
 
                 else:
                      Fight.Player.Player1Turn(Character,Mob)
@@ -432,5 +436,37 @@ class Fight:
     def EndFight(Character,Mob,Turn):
         """Gestion de la fin de combat"""
         #Calcul de l'xp
-        XP=GameFonctions.Exp.CalcXPMob(Character,Mob,Turn)
-        GameFonctions.Exp.NewXP(Character,XP)
+        if Mob.HP==0:
+            XP=GameFonctions.Exp.CalcXPMob(Character,Mob,Turn)
+            GameFonctions.Exp.NewXP(Character,XP)
+
+    def Fuite(Character, Mob):
+        Chance=randrange(1,101)
+        if GameFonctions.Mobs.Attitude==1:
+            if Chance>70:
+                return 1
+            else:
+                return 0
+        elif GameFonctions.Mobs.Attitude==2:
+            if Chance>10:
+                return 1
+            else:
+                return 0
+        else:
+            if Chance>30:
+                return 1
+            else:
+                return 0
+
+    def Action_choice(Character, Mob, IDAction):
+        if IDAction==1:
+            Fight.Player.Player1Turn(Character,Mob)
+        elif IDAction==2:
+            if Fight.Fuite==0: #Arrive pas a fuir
+                return 1
+
+
+
+
+
+

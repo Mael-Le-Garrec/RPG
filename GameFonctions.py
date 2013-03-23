@@ -42,14 +42,6 @@ class ClansInfo:
 
 
 class MyCharacters:
-    def SaveExist(NickName):
-            """Vérifie si la save existe"""
-            if os.path.exists(os.path.join("MyCharacters", str(NickName) + ".txt")):
-                Config.LogFile.Information("Le fichier de sauvegarde " + str(NickName) + " n'existe pas.",0)
-                Config.LogFile.Information("Le fichier de sauvegarde " + str(NickName) + " a été créer.",0)
-                return True
-            else:
-                return False
 
     def CreateSave(Character):
         """Créer la save du personnage"""
@@ -91,23 +83,14 @@ class MyCharacters:
         conn.close()
 
         Character.Nickname=reponse[1]
-
         Character.ClanName=reponse[2]
-
         Character.Lvl=reponse[3]
-
         Character.HP=reponse[5]
-
         Character.Vitality=reponse[6]
-
         Character.Exp=reponse[4]
-
         Character.Bonus_Intelligence=reponse[7]
-
         Character.Bonus_Strength=reponse[8]
-
         Character.Bonus_Chance=reponse[10]
-
         Character.Bonus_Agility=reponse[9]
         Character.Sort.append(reponse[10])
         Character.Sort.append(reponse[11])
@@ -154,9 +137,6 @@ class MyCharacters:
 
 
 
-
-
-
         def LvlUpStats(Character,Caracteristique,Nbr):
             """Actualise les caractéristique après un LvlUp"""
             Character.Caracteristique=Character.Caracterisque+Nbr
@@ -191,7 +171,6 @@ class Mobs:
     def IniMobs(IDMOB):
 
         """Initialise les différents sorts & vérifie si les fichiers d'information sont entier et sans erreur & récupère les infos des sorts"""
-
 
         conn = sqlite3.connect(os.path.join('Mobs','Mobs.db'))
         c = conn.cursor()
