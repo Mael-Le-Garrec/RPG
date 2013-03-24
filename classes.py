@@ -303,6 +303,8 @@ class Joueur:
                     monstres = Listes.liste_cartes[Joueur.carte].aggro[i][5]
                     break
         
+        # On affiche la Joueur.carte
+        afficher_monde(fenetre)
         
         monstre_choisi = None
         if monstres:
@@ -324,10 +326,7 @@ class Joueur:
                     Listes.mob_prob[monstre_choisi] += 1
                 else:
                     Listes.mob_prob[monstre_choisi] = 1
-        
-        
-        # On affiche la Joueur.carte
-        afficher_monde(fenetre)
+
 
     def parler_pnj(fenetre, inventaire):
         # On définit deux varibles contenant la distance séparant le personnage du bloc qu'il voit
