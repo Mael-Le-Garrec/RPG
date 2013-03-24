@@ -162,8 +162,9 @@ while continuer == 1:
 
             if event.key == K_f:
                 FightFonctions.Fight.StartFightMob(GameFonctions.MyCharacters.Character1)
-
                 GameFonctions.MyCharacters.UpdateSave(GameFonctions.MyCharacters.Character1)
+ 
+                afficher_monde(fenetre)
 
 
         # if event.type == MOUSEMOTION: # Décommenter pour avoir la position de la souris.

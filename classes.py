@@ -163,6 +163,8 @@ def creer_images_perso():
     Joueur.perso_h = pygame.image.load(os.path.join('images', 'fatman_up.png')).convert_alpha()
     Joueur.fond_dial = pygame.image.load(os.path.join('images', 'fond_dialogue.png')).convert_alpha()
     Joueur.orientation = Joueur.perso_b
+    
+    Joueur.centre = [300,300,0, Joueur.orientation]
 
 # Classe du personnage à jouer
 class Joueur:
@@ -171,14 +173,9 @@ class Joueur:
     position_y = 300
     ancienne_y = 300
     ancienne_x = 300
-
+    
     # On définit la Joueur.carte du joueur comme étant la première (en attendant les sauvegardes toujours)
     carte = 0
-    # On charge le fond noir servant à recouvrir les dialogues
-
-    # On met l'objet contenant l'Joueur.orientation "bas" dans la varibable Joueur.orientation, qu'on affichera
-
-
 
     def bouger_perso(key, fenetre, inventaire):
         '''Cette fonction sert à bouger le personnage en fonction de la touche pressée (up/down/left/right)'''
@@ -326,7 +323,8 @@ class Joueur:
                     Listes.mob_prob[monstre_choisi] += 1
                 else:
                     Listes.mob_prob[monstre_choisi] = 1
-
+                
+                afficher_monde(fenetre)
 
     def parler_pnj(fenetre, inventaire):
         # On définit deux varibles contenant la distance séparant le personnage du bloc qu'il voit
@@ -342,7 +340,7 @@ class Joueur:
             voir_x = -30
         else:
             voir_x = 30
-
+    
         # On parcourt la liste des pnjs
         for val in Listes.liste_pnjs.values():
             # Si ce pnj se trouve sur la Joueur.carte actuelle
@@ -355,6 +353,9 @@ class Joueur:
                     choisir_dialogue(val, fenetre)
                     if dialogue:
                         fenetre_dialogue(fenetre, dialogue)
+                        
+                    if val.centre:
+                        Joueur.centre = [Joueur.position_x, Joueur.position_y, Joueur.carte, Joueur.orientation]
 
     def prendre_item(inventaire, fenetre):
         voir_x = 0
@@ -488,7 +489,7 @@ class PNJ:
         reponse = c.fetchall()[0]
         conn.close()
         # id, nom, nom_entier, position, carte, image, dialogue
-
+       
         self.nom = reponse[1]
         self.nom_entier = reponse[2]
         self.image = pygame.image.load(os.path.join('textures', '{0}'.format(reponse[5]))).convert_alpha()
@@ -500,6 +501,8 @@ class PNJ:
         self.carte = int(reponse[4])
 
         self.dialogues = reponse[6]
+        
+        self.centre = reponse[7]
 
         # print("{0} : {1}".format(self.id, self.nom))
 

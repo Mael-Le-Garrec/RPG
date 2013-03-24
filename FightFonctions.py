@@ -5,6 +5,7 @@ import os
 from random import choice
 from math import floor
 import sqlite3
+import classes
 
 class Etat:
     Name=[]
@@ -172,6 +173,12 @@ class Fight:
                 print("==============================\n")
             if Character.HP==0:
                 GameFonctions.MyCharacters.Character1.HP=1
+                
+                classes.Joueur.position_x = classes.Joueur.centre[0]
+                classes.Joueur.position_y = classes.Joueur.centre[1]
+                classes.Joueur.carte = classes.Joueur.centre[2]
+                classes.Joueur.orientation = classes.Joueur.centre[3]
+                
     class Player:
          def Player1Turn(Character,Mob):
              """Tour du joueur"""

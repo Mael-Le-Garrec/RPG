@@ -7,7 +7,7 @@ conn = sqlite3.connect(os.path.join('pnj','PNJs.db'))
 c = conn.cursor()
 
 c.execute("DROP TABLE IF EXISTS pnj")
-c.execute('CREATE TABLE pnj (id integer primary key, nom, nom_entier text, position text, carte real, image text, dialogue text)')
+c.execute('CREATE TABLE pnj (id integer primary key, nom, nom_entier text, position text, carte real, image text, dialogue text, centre bool)')
 # id, nom, nom_entier, position, carte, image, dialogue par défaut
 
 dialogues = "Bonjour mon cher %{0}% ! Je me prénomme Maxime, comment allez vous ?"
@@ -19,7 +19,7 @@ c.execute("INSERT INTO pnj(nom, nom_entier, position, carte, image, dialogue) VA
 
 
 dialogue = "Bonjour et bienvenu dans mon Manôär ! Prennez le temps de visiter ma modeste demeure. Admirez également ma collection d'armoires."
-c.execute("INSERT INTO pnj(nom, nom_entier, position, carte, image, dialogue) VALUES ('Manoir','Manoir Man','240;270',6, 'manoir.png', ?)", (dialogue,))
+c.execute("INSERT INTO pnj(nom, nom_entier, position, carte, image, dialogue, centre) VALUES ('Manoir','Manoir Man','240;270',6, 'manoir.png', ?, 1)", (dialogue,))
 
 
 dialogue = "Bonjour ! Comment allez vous ?"
