@@ -242,10 +242,10 @@ conn = sqlite3.connect(os.path.join('Mobs','Mobs.db'))
 c = conn.cursor()
 
 c.execute("DROP TABLE IF EXISTS caracteristiques")
-c.execute('CREATE TABLE caracteristiques (id integer primary key, name text, lvl int, hp int, intelligence int, strength int, chance int, agility int, sort_1 int, sort_2 int, sort_3 int, sort_4 int, attitude int)')
+c.execute('CREATE TABLE caracteristiques (id integer primary key, name text, lvl int, hp int, intelligence int, strength int, chance int, agility int, sort_1 int, sort_2 int, sort_3 int, sort_4 int, attitude int, dialogue text)')
 
-c.execute('INSERT INTO caracteristiques (name, lvl, hp, intelligence, strength, chance, agility, sort_1, sort_2, sort_3, sort_4, attitude) VALUES("Prof Chêne", 1, 200, 0, 0, 0, 0, 0, -1, -1, -1, 1)')
-c.execute('INSERT INTO caracteristiques (name, lvl, hp, intelligence, strength, chance, agility, sort_1, sort_2, sort_3, sort_4, attitude) VALUES("Prof Orme", 1, 300, 0, 0, 0, 0, 0, -1, -1, -1, 1)')
+c.execute('INSERT INTO caracteristiques (name, lvl, hp, intelligence, strength, chance, agility, sort_1, sort_2, sort_3, sort_4, attitude, dialogue) VALUES("Prof Chêne", 1, 200, 0, 0, 0, 0, 0, -1, -1, -1, 1, "Je suis le prof chêne, je vais te rosser !")')
+c.execute('INSERT INTO caracteristiques (name, lvl, hp, intelligence, strength, chance, agility, sort_1, sort_2, sort_3, sort_4, attitude, dialogue) VALUES("Prof Orme", 1, 300, 0, 0, 0, 0, 0, -1, -1, -1, 1, "Je suis le prof orme, je vais te rosser !")')
 
 conn.commit()
 conn.close()

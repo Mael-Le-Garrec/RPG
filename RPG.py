@@ -12,19 +12,19 @@ import GameFonctions
 import FightFonctions
 
 # Initialisation Pygame
-# La fenetre fait 800*800 et le jeu 600*600
+# La Listes.fenetre fait 800*800 et le jeu 600*600
 # Les cases font 30*30
 pygame.init()
 titre = 'Un super RPG'
 pygame.key.set_repeat(1, 200)
-fenetre = pygame.display.set_mode((600,600))
+Listes.fenetre = pygame.display.set_mode((600,600))
 pygame.display.set_caption(titre)
 
 creer_images_perso()
 
 
-# fenetre.blit(pygame.image.load(os.path.join("images", "fond.png")), (0,0))
-fenetre.fill((240, 240, 240))
+# Listes.fenetre.blit(pygame.image.load(os.path.join("images", "fond.png")), (0,0))
+Listes.fenetre.fill((240, 240, 240))
 
 # On crée une liste contenant chaque carte
 Listes.liste_cartes = list()
@@ -39,7 +39,7 @@ for val in os.listdir("MyCharacters"):
     Listes.liste_persos = creer_liste_perso()
 
 # Selection du personnage
-selection_personnage(fenetre)
+selection_personnage(Listes.fenetre)
 
 # On lit le dossier "map" et on crée associe l'objet Carte à chaque indice qui correspond à son nom (Ainsi la carte 6 se trouvera à Listes.liste_cartes[6])
 for i in range(len(os.listdir("map"))):
@@ -74,7 +74,7 @@ for val in Listes.liste_items.keys():
 # print(Listes.liste_items)
 # print(inventaire)
 
-# selection_personnage(fenetre)
+# selection_personnage(Listes.fenetre)
 
 Quete.charger_quete_en_cours()
 
@@ -85,22 +85,22 @@ Listes.liste_mobs = creer_liste_mobs()
 cle_deplacement = [K_UP, K_DOWN, K_LEFT, K_RIGHT]
 
 # On affiche la carte sur laquelle est le personnage puis le personnage lui même
-Listes.liste_cartes[Joueur.carte].afficher_carte(fenetre)
-fenetre.blit(Joueur.orientation, (Joueur.position_x,Joueur.position_y))
+Listes.liste_cartes[Joueur.carte].afficher_carte(Listes.fenetre)
+Listes.fenetre.blit(Joueur.orientation, (Joueur.position_x,Joueur.position_y))
 
 # On affiche ensuite les pnjs présents au démarrage
 for val in Listes.liste_pnjs.values():
     if val.carte == Joueur.carte:
-        fenetre.blit(val.image, (val.pos_x, val.pos_y))
+        Listes.fenetre.blit(val.image, (val.pos_x, val.pos_y))
 
 for val in Listes.liste_items.values():
     for val2 in val.position:
         if int(val2[1]) == Joueur.carte:
-            fenetre.blit(val.image, (int(val2[0][0]), int(val2[0][1])))
+            Listes.fenetre.blit(val.image, (int(val2[0][0]), int(val2[0][1])))
 
 for i in Listes.liste_obstacles.keys():
     if Listes.liste_obstacles[i].carte == Joueur.carte:
-        Listes.liste_obstacles[i].afficher_obstacle(fenetre)
+        Listes.liste_obstacles[i].afficher_obstacle(Listes.fenetre)
 
 pygame.display.flip() # Un petit peu d'eau, faut rafraichir
 
@@ -118,25 +118,25 @@ while continuer == 1:
             Joueur.position_x = event.pos[0]//30*30
             Joueur.position_y = event.pos[1]//30*30
             print(Joueur.position_x, Joueur.position_y)
-            afficher_monde(fenetre)
+            afficher_monde(Listes.fenetre)
 
         # Si on a pressé une touche
         if event.type == KEYDOWN:
             # Soit elle se trouve dans les clés de déplacement et on bouge le perso
             if event.key in cle_deplacement:
-                Joueur.bouger_perso(event.key, fenetre, inventaire);
+                Joueur.bouger_perso(event.key, Listes.fenetre, inventaire);
 
             # Soit c'est "Entrée" et on fait parler le personnage
             if event.key == K_RETURN:
-                Joueur.parler_pnj(fenetre, inventaire)
-                Joueur.prendre_item(inventaire, fenetre)
+                Joueur.parler_pnj(Listes.fenetre, inventaire)
+                Joueur.prendre_item(inventaire, Listes.fenetre)
 
             if event.key == K_ESCAPE:
-                options(fenetre, inventaire)
+                options(Listes.fenetre, inventaire)
 
             if event.key == K_i:
                 # pprint(inventaire)
-                afficher_inventaire(fenetre, inventaire)
+                afficher_inventaire(Listes.fenetre, inventaire)
             
             if event.key == K_g:
                 nb = 0
@@ -152,7 +152,7 @@ while continuer == 1:
                 print("\n")
 
             if event.key == K_u:
-                pygame.image.save(fenetre, os.path.join("cartes_images", "{0}.png".format(Joueur.carte)))
+                pygame.image.save(Listes.fenetre, os.path.join("cartes_images", "{0}.png".format(Joueur.carte)))
 
             if event.key == K_m:
                 try:
@@ -164,7 +164,7 @@ while continuer == 1:
                 FightFonctions.Fight.StartFightMob(GameFonctions.MyCharacters.Character1)
                 GameFonctions.MyCharacters.UpdateSave(GameFonctions.MyCharacters.Character1)
  
-                afficher_monde(fenetre)
+                afficher_monde(Listes.fenetre)
 
 
         # if event.type == MOUSEMOTION: # Décommenter pour avoir la position de la souris.

@@ -141,14 +141,16 @@ class Fight:
             GameFonctions.Mobs.CalcInitiative(Mob)
             GameFonctions.MyCharacters.StatsCalc.CalcInitiative(Character)
 
-            print("Initiative Player 1 "+str(Character.Initiative))
-            print("Initiative Mob "+str(Mob.Initiative))
+            # print("Initiative Player 1 "+str(Character.Initiative))
+            # classes.fenetre_dialogue(classes.Listes.fenetre, "Initiative Player 1 "+str(Character.Initiative))
+            # classes.fenetre_dialogue(classes.Listes.fenetre, "Initiative Mob "+str(Mob.Initiative))
+            # print("Initiative Mob "+str(Mob.Initiative))
 
             while Character.HP>0 and Mob.HP>0:
                 print("==============================")
                 print("Turn "+str(Fight.Turn))
                 if Character.Initiative>Mob.Initiative:
-                    if Fight.Action_choice(Character,Mob,int(input("1 : Attaquer ; 2 : Fuir ")))==1:
+                    if Fight.Action_choice(Character,Mob,classes.choisirAction(classes.Listes.fenetre, Character))==1:
                         print("Fin du combat (fuite)")
                         break
                     else:
@@ -357,6 +359,8 @@ class Fight:
         #Calcul les stats du mobs
         GameFonctions.Mobs.MobStats(Carac)
         #Lance le combat contre le monstre
+        
+        classes.affichageDebutCombat(classes.Listes.fenetre,GameFonctions.MyCharacters.Character1, GameFonctions.Mobs)
         Fight.Mob.MobCombat(GameFonctions.MyCharacters.Character1,GameFonctions.Mobs)
 
 

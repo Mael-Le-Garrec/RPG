@@ -157,6 +157,7 @@ class MyCharacters:
 
 class Mobs:
     Name=""
+    Dialogue=""
     Lvl=0
     HP=0
     TVitality=0
@@ -181,7 +182,7 @@ class Mobs:
 
     def MobStats(x):
         """Charge les caractéristiques du monstre"""
-
+        
         Mobs.Name=x[1]
         Mobs.Lvl=x[2]
         Mobs.HP=x[3]
@@ -193,7 +194,7 @@ class Mobs:
         Mobs.Sort=str(x[8])+","+str(x[9])+","+str(x[10])+","+str(x[11])
         Mobs.Sort=Mobs.Sort.replace(",-1","").replace("-1,","")
         Mobs.Attitude=x[12]
-
+        Mobs.Dialogue=x[13]
 
     def CalcInitiative(Mob):
             """Calcul de l'initiative"""

@@ -895,7 +895,6 @@ def options(fenetre, inventaire):
                         afficher_monde(fenetre)
                         continuer = 0
 
-
 def afficher_monde(fenetre):
     Listes.liste_cartes[Joueur.carte].afficher_carte(fenetre)
 
@@ -914,7 +913,7 @@ def afficher_monde(fenetre):
     fenetre.blit(Joueur.orientation, (Joueur.position_x, Joueur.position_y))
     pygame.display.flip()
 
-def fenetre_dialogue(fenetre, dialogue):
+def fenetre_dialogue(fenetre, dialogue, afficher=1):
     myfont = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 14)
     dialogue_wrap = textwrap.wrap(dialogue.replace("%{0}%", GameFonctions.MyCharacters.Character1.Nickname),65)
     fond_dial = pygame.image.load(os.path.join('images', 'fond_dialogue.png')).convert_alpha()
@@ -977,8 +976,9 @@ def fenetre_dialogue(fenetre, dialogue):
             if event.type == KEYDOWN:
                 if event.key == K_RCTRL:
                     continuer = 0
-                    afficher_monde(fenetre)
-
+                    
+                    if afficher:
+                        afficher_monde(fenetre)
 
 def afficher_quetes_status(fenetre):
     # Quete.quetes_finies
@@ -1555,3 +1555,148 @@ def pygame_input(fenetre, actuel):
 
                 elif event.key == K_RETURN and len(pseudo) > 2 and pseudo not in Listes.liste_persos:
                     return pseudo
+                    
+def affichageDebutCombat(fenetre, perso, mob):
+    font = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 14)
+
+    fenetre.blit(pygame.image.load(os.path.join('images', 'clan.png')).convert_alpha(),(0,0))
+    fenetre_dialogue(fenetre, "Un combat vient de commencer avec un {} !".format(mob.Name), 0)
+    
+    fenetre.blit(pygame.image.load(os.path.join('images', 'clan.png')).convert_alpha(),(0,0))
+    fenetre.blit(pygame.image.load(os.path.join('images', 'combat.png')).convert_alpha(),(600-254-15,600-80-15))
+    
+    x = 600-254-15+40
+    y = 600-80-15+20
+    
+    fenetre.blit(font.render("Attaquer", 1, (0,0,0)), (x, y))
+    fenetre.blit(font.render("Parler", 1, (0,0,0)), (x, y+20))
+    fenetre.blit(font.render("Objets", 1, (0,0,0)), (x+130, y))
+    fenetre.blit(font.render("Fuir", 1, (0,0,0)), (x+130, y+20))
+    
+    x_c = x - 20
+    y_c = y + 4
+    
+    pygame.gfxdraw.filled_trigon(fenetre, 0+x_c, 0+y_c, 0+x_c, 10+y_c, 5+x_c, 5+y_c, (0,0,0))
+    
+    pygame.display.flip()
+
+    print(perso.Nickname)
+    print(perso.ClanName)
+    
+def choisirAction(fenetre, perso):
+    curseur = [0,0]
+    affichageSelectionCombat1(fenetre, curseur)
+    
+    continuer = 1
+    while continuer:
+        pygame.time.Clock().tick(60)
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                quit()
+            if event.type == KEYDOWN:
+                if event.key == K_RETURN:
+                    continuer = 0
+                    if curseur == [1,1]:
+                        return 2
+                    elif curseur == [0,0]:
+                        choisirSort(fenetre, perso)
+                    else:
+                        return 1
+                   
+                if event.key == K_LEFT:
+                    if curseur[0] == 1:
+                        curseur[0] -= 1
+                        affichageSelectionCombat1(fenetre, curseur)
+                
+                if event.key == K_RIGHT:
+                    if curseur[0] == 0:
+                        curseur[0] += 1
+                        affichageSelectionCombat1(fenetre, curseur)
+                        
+                if event.key == K_DOWN:
+                    if curseur[1] == 0:
+                        curseur[1] += 1
+                        affichageSelectionCombat1(fenetre, curseur)
+                        
+                if event.key == K_UP:
+                    if curseur[1] == 1:
+                        curseur[1] -= 1
+                        affichageSelectionCombat1(fenetre, curseur)
+
+def affichageSelectionCombat1(fenetre, curseur):
+    font = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 14)
+    
+    fenetre.blit(pygame.image.load(os.path.join('images', 'combat.png')).convert_alpha(),(600-254-15,600-80-15))
+    
+    x = 600-254-15+40
+    y = 600-80-15+20
+    
+    fenetre.blit(font.render("Attaquer", 1, (0,0,0)), (x, y))
+    fenetre.blit(font.render("Parler", 1, (0,0,0)), (x, y+20))
+    fenetre.blit(font.render("Objets", 1, (0,0,0)), (x+130, y))
+    fenetre.blit(font.render("Fuir", 1, (0,0,0)), (x+130, y+20))
+    
+    x_c = x - 20 + 130 * curseur[0] 
+    y_c = y + 4 + 20 * curseur[1]
+    
+    pygame.gfxdraw.filled_trigon(fenetre, 0+x_c, 0+y_c, 0+x_c, 10+y_c, 5+x_c, 5+y_c, (0,0,0))
+    
+    pygame.display.flip()
+    
+    
+def choisirSort(fenetre, perso):
+    curseur = [0,0]
+    affichageSelectionCombat2(fenetre, curseur, perso)
+    
+    continuer = 1
+    while continuer:
+        pygame.time.Clock().tick(60)
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                quit()
+            if event.type == KEYDOWN:
+                if event.key == K_RETURN:
+                   pass
+                   
+                if event.key == K_LEFT:
+                    if curseur[0] == 1:
+                        curseur[0] -= 1
+                        affichageSelectionCombat2(fenetre, curseur, perso)
+                
+                if event.key == K_RIGHT:
+                    if curseur[0] == 0:
+                        curseur[0] += 1
+                        affichageSelectionCombat2(fenetre, curseur, perso)
+                        
+                if event.key == K_DOWN:
+                    if curseur[1] == 0:
+                        curseur[1] += 1
+                        affichageSelectionCombat2(fenetre, curseur, perso)
+                        
+                if event.key == K_UP:
+                    if curseur[1] == 1:
+                        curseur[1] -= 1
+                        affichageSelectionCombat2(fenetre, curseur, perso)
+    
+def affichageSelectionCombat2(fenetre, curseur, perso):
+    font = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 14)
+    
+    fenetre.blit(pygame.image.load(os.path.join('images', 'combat.png')).convert_alpha(),(600-254-15,600-80-15))
+    
+    x = 600-254-15+40
+    y = 600-80-15+20
+    
+    print(perso.Sort)
+    
+    fenetre.blit(font.render("Coucou", 1, (0,0,0)), (x, y))
+    fenetre.blit(font.render("Coucou", 1, (0,0,0)), (x, y+20))
+    fenetre.blit(font.render("Coucou", 1, (0,0,0)), (x+130, y))
+    fenetre.blit(font.render("Coucou", 1, (0,0,0)), (x+130, y+20))
+    
+    x_c = x - 20 + 130 * curseur[0] 
+    y_c = y + 4 + 20 * curseur[1]
+    
+    pygame.gfxdraw.filled_trigon(fenetre, 0+x_c, 0+y_c, 0+x_c, 10+y_c, 5+x_c, 5+y_c, (0,0,0))
+    
+    pygame.display.flip()
+    
