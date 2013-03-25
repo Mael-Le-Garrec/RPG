@@ -1599,7 +1599,7 @@ def choisirAction(fenetre, perso):
                     if curseur == [1,1]:
                         return 2
                     elif curseur == [0,0]:
-                        choisirSort(fenetre, perso)
+                        return choisirSort(fenetre, perso)
                     else:
                         return 1
                    
@@ -1656,7 +1656,7 @@ def choisirSort(fenetre, perso):
                 quit()
             if event.type == KEYDOWN:
                 if event.key == K_RETURN:
-                   pass
+                   return 1
                    
                 if event.key == K_LEFT:
                     if curseur[0] == 1:
