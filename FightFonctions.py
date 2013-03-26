@@ -71,6 +71,7 @@ class Sort:
     Name=[]
     Degat=[]
     Element=[]
+    Boost=[]
     Etat=[]
     Cible=[]
     def IniSort():
@@ -87,6 +88,7 @@ class Sort:
             Sort.Element.append(i[4].lower())
             Sort.Etat.append(i[5])
             Sort.Cible.append(i[6])
+            Sort.Boost.append(i[7])
 
 
 class Fight:
@@ -95,50 +97,47 @@ class Fight:
 
         def MobTurn(Mob,Character):
             """Tour du monstre"""
-            print("\nTour du mobs :")
+            print("\nTour du mob :")
             print(str(Mob.HP)+"/"+str(Mob.TVitality))
             Etat.ActionMob(Mob)
             if Mob.HP>0:
-
                 MobAttaque=int(Fight.Mob.IA.Choix_attitude())
+                if Sort.Boost[MobAttaque]!=0:
+                    Fight.Sort_bonus("Mob",MobAttaque,Sort.Cible[MobAttaque])
+                    if Sort.Cible[MobAttaque]==1:
+                            if Sort.Boost[MobAttaque]<= 0:
+                                print (Character.Nickname+" : -{} {}".format(Sort.Boost[MobAttaque],Sort.Element[MobAttaque])  )
+                            else:
+                                print (Character.Nickname+" : +{} {}".format(Sort.Boost[MobAttaque],Sort.Element[MobAttaque]) )
+                    else:
+                            if Sort.Boost[MobAttaque] <= 0:
+                                print(Mob.Name+" : -{} {}".format(Sort.Boost[MobAttaque],Sort.Element[MobAttaque])  )
+                            else:
+                                print(Mob.Name+" : +{} {}".format(Sort.Boost[MobAttaque],Sort.Element[MobAttaque]) )
 
-                MobAttaque=int(Fight.IA.Choix_attitude())
 
-                Degat,Cible=Fight.Attaque(GameFonctions.Mobs,MobAttaque,Sort.Cible[MobAttaque])
-                if Cible==1:
-                    Degat=Fight.HP(GameFonctions.MyCharacters.Character1,Degat)
                 else:
-                    Degat=Fight.HP(Mob,Degat)
 
-                print(Mob.Name+" lance {}".format(Sort.Name[int(MobAttaque)]))
-
-                print("Mobs lance {}".format(Sort.Name[int(MobAttaque)]))
-
-                if Sort.Etat[MobAttaque]!=-1:
-                    Etat.EtatCharacter1=[Etat.Name[Sort.Etat[MobAttaque]],Etat.Turn[Sort.Etat[MobAttaque]],Etat.Effect[Sort.Etat[MobAttaque]]]
-                    print ("Player entre dans l'etat {}".format(Etat.Name[Sort.Etat[MobAttaque]]))
-
-                if Cible==1:
-                    if Degat >= 0:
-
-                        print (Character.Nickname+" : -{} ".format(Degat) + str(Character.HP)+"/"+str(Character.TVitality) )
+                    Degat,Cible=Fight.Sort_normal(GameFonctions.Mobs,MobAttaque,Sort.Cible[MobAttaque])
+                    if Cible==1:
+                        Degat=Fight.HP(GameFonctions.MyCharacters.Character1,Degat)
                     else:
-                        print (Character.Nickname+" : +{} ".format(-Degat)+ str(Character.HP)+"/"+str(Character.TVitality) )
-                else:
-                    if Degat >= 0:
-                        print(Mob.Name+" : -{} : ".format(Degat) + str(Mob.HP)+"/"+str(Mob.TVitality) )
-                    else:
-                        print(Mob.Name+" : +{} : ".format(-Degat) + str(Mob.HP)+"/"+str(Mob.TVitality))
+                        Degat=Fight.HP(Mob,Degat)
+                    print(Mob.Name+" lance {}".format(Sort.Name[int(MobAttaque)]))
+                    if Sort.Etat[MobAttaque]!=-1:
+                        Etat.EtatCharacter1=[Etat.Name[Sort.Etat[MobAttaque]],Etat.Turn[Sort.Etat[MobAttaque]],Etat.Effect[Sort.Etat[MobAttaque]]]
+                        print ("Player entre dans l'etat {}".format(Etat.Name[Sort.Etat[MobAttaque]]))
 
-                        print ("Joueur perd {} ".format(Degat) + str(Character.HP)+"/"+str(Character.TVitality) )
+                    if Cible==1:
+                        if Degat >= 0:
+                            print (Character.Nickname+" : -{} ".format(Degat) + str(Character.HP)+"/"+str(Character.TVitality) )
+                        else:
+                            print (Character.Nickname+" : +{} ".format(-Degat)+ str(Character.HP)+"/"+str(Character.TVitality) )
                     else:
-                        print ("Joueur gagne {}".format(-Degat)+ str(Character.HP)+"/"+str(Character.TVitality) )
-                else:
-                    if Degat >= 0:
-                        print("Mob perd {} : ".format(Degat) + str(Mob.HP)+"/"+str(Mob.TVitality) )
-                    else:
-                        print("Mob gagne {} : ".format(-Degat) + str(Mob.HP)+"/"+str(Mob.TVitality))
-
+                        if Degat >= 0:
+                            print(Mob.Name+" : -{} : ".format(Degat) + str(Mob.HP)+"/"+str(Mob.TVitality) )
+                        else:
+                            print(Mob.Name+" : +{} : ".format(-Degat) + str(Mob.HP)+"/"+str(Mob.TVitality))
 
             if Character.HP==0:
                 print("\nMob Win")
@@ -146,6 +145,11 @@ class Fight:
             elif Mob.HP==0:
                print("\nPlayer Win")
                Fight.EndFight(Character,Mob,Fight.Turn)
+
+## def RandomMobAttaque():
+## """Choix aléatoire de l'attaque du mobs"""
+## MobSpellList=GameFonctions.Mobs.Sort.split(",")
+## return choice(MobSpellList)
 
 
         def MobCombat(Character,Mob):
@@ -155,43 +159,39 @@ class Fight:
             GameFonctions.Mobs.CalcInitiative(Mob)
             GameFonctions.MyCharacters.StatsCalc.CalcInitiative(Character)
 
-            print("Initiative Player 1 "+str(Character.Initiative))
-            print("Initiative Mob "+str(Mob.Initiative))
+            print("Initiative "+ Character.Nickname +" "+ str(Character.Initiative))
+            print("Initiative " + Mob.Name +" "+str(Mob.Initiative))
 
             while Character.HP>0 and Mob.HP>0:
                 print("==============================")
                 print("Turn "+str(Fight.Turn))
+
+                if Character.Initiative==Mob.Initiative:
+                    if randrange(0,2)==0:
+                        Character.Initiative+=1
+                    else:
+                        Character.Initiative-=1
+
                 if Character.Initiative>Mob.Initiative:
-
-                    if Fight.Player.Action_choice(Character,Mob,classes.choisirAction(classes.Listes.fenetre, Character))==1:
-
-                    if Fight.Action_choice(Character,Mob,int(input("1 : Attaquer ; 2 : Fuir ")))==1:
-
+                    if Fight.Player.Action_choice(Character,Mob,int(input("Attaquer : 1 ; Fuir : 2"))):#classes.choisirAction(classes.Listes.fenetre, Character))==1:
                         print("Fin du combat (fuite)")
                         break
-                    else:
-                        if Character.HP>0 and Mob.HP>0:
-                            Fight.Mob.MobTurn(Mob,Character)
-
-                elif Character.Initiative<Mob.Initiative:
-                     Fight.Mob.MobTurn(Mob,Character)
-
 
                     if Character.HP>0 and Mob.HP>0:
-                         if Fight.Player.Action_choice(Character,Mob,classes.choisirAction(classes.Listes.fenetre, Character))==1:
-
-                     if Character.HP>0 and Mob.HP>0:
-                         if Fight.Action_choice(Character,Mob,int(input("1 : Attaquer ; 2 : Fuir ")))==1:
-
+                        if Fight.Mob.IA.Action_choice(Character,Mob)==1:
                             print("Fin du combat (fuite)")
                             break
-                         else:
-                            Fight.Player.Player1Turn(Character,Mob)
 
-                else:
-                     Fight.Player.Player1Turn(Character,Mob)
-                     if Character.HP>0 and Mob.HP>0:
-                         Fight.Mob.MobTurn(Mob,Character)
+                elif Character.Initiative<Mob.Initiative:
+                    if Fight.Mob.IA.Action_choice(Character,Mob)==1:
+                                print("Fin du combat (fuite)")
+                                break
+
+                    if Character.HP>0 and Mob.HP>0:
+                         if Fight.Player.Action_choice(Character,Mob,int(input("Attaquer : 1 ; Fuir : 2"))):#classes.choisirAction(classes.Listes.fenetre, Character))==1:
+                            print("Fin du combat (fuite)")
+                            break
+
                 Fight.Turn=Fight.Turn+1
                 print("==============================\n")
             if Character.HP==0:
@@ -202,11 +202,21 @@ class Fight:
                 classes.Joueur.carte = classes.Joueur.centre[2]
                 classes.Joueur.orientation = classes.Joueur.centre[3]
 
-
         class IA:
+            PlayerLastSpell=0
+            PlayerSpell={}
+            def IAIni():
+                PlayerSpell.clear()
+                for i in range (len(Sort.Name)):
+                    PlayerSpell[i]=0
+
+            def PlayerStats(IDSort):
+                PlayerSpell[IDSort]+=1
+
             def Action_choice(Character,Mob):
-                if Fight.Turn==1 & GameFonctions.Mobs.Attitude==0:
-                    if GameFonctions.Mobs.HP<=GameFonctions.Mobs.TVitality*0.75:
+                """Choix de l'action"""
+                if Fight.Turn==1 & Mob.Attitude==0:
+                    if Mob.HP<=Mob.TVitality*0.75:
                         return Fight.Fuite(50)
                 else:
                      Fight.Mob.MobTurn(Mob,Character)
@@ -242,9 +252,12 @@ class Fight:
                             if "-" in Sort.Degat[i]:
                                 UsableSpell.append(i)
                 else:
+                    if randrange(0,2)==0:
                         for i in MobSpellList:
                             if "-" in Sort.Degat[i]:
                                 UsableSpell.append(i)
+                    else:
+                        UsableSpell=Fight.Mob.IA.Spell.Bonus_Spell(MobSpellList)
 
                 return UsableSpell
 
@@ -307,11 +320,11 @@ class Fight:
 
                     #Filtre le sorts soignant et les sorts infligeant des degats.
                     for i in Spell:
-                            if not "-" in Sort.Degat[i]:
+                            if not "-" in Sort.Degat[i] or 0 in Sort.Boost[i] :
                                 UsableSpell.append(i)
                     #Convertie le sort en degats
                     for i in range(len(UsableSpell)):
-                                MaxSpell.append(Fight.Mob.IA.Spell.Try_Attaque(GameFonctions.Mobs,UsableSpell[i]))
+                                MaxSpell.append(Fight.Mob.IA.Spell.Try_Sort_Normal(GameFonctions.Mobs,UsableSpell[i]))
                     #Obtient l'ID du sort le plus puissant des sorts disponible
                     Max=UsableSpell[MaxSpell.index(max(MaxSpell))]
                     UsableSpell[:]=[]
@@ -320,7 +333,7 @@ class Fight:
                     return UsableSpell
 
 
-                def Try_Attaque(Character, NbrSort):
+                def Try_Sort_Normal(Character, NbrSort):
                     """Calcul les dégat infligée par les attaques"""
                     Degat=0
 
@@ -343,8 +356,27 @@ class Fight:
 
                     return Degat
 
+                def Bonus_Spell(Spell):
+                    UsableSpell=[]
+                    for i in Spell:
+                       if not 0 in Sort.Boost[i] :
+                            UsableSpell.append(i)
+
+                    return UsableSpell
+
+
+
 
     class Player:
+         def Action_choice(Character, Mob, IDAction):
+             if IDAction==1:
+                Fight.Player.Player1Turn(Character,Mob)
+             elif IDAction==2:
+                if Fight.Fuite()==1:
+                   return 1
+                else:
+                   print("Impossible de fuir")
+
          def Player1Turn(Character,Mob):
              """Tour du joueur"""
              print("Tour du Joueur :")
@@ -357,166 +389,55 @@ class Fight:
                         except ValueError:
                             continue
                         else:
-                            if  SortID not in Character.Sort:
+                            if SortID not in Character.Sort:
                                 print("Vous ne pouvez pas utiliser ce sort !")
                             else:
                                 break
-
-                 Degat, Cible=Fight.Attaque(Character,SortID, Sort.Cible[SortID])
-                 if Cible==1:
-                    Degat=Fight.HP(Mob,Degat)
+                 if Sort.Boost[SortID]!=0:
+                    Fight.Sort_bonus("Character",SortID,Sort.Cible[SortID])
+                    if Sort.Cible[SortID]==1:
+                         if Sort.Boost[SortID] <= 0:
+                            print(Mob.Name+" : -{} {}".format(Sort.Boost[SortID],Sort.Element[SortID]))
+                         else:
+                            print(Mob.Name+" : +{} {}".format(Sort.Boost[SortID],Sort.Element[SortID]))
+                    else:
+                         if Sort.Boost[SortID] <= 0:
+                             print (Character.Nickname+" : -{} {}".format(Sort.Boost[SortID],Sort.Element[SortID]))
+                         else:
+                            print (Character.Nickname+" : +{} {}".format(Sort.Boost[SortID],Sort.Element[SortID]))
 
                  else:
-                    Degat=Fight.HP(GameFonctions.MyCharacters.Character1,Degat)
-                 if Sort.Etat[SortID]!=-1:
-                    Etat.EtatMob=[Etat.Name[Sort.Etat[SortID]],Etat.Turn[Sort.Etat[SortID]],Etat.Effect[Sort.Etat[SortID]]]
-                    print ("Mob entre dans l'etat {}".format(Etat.Name[Sort.Etat[SortID]]))
-                 print("Joueur lance {}".format(Sort.Name[int(SortID)]))
-                 if Cible==1:
-                     if Degat >= 0:
+                     Degat, Cible=Fight.Sort_normal(Character,SortID, Sort.Cible[SortID])
+                     if Cible==1:
+                        Degat=Fight.HP(Mob,Degat)
 
-                        print(Mob.Name+" : -{} : ".format(Degat) + str(Mob.HP)+"/"+str(Mob.TVitality) )
                      else:
-                        print(Mob.Name+" : +{} : ".format(-Degat) + str(Mob.HP)+"/"+str(Mob.TVitality))
-                 else:
-                     if Degat >= 0:
-                         print (Character.Nickname+" : -{} ".format(Degat) + str(Character.HP)+"/"+str(Character.TVitality) )
+                        Degat=Fight.HP(GameFonctions.MyCharacters.Character1,Degat)
+                     if Sort.Etat[SortID]!=-1:
+                        Etat.EtatMob=[Etat.Name[Sort.Etat[SortID]],Etat.Turn[Sort.Etat[SortID]],Etat.Effect[Sort.Etat[SortID]]]
+                        print ("Mob entre dans l'etat {}".format(Etat.Name[Sort.Etat[SortID]]))
+                     print("Joueur lance {}".format(Sort.Name[int(SortID)]))
+                     if Cible==1:
+                         if Degat >= 0:
+                            print(Mob.Name+" : -{} : ".format(Degat) + str(Mob.HP)+"/"+str(Mob.TVitality) )
+                         else:
+                            print(Mob.Name+" : +{} : ".format(-Degat) + str(Mob.HP)+"/"+str(Mob.TVitality))
                      else:
-                        print (Character.Nickname+" : +{} ".format(-Degat)+ str(Character.HP)+"/"+str(Character.TVitality) )
-
-                        print("Mob perd {} : ".format(Degat) + str(Mob.HP)+"/"+str(Mob.TVitality))
-                     else:
-                        print("Mob gagne {} : ".format(-Degat) + str(Mob.HP)+"/"+str(Mob.TVitality))
-                 else:
-                     if Degat >= 0:
-                        print("Joueur perd {} : ".format(Degat) + str(Character.HP)+"/"+str(Character.TVitality))
-                     else:
-                        print("Joueur gagne {} : ".format(-Degat) + str(Character.HP)+"/"+str(Character.TVitality))
-
+                         if Degat >= 0:
+                             print (Character.Nickname+" : -{} ".format(Degat) + str(Character.HP)+"/"+str(Character.TVitality) )
+                         else:
+                            print (Character.Nickname+" : +{} ".format(-Degat)+ str(Character.HP)+"/"+str(Character.TVitality) )
+            #Vérification s'il y a un gagnant
              if Mob.HP==0:
                print("\nPlayer Win")
                Fight.EndFight(Character,Mob,Fight.Turn)
              elif Character.HP==0:
                 Character.HP=1
                 print("\nMob Win")
+             else:
+                #Analyse du tour du joueur par l'IA delamortquitue
+                Fight.Mob.IA.PlayerStats(SortID)
 
-    class IA:
-
-        def Choix_attitude():
-            """Choisi le comportement du monstre"""
-            UsableSpell=[]
-
-            MobSpellList=GameFonctions.Mobs.Sort.split(",")
-            MobSpellList=list(map(int,MobSpellList))
-
-            if GameFonctions.Mobs.Attitude==0: #Peureux
-                UsableSpell=Fight.IA.Attitude_Peureux(MobSpellList)
-
-
-            elif GameFonctions.Mobs.Attitude==2: #Agressif
-                UsableSpell=Fight.IA.Attitude_Agressif(MobSpellList)
-
-            if UsableSpell==[]:
-                return choice (MobSpellList)
-            else:
-                return choice (UsableSpell)
-
-
-        def Attitude_Peureux(MobSpellList):
-            """Choisi le sort en fonction du comportement peureux du monstre. Le monstre va principalement se soigner s'il dispose d'un sort de soin"""
-            UsableSpell=[]
-            if GameFonctions.MyCharacters.Character1.HP>GameFonctions.MyCharacters.Character1.TVitality*0.10:
-                if randrange(1,101)<=10:
-                    UsableSpell=MobSpellList
-                else:
-                    for i in MobSpellList:
-                        if "-" in Sort.Degat[i]:
-                            UsableSpell.append(i)
-            else:
-                    for i in MobSpellList:
-                        if "-" in Sort.Degat[i]:
-                            UsableSpell.append(i)
-
-            return UsableSpell
-
-        def Attitude_Agressif(MobSpellList):
-            """Choisi le sort en fonction du comportement agressif du monstre. Le monstre va principalement attaquer s'il dispose d'un d'attaque"""
-            UsableSpell=[]
-            if Fight.Turn>15 and Fight.Turn<=25:
-                 if GameFonctions.Mobs.HP<=GameFonctions.Mobs.TVitality*0.50:
-                    #Le monstre avec la comportement agressif va lancer son attaque la plus fort s'il est sous la bare des 50% de vie et que le nombre de tour est supérieur à 15.
-                    UsableSpell=Fight.IA.Spell.Strongest_Spell(MobSpellList)
-            elif Fight.Turn>25 and Fight.Turn<=30:
-                 if GameFonctions.Mobs.HP<=GameFonctions.Mobs.TVitality*0.80:
-                    #Le monstre avec la comportement agressif va lancer son attaque la plus fort s'il est sous la bare des 80% de vie et que le nombre de tour est supérieur à 25.
-                    UsableSpell=Fight.IA.Spell.Strongest_Spell(MobSpellList)
-            elif Fight.Turn>30:
-                    #Le monstre avec la comportement agressif va lancer son attaque la plus fort si le nombre de tour est supérieur à 30.
-                    UsableSpell=Fight.IA.Spell.Strongest_Spell(MobSpellList)
-            else:
-                if GameFonctions.Mobs.HP<=GameFonctions.Mobs.TVitality*0.25:
-                    #Le monstre avec la comportement agressif va lancer son attaque la plus fort s'il est sous la bare des 25% de vie.
-                    #Plus le monstres est frappé, plus le monstre devient dangereux et agressif
-                    USableSpell=Fight.IA.Spell.Strongest_Spell(MobSpellList)
-                elif GameFonctions.Mobs.HP>GameFonctions.Mobs.TVitality*0.25 and GameFonctions.Mobs.HP<=GameFonctions.Mobs.TVitality*0.75:
-                    #Le monstre se sent légérement en danger est choisi uniquement d'attaquer quand il est entre 25% et 75% de vie
-                    for i in MobSpellList:
-                        if not "-" in Sort.Degat[i]:
-                            UsableSpell.append(i)
-                else:
-                    #Le monstre n'a que 10% de chance de choisir une attaque qui soigne mais il va préférer dans 90% des cas d'attaquer.
-                    if randrange(1,101)<=10:
-                        UsableSpell=MobSpellList
-                    else:
-                        for i in MobSpellList:
-                            if not "-" in Sort.Degat[i]:
-                                 UsableSpell.append(i)
-
-            return UsableSpell
-
-        class Spell():
-            def Strongest_Spell(Spell):
-                """Trouve le sort le plus puissant"""
-                UsableSpell=[]
-                MaxSpell=[]
-
-                #Filtre le sorts soignant et les sorts infligeant des degats.
-                for i in Spell:
-                        if not "-" in Sort.Degat[i]:
-                            UsableSpell.append(i)
-                #Convertie le sort en degats
-                for i in range(len(UsableSpell)):
-                            MaxSpell.append(Fight.IA.Spell.Try_Attaque(GameFonctions.Mobs,UsableSpell[i]))
-                #Obtient l'ID du sort le plus puissant des sorts disponible
-                Max=UsableSpell[MaxSpell.index(max(MaxSpell))]
-                UsableSpell[:]=[]
-                UsableSpell.append(Max)
-
-                return UsableSpell
-
-
-            def Try_Attaque(Character, NbrSort):
-                """Calcul les dégat infligée par les attaques"""
-                Degat=0
-
-                Min=int((Sort.Degat[int(NbrSort)].split(";")[0]))
-                Max=int((Sort.Degat[int(NbrSort)].split(";")[1]))
-
-                if Sort.Element[int(NbrSort)]!="error":
-                    if Sort.Element[int(NbrSort)]=="intelligence":
-                        Element=Character.TIntelligence
-                    elif Sort.Element[int(NbrSort)]=="strength":
-                        Element=Character.TStrength
-                    elif Sort.Element[int(NbrSort)]=="chance":
-                        Element=Character.TChance
-                    elif Sort.Element[int(NbrSort)]=="agility":
-                        Element=Character.TAgility
-
-                    #Formule de calcul des dégats
-                for i in range(10):
-                    Degat = Degat + randrange(floor(Min * (100 + Element ) / 100),floor((Max * (100 + Element ) / 100)+1))
-
-                return Degat
 
     def StartFightMob(Character, Mob=None):
         """Lance un combat Joueur vs Monstre"""
@@ -532,17 +453,16 @@ class Fight:
             Mob=int(input("Entrer l'id de notre mob :"))
         #Initialise le montre
         Carac = GameFonctions.Mobs.IniMobs(Mob)
+        #Initialise l'IA (Intelligence artificiel) delamortquitue !
+        Fight.Mob.IA.IAIni()
         #Calcul les stats du mobs
         GameFonctions.Mobs.MobStats(Carac)
         #Lance le combat contre le monstre
 
-
-        classes.affichageDebutCombat(classes.Listes.fenetre,GameFonctions.MyCharacters.Character1, GameFonctions.Mobs)
-
+##        classes.affichageDebutCombat(classes.Listes.fenetre,GameFonctions.MyCharacters.Character1, GameFonctions.Mobs)
         Fight.Mob.MobCombat(GameFonctions.MyCharacters.Character1,GameFonctions.Mobs)
 
-
-    def Attaque(Character, NbrSort, Cible):
+    def Sort_normal(Character, NbrSort, Cible):
         """Calcul des dégat à infligée"""
 
         Min=int((Sort.Degat[int(NbrSort)].split(";")[0]))
@@ -568,13 +488,40 @@ class Fight:
             if randrange(1,101)<=5:
                 NewDegat = Degat + Fight.CC(Degat)
             elif randrange(1,101)>=95:
-                NewDegat= Degat-Fight.EC(Degat,Cible)
+                NewDegat,Cible= Degat-Fight.EC(Degat,Cible)
             else:
                 NewDegat=Degat
 
             return NewDegat,Cible
         else:
             return 0,0
+
+    def Sort_bonus(MobOrCharacter,NbrSort,Cible):
+        """Gestion de sort de soutien"""
+        if MobOrCharacter=="Mob":
+            if Cible==1:
+                Character=GameFonctions.MyCharacters.Character1
+            else:
+                Character=GameFonctions.Mobs
+        else:
+            if Cible==0:
+                Character=GameFonctions.MyCharacters.Character1
+            else:
+                Character=GameFonctions.Mobs
+
+        if "strength" in Sort.Element[NbrSort]:
+            Character.TStrength+=Sort.Boost[NbrSort]
+        elif "intelligence" in Sort.Element[NbrSort]:
+            Character.TIntelligence+=Sort.Boost[NbrSort]
+        elif "chance" in Sort.Element[NbrSort]:
+            Character.TChance+=Sort.Boost[NbrSort]
+        elif "agility" in Sort.Element[NbrSort]:
+            Character.TAgility+=Sort.Boost[NbrSort]
+        elif "resistance" in Sort.Element[NbrSort]:
+            Character.Resistance+=Sort.Boost[NbrSort]
+
+
+
 
     def CC(Degat):
         """Retourne la valeur du bonus de coup critique en fonction des degats"""
@@ -594,16 +541,17 @@ class Fight:
                 Cible= 1
             elif Cible==1:
                 Cible= 0
-            return int(Degat/100*randrange(0,101))
+            return (int(Degat/100*randrange(0,101))),Cible
 
         elif ECType<90 and ECType>10: #EC Moyen
-            return int(Degat/100*randrange(70,101))
+            return (int(Degat/100*randrange(70,101))),Cible
         elif ECType>=90: #EC Mineur
-            return int(Degat/100*randrange(30,71))
+            return (int(Degat/100*randrange(30,71))),Cible
 
     def HP(Character,Degat):
         """Actualise les HP après une attaque"""
-
+        if Degat>0:
+            Degat+=Character.Resistance
         #Gestion de degat supérieur à la vitalité du personnage
         if Character.HP-Degat<0:
             Degat=Character.HP
@@ -622,35 +570,22 @@ class Fight:
             XP=GameFonctions.Exp.CalcXPMob(Character,Mob,Turn)
             GameFonctions.Exp.NewXP(Character,XP)
 
-    def Fuite(Character, Mob):
-        Chance=randrange(1,101)
+    def Fuite(BonusFuite=0):
+        Fuite=randrange(1,101)
+        Fuite+=BonusFuite
         if GameFonctions.Mobs.Attitude==1:
-            if Chance>70:
+            if Fuite>30:
                 return 1
             else:
                 return 0
         elif GameFonctions.Mobs.Attitude==2:
-            if Chance>10:
+            if Fuite>90:
                 return 1
             else:
                 return 0
         else:
-            if Chance>30:
+            if Fuite>60:
                 return 1
             else:
                 return 0
-
-
-    def Action_choice(Character, Mob, IDAction):
-        if IDAction==1:
-            Fight.Player.Player1Turn(Character,Mob)
-        elif IDAction==2:
-            if Fight.Fuite(Character, Mob)==1:
-                return 1
-
-
-
-
-
-
 
