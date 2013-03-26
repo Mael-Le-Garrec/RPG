@@ -99,28 +99,28 @@ class Fight:
             print(str(Mob.HP)+"/"+str(Mob.TVitality))
             Etat.ActionMob(Mob)
             if Mob.HP>0:
-<<<<<<< HEAD
+
                 MobAttaque=int(Fight.Mob.IA.Choix_attitude())
-=======
+
                 MobAttaque=int(Fight.IA.Choix_attitude())
->>>>>>> parent of c76a803... Mise à jours majeur de l'IA.
+
                 Degat,Cible=Fight.Attaque(GameFonctions.Mobs,MobAttaque,Sort.Cible[MobAttaque])
                 if Cible==1:
                     Degat=Fight.HP(GameFonctions.MyCharacters.Character1,Degat)
                 else:
                     Degat=Fight.HP(Mob,Degat)
-<<<<<<< HEAD
+
                 print(Mob.Name+" lance {}".format(Sort.Name[int(MobAttaque)]))
-=======
+
                 print("Mobs lance {}".format(Sort.Name[int(MobAttaque)]))
->>>>>>> parent of c76a803... Mise à jours majeur de l'IA.
+
                 if Sort.Etat[MobAttaque]!=-1:
                     Etat.EtatCharacter1=[Etat.Name[Sort.Etat[MobAttaque]],Etat.Turn[Sort.Etat[MobAttaque]],Etat.Effect[Sort.Etat[MobAttaque]]]
                     print ("Player entre dans l'etat {}".format(Etat.Name[Sort.Etat[MobAttaque]]))
 
                 if Cible==1:
                     if Degat >= 0:
-<<<<<<< HEAD
+
                         print (Character.Nickname+" : -{} ".format(Degat) + str(Character.HP)+"/"+str(Character.TVitality) )
                     else:
                         print (Character.Nickname+" : +{} ".format(-Degat)+ str(Character.HP)+"/"+str(Character.TVitality) )
@@ -129,7 +129,7 @@ class Fight:
                         print(Mob.Name+" : -{} : ".format(Degat) + str(Mob.HP)+"/"+str(Mob.TVitality) )
                     else:
                         print(Mob.Name+" : +{} : ".format(-Degat) + str(Mob.HP)+"/"+str(Mob.TVitality))
-=======
+
                         print ("Joueur perd {} ".format(Degat) + str(Character.HP)+"/"+str(Character.TVitality) )
                     else:
                         print ("Joueur gagne {}".format(-Degat)+ str(Character.HP)+"/"+str(Character.TVitality) )
@@ -138,7 +138,7 @@ class Fight:
                         print("Mob perd {} : ".format(Degat) + str(Mob.HP)+"/"+str(Mob.TVitality) )
                     else:
                         print("Mob gagne {} : ".format(-Degat) + str(Mob.HP)+"/"+str(Mob.TVitality))
->>>>>>> parent of c76a803... Mise à jours majeur de l'IA.
+
 
             if Character.HP==0:
                 print("\nMob Win")
@@ -146,11 +146,6 @@ class Fight:
             elif Mob.HP==0:
                print("\nPlayer Win")
                Fight.EndFight(Character,Mob,Fight.Turn)
-
-##        def RandomMobAttaque():
-##            """Choix aléatoire de l'attaque du mobs"""
-##            MobSpellList=GameFonctions.Mobs.Sort.split(",")
-##            return choice(MobSpellList)
 
 
         def MobCombat(Character,Mob):
@@ -167,11 +162,11 @@ class Fight:
                 print("==============================")
                 print("Turn "+str(Fight.Turn))
                 if Character.Initiative>Mob.Initiative:
-<<<<<<< HEAD
+
                     if Fight.Player.Action_choice(Character,Mob,classes.choisirAction(classes.Listes.fenetre, Character))==1:
-=======
+
                     if Fight.Action_choice(Character,Mob,int(input("1 : Attaquer ; 2 : Fuir ")))==1:
->>>>>>> parent of c76a803... Mise à jours majeur de l'IA.
+
                         print("Fin du combat (fuite)")
                         break
                     else:
@@ -181,13 +176,13 @@ class Fight:
                 elif Character.Initiative<Mob.Initiative:
                      Fight.Mob.MobTurn(Mob,Character)
 
-<<<<<<< HEAD
+
                     if Character.HP>0 and Mob.HP>0:
                          if Fight.Player.Action_choice(Character,Mob,classes.choisirAction(classes.Listes.fenetre, Character))==1:
-=======
+
                      if Character.HP>0 and Mob.HP>0:
                          if Fight.Action_choice(Character,Mob,int(input("1 : Attaquer ; 2 : Fuir ")))==1:
->>>>>>> parent of c76a803... Mise à jours majeur de l'IA.
+
                             print("Fin du combat (fuite)")
                             break
                          else:
@@ -201,12 +196,12 @@ class Fight:
                 print("==============================\n")
             if Character.HP==0:
                 GameFonctions.MyCharacters.Character1.HP=1
-                
+
                 classes.Joueur.position_x = classes.Joueur.centre[0]
                 classes.Joueur.position_y = classes.Joueur.centre[1]
                 classes.Joueur.carte = classes.Joueur.centre[2]
                 classes.Joueur.orientation = classes.Joueur.centre[3]
-<<<<<<< HEAD
+
 
         class IA:
             def Action_choice(Character,Mob):
@@ -348,9 +343,7 @@ class Fight:
 
                     return Degat
 
-=======
-                
->>>>>>> parent of c76a803... Mise à jours majeur de l'IA.
+
     class Player:
          def Player1Turn(Character,Mob):
              """Tour du joueur"""
@@ -381,7 +374,7 @@ class Fight:
                  print("Joueur lance {}".format(Sort.Name[int(SortID)]))
                  if Cible==1:
                      if Degat >= 0:
-<<<<<<< HEAD
+
                         print(Mob.Name+" : -{} : ".format(Degat) + str(Mob.HP)+"/"+str(Mob.TVitality) )
                      else:
                         print(Mob.Name+" : +{} : ".format(-Degat) + str(Mob.HP)+"/"+str(Mob.TVitality))
@@ -390,7 +383,7 @@ class Fight:
                          print (Character.Nickname+" : -{} ".format(Degat) + str(Character.HP)+"/"+str(Character.TVitality) )
                      else:
                         print (Character.Nickname+" : +{} ".format(-Degat)+ str(Character.HP)+"/"+str(Character.TVitality) )
-=======
+
                         print("Mob perd {} : ".format(Degat) + str(Mob.HP)+"/"+str(Mob.TVitality))
                      else:
                         print("Mob gagne {} : ".format(-Degat) + str(Mob.HP)+"/"+str(Mob.TVitality))
@@ -399,15 +392,14 @@ class Fight:
                         print("Joueur perd {} : ".format(Degat) + str(Character.HP)+"/"+str(Character.TVitality))
                      else:
                         print("Joueur gagne {} : ".format(-Degat) + str(Character.HP)+"/"+str(Character.TVitality))
->>>>>>> parent of c76a803... Mise à jours majeur de l'IA.
+
              if Mob.HP==0:
                print("\nPlayer Win")
                Fight.EndFight(Character,Mob,Fight.Turn)
              elif Character.HP==0:
                 Character.HP=1
                 print("\nMob Win")
-<<<<<<< HEAD
-=======
+
     class IA:
 
         def Choix_attitude():
@@ -419,7 +411,7 @@ class Fight:
 
             if GameFonctions.Mobs.Attitude==0: #Peureux
                 UsableSpell=Fight.IA.Attitude_Peureux(MobSpellList)
->>>>>>> parent of c76a803... Mise à jours majeur de l'IA.
+
 
             elif GameFonctions.Mobs.Attitude==2: #Agressif
                 UsableSpell=Fight.IA.Attitude_Agressif(MobSpellList)
@@ -543,11 +535,10 @@ class Fight:
         #Calcul les stats du mobs
         GameFonctions.Mobs.MobStats(Carac)
         #Lance le combat contre le monstre
-<<<<<<< HEAD
-        
+
+
         classes.affichageDebutCombat(classes.Listes.fenetre,GameFonctions.MyCharacters.Character1, GameFonctions.Mobs)
-=======
->>>>>>> parent of c76a803... Mise à jours majeur de l'IA.
+
         Fight.Mob.MobCombat(GameFonctions.MyCharacters.Character1,GameFonctions.Mobs)
 
 
@@ -584,16 +575,6 @@ class Fight:
             return NewDegat,Cible
         else:
             return 0,0
-
-##    def Change_Cible(Degat, NewDegat, Cible):
-## Fonction inutile ??
-##        """Change la cible de l'attaque"""
-##        if Degat>0 and NewDegat<0 and Cible==0:
-##                return 1
-##        elif Degat>0 and NewDegat<0 and Cible==1:
-##                return 0
-##        else:
-##            return Cible
 
     def CC(Degat):
         """Retourne la valeur du bonus de coup critique en fonction des degats"""
@@ -659,17 +640,14 @@ class Fight:
             else:
                 return 0
 
-<<<<<<< HEAD
 
-
-=======
     def Action_choice(Character, Mob, IDAction):
         if IDAction==1:
             Fight.Player.Player1Turn(Character,Mob)
         elif IDAction==2:
             if Fight.Fuite(Character, Mob)==1:
                 return 1
->>>>>>> parent of c76a803... Mise à jours majeur de l'IA.
+
 
 
 
