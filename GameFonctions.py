@@ -37,8 +37,8 @@ class ClansInfo:
 
             ClansInfo.Chance.append(i[6])
             ClansInfo.Agility.append(i[7])
-            ClansInfo.Sort_1.append(i[8])
-            ClansInfo.Sort_2.append(i[9])
+            ClansInfo.Sort_1=i[8]
+            ClansInfo.Sort_2=i[9]
 
 
 class MyCharacters:
@@ -92,8 +92,8 @@ class MyCharacters:
         Character.Bonus_Strength=reponse[8]
         Character.Bonus_Chance=reponse[10]
         Character.Bonus_Agility=reponse[9]
-        Character.Sort.append(reponse[10])
-        Character.Sort.append(reponse[11])
+        Character.Sort[0]=reponse[10]
+        Character.Sort[1]=reponse[11]
 
 
 
@@ -103,18 +103,24 @@ class MyCharacters:
         Lvl=1
         Exp=0
         HP=0
+
+        Resistance=0
+
         Bonus_Vitality=0
         Bonus_Intelligence=0
         Bonus_Strength=0
         Bonus_Chance=0
         Bonus_Agility=0
+
         TVitality=0
         TIntelligence=0
         TStrength=0
         TChance=0
         TAgility=0
+
         Initiative=0
-        Sort=[-1,-1]
+
+        Sort=[-1,-1,-1,-1]
 
 
 
@@ -130,8 +136,8 @@ class MyCharacters:
                     Character.TAgility=Character.Bonus_Agility+ClansInfo.Agility[i]
                     Character.TIntelligence=Character.Bonus_Intelligence+ClansInfo.Intelligence[i]
                     Character.TVitality=Character.Bonus_Vitality+ClansInfo.Vitality[i]
-                    Character.Sort.extend(ClansInfo.Sort_1)
-                    Character.Sort.extend(ClansInfo.Sort_2)
+                    Character.Sort[2]=ClansInfo.Sort_1
+                    Character.Sort[3]=ClansInfo.Sort_2
 
                     break
 
@@ -160,13 +166,18 @@ class Mobs:
     Dialogue=""
     Lvl=0
     HP=0
+
     TVitality=0
     TIntelligence=0
     TStrength=0
     TChance=0
     TAgility=0
+
     Initiative=0
     Sort=""
+
+    Resistance=0
+
     Attitude=0
 
     def IniMobs(IDMOB):
