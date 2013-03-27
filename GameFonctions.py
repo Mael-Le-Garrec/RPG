@@ -86,7 +86,7 @@ class MyCharacters:
         Character.ClanName=reponse[2]
         Character.Lvl=reponse[3]
         Character.HP=reponse[5]
-        Character.Vitality=reponse[6]
+        Character.Bonus_Vitality=reponse[6]
         Character.Exp=reponse[4]
         Character.Bonus_Intelligence=reponse[7]
         Character.Bonus_Strength=reponse[8]
@@ -135,7 +135,7 @@ class MyCharacters:
                     Character.TChance=Character.Bonus_Chance+ClansInfo.Chance[i]
                     Character.TAgility=Character.Bonus_Agility+ClansInfo.Agility[i]
                     Character.TIntelligence=Character.Bonus_Intelligence+ClansInfo.Intelligence[i]
-                    Character.TVitality=Character.Vitality+ClansInfo.Vitality[i]
+                    Character.TVitality=Character.Bonus_Vitality+ClansInfo.Vitality[i]
                     Character.Sort[2]=ClansInfo.Sort_1
                     Character.Sort[3]=ClansInfo.Sort_2
 
