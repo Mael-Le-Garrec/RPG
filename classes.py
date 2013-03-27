@@ -1315,7 +1315,7 @@ def selection_personnage(fenetre):
                         GameFonctions.MyCharacters.Character1.Nickname = nouveau
                         GameFonctions.MyCharacters.Character1.Lvl = 1
                         GameFonctions.MyCharacters.Character1.Exp = 0
-                        GameFonctions.MyCharacters.Character1.Vitality = 0
+                        GameFonctions.MyCharacters.Character1.Bonus_Vitality = 0
                         GameFonctions.MyCharacters.Character1.Intelligence = 0
                         GameFonctions.MyCharacters.Character1.Strength = 0
                         GameFonctions.MyCharacters.Character1.Chance = 0
