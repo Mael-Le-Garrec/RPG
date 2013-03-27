@@ -20,7 +20,6 @@ class Carte:
         self.tableau = []
         self.coords = []
         self.textures = {}
-        self.fond = pygame.image.load(os.path.join('textures', 'fond.png')) #fond de la carte, blanc.
         self.collisions = []
         self.bloc = []
         self.tp = []
@@ -1595,14 +1594,13 @@ def choisirAction(fenetre, perso):
                 quit()
             if event.type == KEYDOWN:
                 if event.key == K_RETURN:
-                    continuer = 0
                     if curseur == [1,1]:
-                        return 2
+                        continuer = 0
+                        return 2, None
                     elif curseur == [0,0]:
+                        continuer = 0
                         return choisirSort(fenetre, perso)
-                    else:
-                        return 1
-                   
+
                 if event.key == K_LEFT:
                     if curseur[0] == 1:
                         curseur[0] -= 1
@@ -1656,7 +1654,17 @@ def choisirSort(fenetre, perso):
                 quit()
             if event.type == KEYDOWN:
                 if event.key == K_RETURN:
-                   return 1
+                    if curseur == [0,0]:
+                        return 1, GameFonctions.MyCharacters.Character1.Sort[0]
+                    elif curseur == [0,1]:
+                        return 1, GameFonctions.MyCharacters.Character1.Sort[1]
+                    elif curseur == [1,0]:
+                        return 1, GameFonctions.MyCharacters.Character1.Sort[2]
+                    elif curseur == [1,1]:
+                        return 1, GameFonctions.MyCharacters.Character1.Sort[3]
+                   
+                if event.key == K_ESCAPE:
+                    pass
                    
                 if event.key == K_LEFT:
                     if curseur[0] == 1:
@@ -1686,12 +1694,28 @@ def affichageSelectionCombat2(fenetre, curseur, perso):
     x = 600-254-15+40
     y = 600-80-15+20
     
-    print(perso.Sort)
+    if GameFonctions.MyCharacters.Character1.Sort[0] >= 0:
+        sort1 = FightFonctions.Sort.Name[GameFonctions.MyCharacters.Character1.Sort[0]]
+    else:
+        sort1 = "- - -"
+    if GameFonctions.MyCharacters.Character1.Sort[1] >= 0:
+        sort2 = FightFonctions.Sort.Name[GameFonctions.MyCharacters.Character1.Sort[1]]
+    else:
+        sort2 = "- - -"
+    if GameFonctions.MyCharacters.Character1.Sort[2] >= 0:
+        sort3 = FightFonctions.Sort.Name[GameFonctions.MyCharacters.Character1.Sort[2]]
+    else:
+        sort3 = "- - -"
+    if GameFonctions.MyCharacters.Character1.Sort[3] >= 0:
+        sort4 = FightFonctions.Sort.Name[GameFonctions.MyCharacters.Character1.Sort[3]]
+    else:
+        sort4 = "- - -"
     
-    fenetre.blit(font.render("Coucou", 1, (0,0,0)), (x, y))
-    fenetre.blit(font.render("Coucou", 1, (0,0,0)), (x, y+20))
-    fenetre.blit(font.render("Coucou", 1, (0,0,0)), (x+130, y))
-    fenetre.blit(font.render("Coucou", 1, (0,0,0)), (x+130, y+20))
+    
+    fenetre.blit(font.render(sort1, 1, (0,0,0)), (x, y))
+    fenetre.blit(font.render(sort2, 1, (0,0,0)), (x, y+20))
+    fenetre.blit(font.render(sort3, 1, (0,0,0)), (x+130, y))
+    fenetre.blit(font.render(sort4, 1, (0,0,0)), (x+130, y+20))
     
     x_c = x - 20 + 130 * curseur[0] 
     y_c = y + 4 + 20 * curseur[1]

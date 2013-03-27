@@ -173,7 +173,9 @@ class Fight:
                         Character.Initiative-=1
 
                 if Character.Initiative>Mob.Initiative:
-                    if Fight.Player.Action_choice(Character,Mob,int(input("Attaquer : 1 ; Fuir : 2"))):#classes.choisirAction(classes.Listes.fenetre, Character))==1:
+                    # if Fight.Player.Action_choice(Character,Mob,int(input("Attaquer : 1 ; Fuir : 2"))):
+                    action, sort = classes.choisirAction(classes.Listes.fenetre, Character)
+                    if Fight.Player.Action_choice(Character,Mob, action, sort)==1:
                         print("Fin du combat (fuite)")
                         break
 
@@ -188,7 +190,9 @@ class Fight:
                                 break
 
                     if Character.HP>0 and Mob.HP>0:
-                         if Fight.Player.Action_choice(Character,Mob,int(input("Attaquer : 1 ; Fuir : 2"))):#classes.choisirAction(classes.Listes.fenetre, Character))==1:
+                         # if Fight.Player.Action_choice(Character,Mob,int(input("Attaquer : 1 ; Fuir : 2"))):
+                        action, sort = classes.choisirAction(classes.Listes.fenetre, Character)
+                        if Fight.Player.Action_choice(Character,Mob, action, sort)==1:    
                             print("Fin du combat (fuite)")
                             break
 
@@ -206,12 +210,12 @@ class Fight:
             PlayerLastSpell=0
             PlayerSpell={}
             def IAIni():
-                PlayerSpell.clear()
+                Fight.Mob.IA.PlayerSpell.clear()
                 for i in range (len(Sort.Name)):
-                    PlayerSpell[i]=0
+                    Fight.Mob.IA.PlayerSpell[i]=0
 
             def PlayerStats(IDSort):
-                PlayerSpell[IDSort]+=1
+                Fight.Mob.IA.PlayerSpell[IDSort]+=1
 
             def Action_choice(Character,Mob):
                 """Choix de l'action"""
@@ -368,16 +372,16 @@ class Fight:
 
 
     class Player:
-         def Action_choice(Character, Mob, IDAction):
+         def Action_choice(Character, Mob, IDAction, sort):
              if IDAction==1:
-                Fight.Player.Player1Turn(Character,Mob)
+                Fight.Player.Player1Turn(Character,Mob, sort)
              elif IDAction==2:
                 if Fight.Fuite()==1:
                    return 1
                 else:
                    print("Impossible de fuir")
 
-         def Player1Turn(Character,Mob):
+         def Player1Turn(Character,Mob, sort):
              """Tour du joueur"""
              print("Tour du Joueur :")
              print(str(Character.HP)+"/"+str(Character.TVitality))
@@ -385,7 +389,8 @@ class Fight:
              if Character.HP>0:
                  while True:
                         try:
-                            SortID=int(input("Entrer l'id de votre sort :"))
+                            # SortID=int(input("Entrer l'id de votre sort :"))
+                            SortID=sort
                         except ValueError:
                             continue
                         else:
@@ -459,7 +464,7 @@ class Fight:
         GameFonctions.Mobs.MobStats(Carac)
         #Lance le combat contre le monstre
 
-##        classes.affichageDebutCombat(classes.Listes.fenetre,GameFonctions.MyCharacters.Character1, GameFonctions.Mobs)
+        classes.affichageDebutCombat(classes.Listes.fenetre,GameFonctions.MyCharacters.Character1, GameFonctions.Mobs)
         Fight.Mob.MobCombat(GameFonctions.MyCharacters.Character1,GameFonctions.Mobs)
 
     def Sort_normal(Character, NbrSort, Cible):
@@ -488,7 +493,8 @@ class Fight:
             if randrange(1,101)<=5:
                 NewDegat = Degat + Fight.CC(Degat)
             elif randrange(1,101)>=95:
-                NewDegat,Cible= Degat-Fight.EC(Degat,Cible)
+                NewDegat,Cible= Fight.EC(Degat,Cible)
+                NewDegat=Degat-NewDegat
             else:
                 NewDegat=Degat
 

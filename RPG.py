@@ -40,6 +40,7 @@ for val in os.listdir("MyCharacters"):
 
 # Selection du personnage
 selection_personnage(Listes.fenetre)
+GameFonctions.MyCharacters.StatsCalc.CalcTotalStats(GameFonctions.MyCharacters.Character1)
 
 # On lit le dossier "map" et on crée associe l'objet Carte à chaque indice qui correspond à son nom (Ainsi la carte 6 se trouvera à Listes.liste_cartes[6])
 for i in range(len(os.listdir("map"))):
@@ -160,6 +161,9 @@ while continuer == 1:
                 except:
                     pass
 
+            if event.key == K_d:
+                print(GameFonctions.MyCharacters.Character1.Sort)
+                    
             if event.key == K_f:
                 FightFonctions.Fight.StartFightMob(GameFonctions.MyCharacters.Character1)
                 GameFonctions.MyCharacters.UpdateSave(GameFonctions.MyCharacters.Character1)
