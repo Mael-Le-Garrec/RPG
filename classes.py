@@ -1387,7 +1387,7 @@ def afficher_personnage(fenetre, actuel):
     fenetre.blit(myfont.render("Agilité : " + str(GameFonctions.MyCharacters.Character1.Bonus_Agility), 1, (0,0,0)), (210, 210+4*20))
     fenetre.blit(myfont.render("Chance : " + str(GameFonctions.MyCharacters.Character1.Bonus_Chance), 1, (0,0,0)), (210, 210+5*20))
     fenetre.blit(myfont.render("Intelligence : " + str(GameFonctions.MyCharacters.Character1.Bonus_Intelligence), 1, (0,0,0)), (210, 210+6*20))
-    fenetre.blit(myfont.render("Vitalité : " + str(GameFonctions.MyCharacters.Character1.Bonus_Vitality), 1, (0,0,0)), (210, 210+7*20))
+    fenetre.blit(myfont.render("Vitalité : " + str(GameFonctions.MyCharacters.Character1.Vitality), 1, (0,0,0)), (210, 210+7*20))
     fenetre.blit(myfont.render("Niveau : " + str(GameFonctions.MyCharacters.Character1.Lvl), 1, (0,0,0)), (210, 210+8*20))
 
     taille = myfont.render("{0} / {1}".format(actuel+1, len(Listes.liste_persos)), 1, (0,0,0)).get_rect().width

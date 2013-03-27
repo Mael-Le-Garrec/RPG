@@ -135,7 +135,7 @@ class MyCharacters:
                     Character.TChance=Character.Bonus_Chance+ClansInfo.Chance[i]
                     Character.TAgility=Character.Bonus_Agility+ClansInfo.Agility[i]
                     Character.TIntelligence=Character.Bonus_Intelligence+ClansInfo.Intelligence[i]
-                    Character.TVitality=Character.Bonus_Vitality+ClansInfo.Vitality[i]
+                    Character.TVitality=Character.Vitality+ClansInfo.Vitality[i]
                     Character.Sort[2]=ClansInfo.Sort_1
                     Character.Sort[3]=ClansInfo.Sort_2
 

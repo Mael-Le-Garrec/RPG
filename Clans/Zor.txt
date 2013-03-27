@@ -1,8 +1,0 @@
-name:Zor
-description:Aucune
-vitality:100
-intelligence:900
-strength:200
-chance:200
-agility:200
-sort:0
