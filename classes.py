@@ -1582,9 +1582,9 @@ def affichageDebutCombat(fenetre, perso, mob):
     print(perso.Nickname)
     print(perso.ClanName)
     
-def choisirAction(fenetre, perso):
+def choisirAction(fenetre, perso, mob):
     curseur = [0,0]
-    affichageSelectionCombat1(fenetre, curseur)
+    affichageSelectionCombat1(fenetre, curseur, perso, mob)
     
     continuer = 1
     while continuer:
@@ -1598,34 +1598,161 @@ def choisirAction(fenetre, perso):
                         continuer = 0
                         return 2, None
                     elif curseur == [0,0]:
-                        sort = choisirSort(fenetre, perso)
+                        sort = choisirSort(fenetre, perso, mob)
                         if sort:
                             return sort
-
+                    elif curseur == [0,1]:
+                        fenetre_dialogue(fenetre, mob.Dialogue,0)
+                        affichageSelectionCombat1(fenetre, curseur, perso, mob)                        
+                    
                 if event.key == K_LEFT:
                     if curseur[0] == 1:
                         curseur[0] -= 1
-                        affichageSelectionCombat1(fenetre, curseur)
+                        affichageSelectionCombat1(fenetre, curseur, perso, mob)
                 
                 if event.key == K_RIGHT:
                     if curseur[0] == 0:
                         curseur[0] += 1
-                        affichageSelectionCombat1(fenetre, curseur)
+                        affichageSelectionCombat1(fenetre, curseur, perso, mob)
                         
                 if event.key == K_DOWN:
                     if curseur[1] == 0:
                         curseur[1] += 1
-                        affichageSelectionCombat1(fenetre, curseur)
+                        affichageSelectionCombat1(fenetre, curseur, perso, mob)
                         
                 if event.key == K_UP:
                     if curseur[1] == 1:
                         curseur[1] -= 1
-                        affichageSelectionCombat1(fenetre, curseur)
+                        affichageSelectionCombat1(fenetre, curseur, perso, mob)
 
-def affichageSelectionCombat1(fenetre, curseur):
-    font = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 14)
+def choisirSort(fenetre, perso, mob):
+    curseur = [0,0]
+    affichageSelectionCombat2(fenetre, curseur, perso, mob)
     
-    fenetre.blit(pygame.image.load(os.path.join('images', 'combat.png')).convert_alpha(),(600-254-15,600-80-15))
+    continuer = 1
+    while continuer:
+        pygame.time.Clock().tick(60)
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                quit()
+            if event.type == KEYDOWN:
+                if event.key == K_RETURN:
+                    if curseur == [0,0]:
+                        if GameFonctions.MyCharacters.Character1.Sort[0] >= 0:
+                            return 1, GameFonctions.MyCharacters.Character1.Sort[0]
+                        else:
+                            fenetre_dialogue(fenetre, "Ceci n'est pas un sort", 0)
+                            affichageSelectionCombat2(fenetre, curseur, perso, mob)
+                    elif curseur == [0,1]:
+                        if GameFonctions.MyCharacters.Character1.Sort[1] >= 0:
+                            return 1, GameFonctions.MyCharacters.Character1.Sort[1]
+                        else:
+                            fenetre_dialogue(fenetre, "Ceci n'est pas un sort", 0)
+                            affichageSelectionCombat2(fenetre, curseur, perso, mob)
+                    elif curseur == [1,0]:
+                        if GameFonctions.MyCharacters.Character1.Sort[2] >= 0:
+                            return 1, GameFonctions.MyCharacters.Character1.Sort[2]
+                            affichageSelectionCombat2(fenetre, curseur, perso, mob)
+                        else:
+                            fenetre_dialogue(fenetre, "Ceci n'est pas un sort", 0)
+                            affichageSelectionCombat2(fenetre, curseur, perso, mob)
+                    elif curseur == [1,1]:
+                        if GameFonctions.MyCharacters.Character1.Sort[3] >= 0:
+                            return 1, GameFonctions.MyCharacters.Character1.Sort[3]
+                        else:
+                            fenetre_dialogue(fenetre, "Ceci n'est pas un sort", 0)
+                            affichageSelectionCombat2(fenetre, curseur, perso, mob)
+                            
+                if event.key == K_ESCAPE:
+                    continuer = 0
+                    affichageSelectionCombat1(fenetre, [0,0], perso, mob)
+                                 
+                if event.key == K_LEFT:
+                    if curseur[0] == 1:
+                        curseur[0] -= 1
+                        affichageSelectionCombat2(fenetre, curseur, perso, mob)
+                
+                if event.key == K_RIGHT:
+                    if curseur[0] == 0:
+                        curseur[0] += 1
+                        affichageSelectionCombat2(fenetre, curseur, perso, mob)
+                        
+                        
+                if event.key == K_DOWN:
+                    if curseur[1] == 0:
+                        curseur[1] += 1
+                        affichageSelectionCombat2(fenetre, curseur, perso, mob)
+                        
+                if event.key == K_UP:
+                    if curseur[1] == 1:
+                        curseur[1] -= 1
+                        affichageSelectionCombat2(fenetre, curseur, perso, mob)
+    
+def afficherSelectionCombat(fenetre, curseur, perso, mob):
+    font = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 14)
+    pfont = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 12)
+    
+    fenetre.blit(pygame.image.load(os.path.join('images', 'clan.png')).convert_alpha(),(0,0)) # fond
+    
+    fenetre.blit(pygame.image.load(os.path.join('images', 'combat.png')).convert_alpha(),(600-254-15,600-80-15)) # menu
+    fenetre.blit(pygame.image.load(os.path.join('images', 'combat.png')).convert_alpha(),(15,15)) # adversaire
+    fenetre.blit(pygame.image.load(os.path.join('images', 'combat.png')).convert_alpha(),(600-254-15,600-80-15-80-10)) # personnage
+    
+    # mob.TVitality
+    # mob.HP
+    # perso.TVitality
+    # perso.HP
+    
+    hp_perso = perso.HP / perso.TVitality * 150
+    hp_mob = mob.HP / mob.TVitality * 150
+    pourcentage_p = perso.HP / perso.TVitality * 100
+    pourcentage_m = mob.HP / mob.TVitality * 100
+    
+    # nom adversaire et lvl
+    fenetre.blit(pfont.render(mob.Name, 1, (0,0,0)), (15+20,15+20))
+    fenetre.blit(pfont.render("N.{0}".format(mob.Lvl), 1, (0,0,0)), (15+20+160,15+20))
+    
+    
+    # nom personnage et lvl
+    fenetre.blit(pfont.render(perso.Nickname, 1, (0,0,0)), (600-254-15+20,600-80-15-80-10+20))
+    fenetre.blit(pfont.render("N.{0}".format(perso.Lvl), 1, (0,0,0)), (600-254-15+20+160,600-80-15-80-10+20))
+    
+    # vie personnage
+    fenetre.blit(pfont.render("{}%".format(int(pourcentage_p)), 1, (0,0,0)), (600-254-15+20,600-80-15-80-10+45))
+    x = 600-254-15+20+40
+    y = 600-80-15-80-10+45 +15
+    
+    pygame.draw.line(fenetre, (0,0,0), (x, y), (x+160, y))
+    pygame.draw.line(fenetre, (0,0,0), (x, y), (x, y-5))
+    pygame.draw.line(fenetre, (0,0,0), (x+160, y), (x+160, y-5))
+    
+    pygame.draw.line(fenetre, (50,160,30), (x+5, y-5), (x+5+hp_perso, y-5), 4)
+
+    
+    # vie adversaire
+    fenetre.blit(pfont.render("{}%".format(int(pourcentage_m)), 1, (0,0,0)), (15+20,60))
+    x = 15+20+40
+    y = 60+15
+    
+    pygame.draw.line(fenetre, (0,0,0), (x, y), (x+160, y))
+    pygame.draw.line(fenetre, (0,0,0), (x, y), (x, y-5))
+    pygame.draw.line(fenetre, (0,0,0), (x+160, y), (x+160, y-5))
+    
+    pygame.draw.line(fenetre, (50,160,30), (x+5, y-5), (x+5+hp_mob, y-5), 4)
+        
+    # séparation dialogue / combat
+    pygame.draw.line(fenetre, (0,0,0), (15, 600-80-10), (600-254-15-10, 600-80-10))
+    
+    # affiche "que faire" et vie
+    taille = font.render("Que faire ?", 1, (0,0,0)).get_rect().width
+    fenetre.blit(font.render("Que faire ?", 1, (0,0,0)), ((600-254-15-15)/2-taille/2,520))
+    vie = "Vie : {0} / {1}".format(perso.HP, perso.TVitality)
+    taille = font.render(vie, 1, (0,0,0)).get_rect().width
+    fenetre.blit(font.render(vie, 1, (0,0,0)), ((600-254-15-15)/2-taille/2, 545))
+    
+def affichageSelectionCombat1(fenetre, curseur, perso, mob):
+    afficherSelectionCombat(fenetre, curseur, perso, mob)
+    font = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 14)
     
     x = 600-254-15+40
     y = 600-80-15+20
@@ -1642,56 +1769,9 @@ def affichageSelectionCombat1(fenetre, curseur):
     
     pygame.display.flip()
     
-    
-def choisirSort(fenetre, perso):
-    curseur = [0,0]
-    affichageSelectionCombat2(fenetre, curseur, perso)
-    
-    continuer = 1
-    while continuer:
-        pygame.time.Clock().tick(60)
-        for event in pygame.event.get():
-            if event.type == QUIT:
-                quit()
-            if event.type == KEYDOWN:
-                if event.key == K_RETURN:
-                    if curseur == [0,0]:
-                        return 1, GameFonctions.MyCharacters.Character1.Sort[0]
-                    elif curseur == [0,1]:
-                        return 1, GameFonctions.MyCharacters.Character1.Sort[1]
-                    elif curseur == [1,0]:
-                        return 1, GameFonctions.MyCharacters.Character1.Sort[2]
-                    elif curseur == [1,1]:
-                        return 1, GameFonctions.MyCharacters.Character1.Sort[3]
-                   
-                if event.key == K_ESCAPE:
-                    continuer = 0
-                    affichageSelectionCombat1(fenetre, [0,0])
-                                 
-                if event.key == K_LEFT:
-                    if curseur[0] == 1:
-                        curseur[0] -= 1
-                        affichageSelectionCombat2(fenetre, curseur, perso)
-                
-                if event.key == K_RIGHT:
-                    if curseur[0] == 0:
-                        curseur[0] += 1
-                        affichageSelectionCombat2(fenetre, curseur, perso)
-                        
-                if event.key == K_DOWN:
-                    if curseur[1] == 0:
-                        curseur[1] += 1
-                        affichageSelectionCombat2(fenetre, curseur, perso)
-                        
-                if event.key == K_UP:
-                    if curseur[1] == 1:
-                        curseur[1] -= 1
-                        affichageSelectionCombat2(fenetre, curseur, perso)
-    
-def affichageSelectionCombat2(fenetre, curseur, perso):
+def affichageSelectionCombat2(fenetre, curseur, perso, mob):
+    afficherSelectionCombat(fenetre, curseur, perso, mob)
     font = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 14)
-    
-    fenetre.blit(pygame.image.load(os.path.join('images', 'combat.png')).convert_alpha(),(600-254-15,600-80-15))
     
     x = 600-254-15+40
     y = 600-80-15+20

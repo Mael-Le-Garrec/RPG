@@ -174,7 +174,7 @@ class Fight:
 
                 if Character.Initiative>Mob.Initiative:
                     # if Fight.Player.Action_choice(Character,Mob,int(input("Attaquer : 1 ; Fuir : 2"))):
-                    action, sort = classes.choisirAction(classes.Listes.fenetre, Character)
+                    action, sort = classes.choisirAction(classes.Listes.fenetre, Character, Mob)
                     if Fight.Player.Action_choice(Character,Mob, action, sort)==1:
                         print("Fin du combat (fuite)")
                         break
