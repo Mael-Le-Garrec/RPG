@@ -1598,8 +1598,9 @@ def choisirAction(fenetre, perso):
                         continuer = 0
                         return 2, None
                     elif curseur == [0,0]:
-                        continuer = 0
-                        return choisirSort(fenetre, perso)
+                        sort = choisirSort(fenetre, perso)
+                        if sort:
+                            return sort
 
                 if event.key == K_LEFT:
                     if curseur[0] == 1:
@@ -1664,8 +1665,9 @@ def choisirSort(fenetre, perso):
                         return 1, GameFonctions.MyCharacters.Character1.Sort[3]
                    
                 if event.key == K_ESCAPE:
-                    pass
-                   
+                    continuer = 0
+                    affichageSelectionCombat1(fenetre, [0,0])
+                                 
                 if event.key == K_LEFT:
                     if curseur[0] == 1:
                         curseur[0] -= 1
