@@ -105,15 +105,18 @@ class Fight:
                 if Sort.Boost[MobAttaque]!=0:
                     Fight.Sort_bonus("Mob",MobAttaque,Sort.Cible[MobAttaque])
                     if Sort.Cible[MobAttaque]==1:
-                            if Sort.Boost[MobAttaque]<= 0:
-                                print (Character.Nickname+" : -{} {}".format(Sort.Boost[MobAttaque],Sort.Element[MobAttaque])  )
-                            else:
-                                print (Character.Nickname+" : +{} {}".format(Sort.Boost[MobAttaque],Sort.Element[MobAttaque]) )
+                        if Sort.Boost[MobAttaque]<= 0:
+                            classes.fenetre_dialogue(classes.Listes.fenetre, Character.Nickname+" : -{} {}".format(Sort.Boost[MobAttaque],Sort.Element[MobAttaque]), 0)
+                            print (Character.Nickname+" : -{} {}".format(Sort.Boost[MobAttaque],Sort.Element[MobAttaque])  )
+                        else:
+                            print (Character.Nickname+" : +{} {}".format(Sort.Boost[MobAttaque],Sort.Element[MobAttaque]) )
+                            classes.fenetre_dialogue(classes.Listes.fenetre, Character.Nickname+" : +{} {}".format(Sort.Boost[MobAttaque],Sort.Element[MobAttaque]), 0)
                     else:
-                            if Sort.Boost[MobAttaque] <= 0:
-                                print(Mob.Name+" : -{} {}".format(Sort.Boost[MobAttaque],Sort.Element[MobAttaque])  )
-                            else:
-                                print(Mob.Name+" : +{} {}".format(Sort.Boost[MobAttaque],Sort.Element[MobAttaque]) )
+                        if Sort.Boost[MobAttaque] <= 0:
+                            print(Mob.Name+" : -{} {}".format(Sort.Boost[MobAttaque],Sort.Element[MobAttaque])  )
+                            classes.fenetre_dialogue(classes.Listes.fenetre,  Mob.Name+" : -{} {}".format(Sort.Boost[MobAttaque],Sort.Element[MobAttaque]), 0)
+                        else:
+                            classes.fenetre_dialogue(classes.Listes.fenetre, Mob.Name+" : +{} {}".format(Sort.Boost[MobAttaque],Sort.Element[MobAttaque]), 0)
 
 
                 else:
@@ -124,26 +127,34 @@ class Fight:
                     else:
                         Degat=Fight.HP(Mob,Degat)
                     print(Mob.Name+" lance {}".format(Sort.Name[int(MobAttaque)]))
+                    classes.fenetre_dialogue(classes.Listes.fenetre, Mob.Name+" lance {}".format(Sort.Name[int(MobAttaque)]), 0)
                     if Sort.Etat[MobAttaque]!=-1:
                         Etat.EtatCharacter1=[Etat.Name[Sort.Etat[MobAttaque]],Etat.Turn[Sort.Etat[MobAttaque]],Etat.Effect[Sort.Etat[MobAttaque]]]
                         print ("Player entre dans l'etat {}".format(Etat.Name[Sort.Etat[MobAttaque]]))
+                        classes.fenetre_dialogue(classes.Listes.fenetre, "{0} entre dans l'etat {1}".format(Character.Nickname, Etat.Name[Sort.Etat[MobAttaque]]), 0)
 
                     if Cible==1:
                         if Degat >= 0:
                             print (Character.Nickname+" : -{} ".format(Degat) + str(Character.HP)+"/"+str(Character.TVitality) )
+                            classes.fenetre_dialogue(classes.Listes.fenetre, Character.Nickname+" perd {} points de vie !".format(Degat), 0)
                         else:
                             print (Character.Nickname+" : +{} ".format(-Degat)+ str(Character.HP)+"/"+str(Character.TVitality) )
+                            classes.fenetre_dialogue(classes.Listes.fenetre, Character.Nickname+" gagne {} points de vie !".format(Degat), 0)
                     else:
                         if Degat >= 0:
                             print(Mob.Name+" : -{} : ".format(Degat) + str(Mob.HP)+"/"+str(Mob.TVitality) )
+                            classes.fenetre_dialogue(classes.Listes.fenetre,  Mob.Name+" perd {} points de vie !".format(Degat), 0)
                         else:
                             print(Mob.Name+" : +{} : ".format(-Degat) + str(Mob.HP)+"/"+str(Mob.TVitality))
+                            classes.fenetre_dialogue(classes.Listes.fenetre, Mob.Name+" gagne {} points de vie !".format(Degat), 0)
 
             if Character.HP==0:
                 print("\nMob Win")
+                classes.fenetre_dialogue(classes.Listes.fenetre, "Vous avez été vaincu par {0}".format(Mob.Name), 0)
 
             elif Mob.HP==0:
                print("\nPlayer Win")
+               classes.fenetre_dialogue(classes.Listes.fenetre, "Vous avez gagné ce combat !", 0)
                Fight.EndFight(Character,Mob,Fight.Turn)
 
 ## def RandomMobAttaque():
@@ -177,23 +188,27 @@ class Fight:
                     action, sort = classes.choisirAction(classes.Listes.fenetre, Character, Mob)
                     if Fight.Player.Action_choice(Character,Mob, action, sort)==1:
                         print("Fin du combat (fuite)")
+                        classes.fenetre_dialogue(classes.Listes.fenetre, "Vous prennez la fuite.", 0)
                         break
-
+                    classes.afficherSelectionCombat(classes.Listes.fenetre, [0,0], Character, Mob)
                     if Character.HP>0 and Mob.HP>0:
                         if Fight.Mob.IA.Action_choice(Character,Mob)==1:
                             print("Fin du combat (fuite)")
+                            classes.fenetre_dialogue(classes.Listes.fenetre, "{0} prend la fuite !".format(Mob.Name), 0)
                             break
 
                 elif Character.Initiative<Mob.Initiative:
                     if Fight.Mob.IA.Action_choice(Character,Mob)==1:
-                                print("Fin du combat (fuite)")
-                                break
-
+                        print("Fin du combat (fuite)")
+                        classes.fenetre_dialogue(classes.Listes.fenetre, "{0} prend la fuite !".format(Mob.Name), 0)
+                        break
+                    classes.afficherSelectionCombat(classes.Listes.fenetre, [0,0], Character, Mob)
                     if Character.HP>0 and Mob.HP>0:
                          # if Fight.Player.Action_choice(Character,Mob,int(input("Attaquer : 1 ; Fuir : 2"))):
                         action, sort = classes.choisirAction(classes.Listes.fenetre, Character)
                         if Fight.Player.Action_choice(Character,Mob, action, sort)==1:    
                             print("Fin du combat (fuite)")
+                            classes.fenetre_dialogue(classes.Listes.fenetre, "Vous prennez la fuite.", 0)
                             break
 
                 Fight.Turn=Fight.Turn+1
@@ -380,6 +395,7 @@ class Fight:
                    return 1
                 else:
                    print("Impossible de fuir")
+                   classes.fenetre_dialogue(classes.Listes.fenetre, "Impossible de fuir", 0)
 
          def Player1Turn(Character,Mob, sort):
              """Tour du joueur"""
@@ -403,13 +419,17 @@ class Fight:
                     if Sort.Cible[SortID]==1:
                          if Sort.Boost[SortID] <= 0:
                             print(Mob.Name+" : -{} {}".format(Sort.Boost[SortID],Sort.Element[SortID]))
+                            classes.fenetre_dialogue(classes.Listes.fenetre, Mob.Name+" : -{} {}".format(Sort.Boost[SortID],Sort.Element[SortID]), 0)
                          else:
                             print(Mob.Name+" : +{} {}".format(Sort.Boost[SortID],Sort.Element[SortID]))
+                            classes.fenetre_dialogue(classes.Listes.fenetre, Mob.Name+" : +{} {}".format(Sort.Boost[SortID],Sort.Element[SortID]), 0)
                     else:
                          if Sort.Boost[SortID] <= 0:
                              print (Character.Nickname+" : -{} {}".format(Sort.Boost[SortID],Sort.Element[SortID]))
+                             classes.fenetre_dialogue(classes.Listes.fenetre, Character.Nickname+" : -{} {}".format(Sort.Boost[SortID],Sort.Element[SortID]), 0)
                          else:
                             print (Character.Nickname+" : +{} {}".format(Sort.Boost[SortID],Sort.Element[SortID]))
+                            classes.fenetre_dialogue(classes.Listes.fenetre, Character.Nickname+" : +{} {}".format(Sort.Boost[SortID],Sort.Element[SortID]), 0)
 
                  else:
                      Degat, Cible=Fight.Sort_normal(Character,SortID, Sort.Cible[SortID])
@@ -421,24 +441,30 @@ class Fight:
                      if Sort.Etat[SortID]!=-1:
                         Etat.EtatMob=[Etat.Name[Sort.Etat[SortID]],Etat.Turn[Sort.Etat[SortID]],Etat.Effect[Sort.Etat[SortID]]]
                         print ("Mob entre dans l'etat {}".format(Etat.Name[Sort.Etat[SortID]]))
+                        classes.fenetre_dialogue(classes.Listes.fenetre, "{0} entre dans l'etat {1}.".format(Mob.Name, Etat.Name[Sort.Etat[SortID]]), 0)
                      print("Joueur lance {}".format(Sort.Name[int(SortID)]))
+                     classes.fenetre_dialogue(classes.Listes.fenetre, "{0} lance {1} !".format(Character.Nickname, Sort.Name[int(SortID)]), 0)
                      if Cible==1:
                          if Degat >= 0:
                             print(Mob.Name+" : -{} : ".format(Degat) + str(Mob.HP)+"/"+str(Mob.TVitality) )
+                            classes.fenetre_dialogue(classes.Listes.fenetre, Mob.Name+" perd {} points de vie !".format(Degat), 0)
                          else:
                             print(Mob.Name+" : +{} : ".format(-Degat) + str(Mob.HP)+"/"+str(Mob.TVitality))
+                            classes.fenetre_dialogue(classes.Listes.fenetre, Mob.Name+" gagne {} points de vie !".format(-Degat), 0)
                      else:
                          if Degat >= 0:
-                             print (Character.Nickname+" : -{} ".format(Degat) + str(Character.HP)+"/"+str(Character.TVitality) )
+                             classes.fenetre_dialogue(classes.Listes.fenetre, Character.Nickname+" perd {} points de vie !".format(-Degat), 0)
                          else:
-                            print (Character.Nickname+" : +{} ".format(-Degat)+ str(Character.HP)+"/"+str(Character.TVitality) )
+                            classes.fenetre_dialogue(classes.Listes.fenetre, Character.Nickname+" gagne {} points de vie !".format(-Degat), 0)
             #Vérification s'il y a un gagnant
              if Mob.HP==0:
                print("\nPlayer Win")
+               classes.fenetre_dialogue(classes.Listes.fenetre, "Vous avez gagné ce combat !", 0)
                Fight.EndFight(Character,Mob,Fight.Turn)
              elif Character.HP==0:
                 Character.HP=1
                 print("\nMob Win")
+                classes.fenetre_dialogue(classes.Listes.fenetre, "Vous avez été vaincu par {0}".format(Mob.Name), 0)
              else:
                 #Analyse du tour du joueur par l'IA delamortquitue
                 Fight.Mob.IA.PlayerStats(SortID)

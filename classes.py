@@ -936,7 +936,7 @@ def fenetre_dialogue(fenetre, dialogue, afficher=1):
                     if event.type == QUIT:
                         quit()
                     if event.type == KEYDOWN:
-                        if event.key == K_RCTRL:
+                        if event.key == K_RETURN:
                             # Ainsi, on affiche un fond noir et denouveau le nom du personnage
                             # On arrête aussi la boucle
                             fenetre.blit(fond_dial, (0,500))
@@ -973,7 +973,7 @@ def fenetre_dialogue(fenetre, dialogue, afficher=1):
             if event.type == QUIT:
                 quit()
             if event.type == KEYDOWN:
-                if event.key == K_RCTRL:
+                if event.key == K_RETURN:
                     continuer = 0
                     
                     if afficher:
