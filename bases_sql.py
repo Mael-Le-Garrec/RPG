@@ -225,11 +225,26 @@ c = conn.cursor()
 
 ######################### Quetes en cours
 c.execute("DROP TABLE IF EXISTS obstacles")
-c.execute('CREATE TABLE obstacles (id integer primary key, nom text, quete integer, image test, position text, carte text)')
+c.execute('CREATE TABLE obstacles (id integer primary key, nom text, quete integer, image text, position text, carte int)')
 
 # c.execute("INSERT INTO obstacles (nom, quete, image, position, carte) VALUES (?,?,?,?,?)", ("Arbre couché", "5", "arbre.png", "390;360", "0"))
 # c.execute("INSERT INTO obstacles (nom, quete, image, position, carte) VALUES (?,?,?,?,?)", ("Arbre couché", "5", "arbre.png", "420;360", "0"))
 c.execute("INSERT INTO obstacles (nom, quete, image, position, carte) VALUES (?,?,?,?,?)", ("tronc couché", "5", "tronc.png", "510;270", "1"))
+
+c.execute("DROP TABLE IF EXISTS objets")
+c.execute('CREATE TABLE objets (id integer primary key, nom text unique, nom_entier text, image text, categorie text, nombre int, position)')
+c.execute("INSERT INTO objets (nom, nom_entier, image, categorie, nombre, position) VALUES (?,?,?,?,?,?)", ("Potion", "Potion de Vie", "defaut.png", "Vie", "0", "120:30;0|330:390;2"))
+c.execute("INSERT INTO objets (nom, nom_entier, image, categorie, nombre, position) VALUES (?,?,?,?,?,?)", ("Cle secrete", "Clé secrete", "defaut.png", "Quete", "0", ""))
+c.execute("INSERT INTO objets (nom, nom_entier, image, categorie, nombre, position) VALUES (?,?,?,?,?,?)", ("Disque", "Disque de Fatal Bazooka", "defaut.png", "Quete", "0", "120:120;0"))
+c.execute("INSERT INTO objets (nom, nom_entier, image, categorie, nombre, position) VALUES (?,?,?,?,?,?)", ("Fleur rare", "Fleur rare de déguisement", "fleur rare.png", "Quete", "0", "540:180;1"))
+c.execute("INSERT INTO objets (nom, nom_entier, image, categorie, nombre, position) VALUES (?,?,?,?,?,?)", ("Fleurs", "Fleurs banales", "fleurs.png", "Divers", "0", "60:60;0|120:90;1|90:120;2|300:240;0|360:240;0"))
+c.execute("INSERT INTO objets (nom, nom_entier, image, categorie, nombre, position) VALUES (?,?,?,?,?,?)", ("Noix de coco", "Noix de coco", "noix de coco.png", "Divers", "0", "180:270;6|240:270;1"))
+c.execute("INSERT INTO objets (nom, nom_entier, image, categorie, nombre, position) VALUES (?,?,?,?,?,?)", ("Jardiland", "TEH JARDILAND", "jardiland.png", "Quete", "0", "390:330;1"))
+c.execute("INSERT INTO objets (nom, nom_entier, image, categorie, nombre, position) VALUES (?,?,?,?,?,?)", ("Poele", "Poêle à bois construit sur mesure pour la cuisson de noix de coco", "poele.png", "Quete", "0", "420:390;5"))
+c.execute("INSERT INTO objets (nom, nom_entier, image, categorie, nombre, position) VALUES (?,?,?,?,?,?)", ("Armoire", "Armoire", "armoire.png", "Divers", "0", "180:210;6|210:210;6|240:210;6|270:210;6"))
+c.execute("INSERT INTO objets (nom, nom_entier, image, categorie, nombre, position) VALUES (?,?,?,?,?,?)", ("Bonhomme", "Bonhomme perdu", "bonhomme.png", "Rare", "0", "300:330;0"))
+c.execute("INSERT INTO objets (nom, nom_entier, image, categorie, nombre, position) VALUES (?,?,?,?,?,?)", ("Bouteille", "Bouteille de vie", "bouteille.png", "Vie", "0", "360:300;0"))
+c.execute("INSERT INTO objets (nom, nom_entier, image, categorie, nombre, position) VALUES (?,?,?,?,?,?)", ("Chat", "Chat perdu", "defaut.png", "Quete", "0", "30:30;0|330:390;2"))
 
 conn.commit()
 conn.close()

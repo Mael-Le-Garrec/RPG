@@ -458,6 +458,7 @@ def creer_liste_pnj():
     conn.close()
 
     return liste
+    
 def creer_liste_perso():
     conn = sqlite3.connect(os.path.join('MyCharacters','Characters.db'))
     c = conn.cursor()
@@ -514,44 +515,68 @@ class PNJ:
         # On affiche simplement le personnage
         fenetre.blit(self.image, (self.pos_x, self.pos_y))
 
+def creer_liste_objets():
+    conn = sqlite3.connect(os.path.join('items','items.db'))
+    c = conn.cursor()
+    c.execute("SELECT * FROM objets")
+    reponse = c.fetchall()
+    conn.close()
+    
+    dic = {}
+    for var in reponse:
+        dic[var[1].lower()] = Item(var[0])
+    
+    return dic
+
+    # return liste_perso
 class Item:
-    def __init__(self, nom):
-        self.nom = nom.replace(".txt", "")
+    def __init__(self, id):
+        self.id = id
+        self.nom = str()
         self.nom_entier = str()
         self.nombre = int()
         self.position = []
         self.carte = []
         self.ligne = []
+        self.categorie = str()
 
     def charger_item(self):
-        try:
-            self.image = pygame.image.load(os.path.join('textures', '{0}.png'.format(self.nom))).convert_alpha()
-        except:
-            self.image = pygame.image.load(os.path.join('textures', 'defaut.png')).convert_alpha()
+        conn = sqlite3.connect(os.path.join('items','items.db'))
+        c = conn.cursor()
+        c.execute("SELECT * FROM objets where id=?", (self.id,))
+        reponse = c.fetchall()[0]
+        conn.close()
+        
+        self.nom = reponse[1].lower()
+        self.nom_entier = reponse[2]
+        self.nombre = reponse[5]
+        self.categorie = reponse[4]
+        self.image = pygame.image.load(os.path.join('textures', reponse[3])).convert_alpha()
+    
+        if reponse[6]:
+            coords = reponse[6].split("|")
+            print(coords)
+            for val in coords:
+                x = int(val.split(";")[0].split(":")[0])
+                y = int(val.split(";")[0].split(":")[1])
+                carte = int(val.split(";")[1])
+                self.carte.append(carte)
+                self.position.append([[x, y], carte])
+                Listes.liste_cartes[self.carte[-1]].collisions.append((x, y))
+        
+            # if re.match("^[0-9]*:[0-9]*;[0-9]*$", self.contenu[i]):
+                # self.ligne.append(self.contenu[i].strip())
+                # self.ligne[-1] = self.ligne[-1].split(";")
+                # self.ligne[-1][0] = self.ligne[-1][0].split(":")
 
+                # self.ligne[-1][0][0] = int(self.ligne[-1][0][0])
+                # self.ligne[-1][0][1] = int(self.ligne[-1][0][1])
+                # self.ligne[-1][1] = int(self.ligne[-1][1])
 
-        self.fichier = open(os.path.join('items', '{0}.txt'.format(self.nom)), "r")
-        self.contenu = self.fichier.readlines()
-        self.fichier.close()
+                # self.carte.append(int(self.ligne[-1][1]))
 
-        for i in range(len(self.contenu)):
-            self.nom_entier = self.contenu[0].strip()
-            self.nombre = int(self.contenu[1].strip())
-            self.categorie = self.contenu[2].strip()
-
-            if re.match("^[0-9]*:[0-9]*;[0-9]*$", self.contenu[i]):
-                self.ligne.append(self.contenu[i].strip())
-                self.ligne[-1] = self.ligne[-1].split(";")
-                self.ligne[-1][0] = self.ligne[-1][0].split(":")
-
-                self.ligne[-1][0][0] = int(self.ligne[-1][0][0])
-                self.ligne[-1][0][1] = int(self.ligne[-1][0][1])
-                self.ligne[-1][1] = int(self.ligne[-1][1])
-
-                self.carte.append(int(self.ligne[-1][1]))
-
-                Listes.liste_cartes[self.carte[-1]].collisions.append((int(self.ligne[-1][0][0]), int(self.ligne[-1][0][1])))
-                self.position.append(self.ligne[-1])
+                # Listes.liste_cartes[self.carte[-1]].collisions.append((int(self.ligne[-1][0][0]), int(self.ligne[-1][0][1])))
+                # self.position.append(self.ligne[-1])
                 # x, y, carte
 
 
@@ -637,11 +662,12 @@ def faire_quete(pnj, inventaire, fenetre):
                             gagnes.append(recompense)
                     if type == 'xp':
                         # print(recompense)
-                        try:
-                            GameFonctions.MyCharacters.Character1.Exp += int(recompense)
-                            xp = int(recompense)
-                        except:
-                            pass
+                        # try:
+                            # GameFonctions.MyCharacters.Character1.Exp += int(recompense)
+                        GameFonctions.Exp.NewXP(GameFonctions.MyCharacters.Character1, int(recompense))
+                        xp = int(recompense)
+                        # except:
+                            # pass
                                         
         for i in range(len(gagnes)):
             gagnes[i] = "«{1}{0}{1}»".format(gagnes[i], b'\xA0'.decode("utf-8", "replace"))
@@ -736,7 +762,7 @@ class Listes:
     mob_prob = {}
     liste_persos = list()
     liste_quetes = list()
-    liste_items = list()
+    liste_items = dict()
     liste_pnjs = list()
     liste_cartes = list()
     liste_obstacles = list()
@@ -1246,7 +1272,7 @@ def afficher_categorie(fenetre, categorie_actuelle, tab, inventaire, nb_actuel, 
 
             y = 130+i*40
             if y < 520 and inventaire[val] !=0:
-                fenetre.blit(myfont.render(val, 1, (0,0,0)), (230, 130+i*40))
+                fenetre.blit(myfont.render(val.capitalize(), 1, (0,0,0)), (230, 130+i*40))
                 fenetre.blit(myfont.render("x{0}".format(str(inventaire[val])), 1, (0,0,0)), (500, 130+i*40))
                 pygame.draw.line(fenetre, (0,0,0), (210,130+i*40+25), (550,130+i*40+25))
                 i += 1

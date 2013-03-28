@@ -215,7 +215,7 @@ class Mobs:
 class Exp:
     def EXPNeed(Lvl):
         """XP en fonction du niveau du personnage"""
-        return floor(188,59*2 + 4712,1*Lvl + 1730,3)
+        return floor(18.59*2 + 4712.1*Lvl + 1730.3)
 
     def CalcXPMob(Character,Mob,Turn):
         """Calcul l'xp que le monstre donne"""

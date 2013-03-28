@@ -49,7 +49,16 @@ for i in range(len(os.listdir("map"))):
     # Après avoir crée l'objet, on la charge (collisions, etc)
     Listes.liste_cartes[i].charger_carte()
 
-
+    
+    
+    
+Listes.liste_items = creer_liste_objets()
+for i in Listes.liste_items.keys():
+    Listes.liste_items[i].charger_item()
+    
+    
+    
+    
 Listes.liste_quetes = creer_liste_quetes()
 for i in Listes.liste_quetes.keys():
     Listes.liste_quetes[i].charger_quete()
@@ -62,16 +71,20 @@ Listes.liste_obstacles = creer_liste_obstacles()
 for i in Listes.liste_obstacles.keys():
     Listes.liste_obstacles[i].charger_obs()
 
-Listes.liste_items = dict()
-for i in os.listdir("items"): # i vaut le nom du pnj, "bidule.txt"
-    if re.match("[0-9a-zA-Z_\-\.\ ]+.txt", i):
-        Listes.liste_items[i.replace(".txt", "")] = Item(i.replace(".txt", ""))
-        Listes.liste_items[i.replace(".txt", "")].charger_item()
+# Listes.liste_items = dict()
+# for i in os.listdir("items"): # i vaut le nom du pnj, "bidule.txt"
+    # if re.match("[0-9a-zA-Z_\-\.\ ]+.txt", i):
+        # Listes.liste_items[i.replace(".txt", "")] = Item(i.replace(".txt", ""))
+        # Listes.liste_items[i.replace(".txt", "")].charger_item()
 
+print(Listes.liste_items)        
+       
 inventaire = dict()
-for val in Listes.liste_items.keys():
-    inventaire[val.replace(".txt", "")] = Listes.liste_items[val].nombre
+for val in Listes.liste_items.values():
+    inventaire[val.nom] = val.nombre
 
+print(inventaire)    
+    
 # print(Listes.liste_items)
 # print(inventaire)
 
