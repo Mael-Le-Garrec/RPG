@@ -887,7 +887,7 @@ def options(fenetre, inventaire):
 
                     # Sauvegarder
                     if curseur == 4:
-                        pass
+                        GameFonctions.MyCharacters.UpdateSave(GameFonctions.MyCharacters.Character1)
                         
                     # Retour
                     if curseur == 5:
