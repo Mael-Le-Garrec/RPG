@@ -1698,6 +1698,15 @@ def afficherSelectionCombat(fenetre, curseur, perso, mob):
     fenetre.blit(pygame.image.load(os.path.join('images', 'combat.png')).convert_alpha(),(15,15)) # adversaire
     fenetre.blit(pygame.image.load(os.path.join('images', 'combat.png')).convert_alpha(),(600-254-15,600-80-15-80-10)) # personnage
     
+    # perso clans
+    try:
+        
+        fenetre.blit(pygame.transform.scale(pygame.image.load(os.path.join('Clans', perso.ClanName + ".gif")).convert_alpha(), (75, 150)),(140,355))
+    except:
+        fenetre.blit(pygame.transform.scale(pygame.image.load(os.path.join('Clans', "defaut.gif")).convert_alpha(), (75, 150)),(140,355))
+    
+    
+    
     # mob.TVitality
     # mob.HP
     # perso.TVitality
