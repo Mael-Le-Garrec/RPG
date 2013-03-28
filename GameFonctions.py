@@ -193,7 +193,7 @@ class Mobs:
 
     def MobStats(x):
         """Charge les caractéristiques du monstre"""
-        
+
         Mobs.Name=x[1]
         Mobs.Lvl=x[2]
         Mobs.HP=x[3]
@@ -215,12 +215,16 @@ class Mobs:
 class Exp:
     def EXPNeed(Lvl):
         """XP en fonction du niveau du personnage"""
-        return floor(((1500*Lvl)/50**(-Lvl/100)*(Lvl*30)/3)/100) #Provisoire
+        return floor(188,59*2 + 4712,1*Lvl + 1730,3)
 
     def CalcXPMob(Character,Mob,Turn):
         """Calcul l'xp que le monstre donne"""
         C=Mob
-        return int(abs(Turn*0.25*(abs(C.TIntelligence)+abs(C.TAgility)+abs(C.TChance)+abs(C.TStrength)+100)*((Character.HP/Character.TVitality)*Mob.Lvl/Character.Lvl)))
+        MobCarac=C.TIntelligence+C.TAgility+C.TChance+C.TStrength
+        if MobCarac<=0:
+            MobCarac=100
+
+        return int(abs(Turn*0.25*(MobCarac)*((Character.TVitality/Character.HP)*Mob.Lvl/Character.Lvl)))
 
     def NewXP(Character,XP):
         """"Gestion de l'xp et des lvl"""
