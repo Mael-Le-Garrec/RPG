@@ -83,6 +83,7 @@ class MyCharacters:
         reponse = c.fetchall()[0]
         conn.close()
 
+        Character.ID = reponse[0]
         Character.Nickname=reponse[1]
         Character.ClanName=reponse[2]
         Character.Lvl=reponse[3]

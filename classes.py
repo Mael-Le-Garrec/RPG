@@ -152,8 +152,6 @@ class Carte:
         for i in range(len(self.bloc)):
             fenetre.blit(self.bloc[i][2], (self.bloc[i][0], self.bloc[i][1]))
 
-
-
 def creer_images_perso():
     Joueur.perso = pygame.image.load(os.path.join('images', 'fatman_down.png')).convert_alpha()
     Joueur.perso_d = pygame.image.load(os.path.join('images', 'fatman_right.png')).convert_alpha()
@@ -165,13 +163,15 @@ def creer_images_perso():
     
     Joueur.centre = [300,300,0, Joueur.orientation]
 
-# Classe du personnage à jouer
 class Joueur:
     # On place le joueur au centre de la Joueur.carte (en attendant les sauvegardes de pos)
     position_x = 300
     position_y = 300
     ancienne_y = 300
     ancienne_x = 300
+    
+    objet_pris = list()
+    #[[x, y], carte, id]
     
     # On définit la Joueur.carte du joueur comme étant la première (en attendant les sauvegardes toujours)
     carte = 0
@@ -380,6 +380,7 @@ class Joueur:
 
                 if [[Joueur.position_x + voir_x, Joueur.position_y + voir_y], Joueur.carte] in val.position:
                     inventaire[val.nom] +=1
+                    Joueur.objet_pris.append([[Joueur.position_x + voir_x, Joueur.position_y + voir_y], Joueur.carte, val.id])
                     val.position.remove([[Joueur.position_x + voir_x, Joueur.position_y + voir_y], Joueur.carte])
                     Listes.liste_cartes[Joueur.carte].collisions.remove((Joueur.position_x + voir_x, Joueur.position_y + voir_y))
 
@@ -472,7 +473,6 @@ def creer_liste_perso():
 
     return liste_perso
 
-# Classe des Personnages Non Joueurs (PNJs)
 class PNJ:
     def __init__(self, id):
         self.nom = str()
@@ -527,8 +527,36 @@ def creer_liste_objets():
         dic[var[1].lower()] = Item(var[0])
     
     return dic
+    
+def sauvegarder_objets():
+    conn = sqlite3.connect(os.path.join('sauvegarde','sauvegarde.db'))
+    c = conn.cursor()
+    
+    for val in Joueur.objet_pris:
+        # print(val[0][0], val[0][1], val[1], val[2], GameFonctions.MyCharacters.Character1.ID)
+        perso = GameFonctions.MyCharacters.Character1.ID
+        x = val[0][0]
+        y = val[0][1]
+        carte = val[1]
+        objet = val[2]
+        c.execute('INSERT INTO objets (objet, personnage, pos_x, pos_y, carte) VALUES (?,?,?,?,?)', (objet, perso, x, y, carte))
+    
+    conn.commit()
+    conn.close()
+    
+def charger_sauvegarde_obj():
+    conn = sqlite3.connect(os.path.join('sauvegarde','sauvegarde.db'))
+    c = conn.cursor()
+    c.execute("SELECT * FROM objets WHERE personnage=?", (GameFonctions.MyCharacters.Character1.ID,))
+    reponse = c.fetchall()
+    conn.close()
+    if len(reponse) > 0:
+        for i in range(len(reponse)):
+            for val in Listes.liste_items.values():
+                if val.id == reponse[i][1] and [[reponse[i][3], reponse[i][4]], reponse[i][5]] in val.position:
+                    val.position.remove([[reponse[i][3], reponse[i][4]], reponse[i][5]]) 
+                    Listes.liste_cartes[reponse[i][5]].collisions.remove((reponse[i][3], reponse[i][4]))            
 
-    # return liste_perso
 class Item:
     def __init__(self, id):
         self.id = id
@@ -781,7 +809,6 @@ def creer_liste_obstacles():
 
     return liste
 
-
 class Obstacle:
     def __init__(self, id):
         self.id = id
@@ -916,6 +943,7 @@ def options(fenetre, inventaire):
                     # Sauvegarder
                     if curseur == 4:
                         GameFonctions.MyCharacters.UpdateSave(GameFonctions.MyCharacters.Character1)
+                        sauvegarder_objets()
                        
                     # Quitter
                     if curseur == 5:
@@ -1153,8 +1181,7 @@ def afficher_quetes_en_cours(fenetre,nombre):
 
             y += 60
     pygame.display.flip() 
-
-   
+  
 def afficher_inventaire(fenetre, inventaire):
     image_inventaire = pygame.image.load(os.path.join("images", "inventaire.png"))
     myfont = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 16)

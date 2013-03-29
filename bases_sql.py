@@ -264,3 +264,16 @@ c.execute('INSERT INTO caracteristiques (name, lvl, hp, intelligence, strength, 
 
 conn.commit()
 conn.close()
+
+#########################################################################################################################################################################################
+
+####################################################################################################################################################################################### Sauvegarde objets
+
+conn = sqlite3.connect(os.path.join('sauvegarde','sauvegarde.db'))
+c = conn.cursor()
+
+c.execute("DROP TABLE IF EXISTS objets")
+c.execute('CREATE TABLE objets (id integer primary key, objet int, personnage int, pos_x int, pos_y int, carte int)')
+
+conn.commit()
+conn.close()

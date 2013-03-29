@@ -113,14 +113,15 @@ for i in Listes.liste_obstacles.keys():
     if Listes.liste_obstacles[i].carte == Joueur.carte:
         Listes.liste_obstacles[i].afficher_obstacle(Listes.fenetre)
 
-pygame.display.flip() # Un petit peu d'eau, faut rafraichir
-
 GameFonctions.MyCharacters.ReadSave(GameFonctions.MyCharacters.Character1.Nickname, GameFonctions.MyCharacters.Character1)
 GameFonctions.MyCharacters.UpdateSave(GameFonctions.MyCharacters.Character1)
 # print(type(Joueur.inventaire))
 # print(ast.literal_eval(Joueur.inventaire))
 # print(type(ast.literal_eval(Joueur.inventaire)))
 
+charger_sauvegarde_obj()
+
+afficher_monde(Listes.fenetre)
 
 continuer = 1
 while continuer == 1:
@@ -179,7 +180,10 @@ while continuer == 1:
                     pass
 
             if event.key == K_d:
-                print(GameFonctions.MyCharacters.Character1.Sort)
+                # print(GameFonctions.MyCharacters.Character1.Sort)
+                for val in Listes.liste_items.values():
+                    print(val.nom + " : ", val.position)
+                # print(Joueur.objet_pris)
                     
             if event.key == K_f:
                 FightFonctions.Fight.StartFightMob(GameFonctions.MyCharacters.Character1)
