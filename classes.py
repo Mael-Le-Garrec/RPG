@@ -958,8 +958,7 @@ def options(fenetre, inventaire):
                         GameFonctions.MyCharacters.UpdateSave(GameFonctions.MyCharacters.Character1)
                         sauvegarder_objets()
                         sauvegarder_quete()
-                        afficher_monde(fenetre)
-                        fenetre_dialogue(fenetre,"Vos progressions ont été sauvegarder !",1)
+                        fenetre_dialogue(fenetre,"Votre progression a été sauvegardée !")
                         continuer = 0
                     # Quitter
                     if curseur == 5:
