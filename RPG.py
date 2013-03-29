@@ -58,7 +58,8 @@ for i in Listes.liste_items.keys():
     Listes.liste_items[i].charger_item()
     
     
-    
+GameFonctions.MyCharacters.ReadSave(GameFonctions.MyCharacters.Character1.Nickname, GameFonctions.MyCharacters.Character1)
+GameFonctions.MyCharacters.UpdateSave(GameFonctions.MyCharacters.Character1)    
     
 Listes.liste_quetes = creer_liste_quetes()
 for i in Listes.liste_quetes.keys():
@@ -115,11 +116,6 @@ for i in Listes.liste_obstacles.keys():
     if Listes.liste_obstacles[i].carte == Joueur.carte:
         Listes.liste_obstacles[i].afficher_obstacle(Listes.fenetre)
 
-GameFonctions.MyCharacters.ReadSave(GameFonctions.MyCharacters.Character1.Nickname, GameFonctions.MyCharacters.Character1)
-GameFonctions.MyCharacters.UpdateSave(GameFonctions.MyCharacters.Character1)
-# print(type(Joueur.inventaire))
-# print(ast.literal_eval(Joueur.inventaire))
-# print(type(ast.literal_eval(Joueur.inventaire)))
 
 charger_sauvegarde_obj()
 
