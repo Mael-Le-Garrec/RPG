@@ -88,17 +88,17 @@ class Carte:
                 y1 = int(self.lignes[i].split(";")[0].split(":")[1])
                 x2 = int(self.lignes[i].split(";")[1].split(":")[0])
                 y2 = int(self.lignes[i].split(";")[1].split(":")[1])
-                
+
                 proba = int(self.lignes[i].split(";")[2])
                 mobs = self.lignes[i].split(";")[3].strip().split(",")
-                
-                
+
+
                 self.aggro.append([x1, y1, x2, y2, proba, mobs])
                 print(self.aggro)
-                
+
                 # self.mobs.append(x1,y1,x2,y2,proba, )
-                
-            
+
+
         # On ajoute pour chaque clé ayant le nom de de la texture son image chargée
         # Du genre : {'pot_de_fleur' : 'objet'}
 
@@ -160,7 +160,7 @@ def creer_images_perso():
     Joueur.perso_h = pygame.image.load(os.path.join('images', 'fatman_up.png')).convert_alpha()
     Joueur.fond_dial = pygame.image.load(os.path.join('images', 'fond_dialogue.png')).convert_alpha()
     Joueur.orientation = Joueur.perso_b
-    
+
     Joueur.centre = [300,300,0, Joueur.orientation]
 
 class Joueur:
@@ -169,10 +169,10 @@ class Joueur:
     position_y = 300
     ancienne_y = 300
     ancienne_x = 300
-    
+
     objet_pris = list()
     #[[x, y], carte, id]
-    
+
     # On définit la Joueur.carte du joueur comme étant la première (en attendant les sauvegardes toujours)
     carte = 0
 
@@ -180,7 +180,7 @@ class Joueur:
         '''Cette fonction sert à bouger le personnage en fonction de la touche pressée (up/down/left/right)'''
         # On prend en paramères la touche envoyée, la surface pygame, la liste des Joueur.cartes et pnjs pour pouvoir les afficher et le personnage
         monstres = None
-        
+
         if key == K_DOWN:
             # Si l'Joueur.orientation actuelle est la même que celle du bas, on peut avancer
             if Joueur.perso_b == Joueur.orientation:
@@ -284,45 +284,45 @@ class Joueur:
                     Joueur.position_y = Listes.liste_cartes[Joueur.carte].tp[i][2][1]
                     Joueur.carte = Listes.liste_cartes[Joueur.carte].tp[i][0]
         # print(Joueur.carte)
-        
+
         for i in range(len(Listes.liste_cartes[Joueur.carte].aggro)):
             x1 = Listes.liste_cartes[Joueur.carte].aggro[i][0]
             y1 = Listes.liste_cartes[Joueur.carte].aggro[i][1]
             x2 = Listes.liste_cartes[Joueur.carte].aggro[i][2]
             y2 = Listes.liste_cartes[Joueur.carte].aggro[i][3]
             proba = Listes.liste_cartes[Joueur.carte].aggro[i][4]
-        
+
             # Si on est dans la zone de monstres
             if Joueur.position_x >= x1 and Joueur.position_x < x2 and Joueur.position_y >= y1 and Joueur.position_y < y2:
                 # print(proba)
                 if randrange(0,100) <= proba:
                     monstres = Listes.liste_cartes[Joueur.carte].aggro[i][5]
                     break
-        
+
         # On affiche la Joueur.carte
         afficher_monde(fenetre)
-        
+
         monstre_choisi = None
         if monstres:
             rand = randrange(0,101)
             for val in monstres:
                 monstre = int(val.split(":")[0])
                 proba = int(val.split(":")[1]) # probabilité que le monstre apparaisse /100
-                
+
                 if monstre in Listes.liste_mobs:
                     if 100-proba <= rand:
                         monstre_choisi = monstre
                         break
                     else:
                         rand = rand + proba
-      
+
             if monstre_choisi:
                 FightFonctions.Fight.StartFightMob(GameFonctions.MyCharacters.Character1, monstre_choisi)
                 if monstre_choisi in Listes.mob_prob.keys():
                     Listes.mob_prob[monstre_choisi] += 1
                 else:
                     Listes.mob_prob[monstre_choisi] = 1
-                
+
                 afficher_monde(fenetre)
 
     def parler_pnj(fenetre, inventaire):
@@ -339,7 +339,7 @@ class Joueur:
             voir_x = -30
         else:
             voir_x = 30
-    
+
         # On parcourt la liste des pnjs
         for val in Listes.liste_pnjs.values():
             # Si ce pnj se trouve sur la Joueur.carte actuelle
@@ -352,7 +352,7 @@ class Joueur:
                     choisir_dialogue(val, fenetre)
                     if dialogue:
                         fenetre_dialogue(fenetre, dialogue)
-                        
+
                     if val.centre:
                         Joueur.centre = [Joueur.position_x, Joueur.position_y, Joueur.carte, Joueur.orientation]
 
@@ -440,11 +440,11 @@ def creer_liste_mobs():
     c.execute("SELECT id FROM caracteristiques")
     reponse = c.fetchall()
     conn.close()
-    
+
     for i in range(len(reponse)):
         reponse[i] = reponse[i][0]
     return reponse
-        
+
 def creer_liste_pnj():
     conn = sqlite3.connect(os.path.join('pnj','PNJs.db'))
     c = conn.cursor()
@@ -459,7 +459,7 @@ def creer_liste_pnj():
     conn.close()
 
     return liste
-    
+
 def creer_liste_perso():
     conn = sqlite3.connect(os.path.join('MyCharacters','Characters.db'))
     c = conn.cursor()
@@ -489,7 +489,7 @@ class PNJ:
         reponse = c.fetchall()[0]
         conn.close()
         # id, nom, nom_entier, position, carte, image, dialogue
-       
+
         self.nom = reponse[1]
         self.nom_entier = reponse[2]
         self.image = pygame.image.load(os.path.join('textures', '{0}'.format(reponse[5]))).convert_alpha()
@@ -501,7 +501,7 @@ class PNJ:
         self.carte = int(reponse[4])
 
         self.dialogues = reponse[6]
-        
+
         self.centre = reponse[7]
 
         # print("{0} : {1}".format(self.id, self.nom))
@@ -521,17 +521,17 @@ def creer_liste_objets():
     c.execute("SELECT * FROM objets")
     reponse = c.fetchall()
     conn.close()
-    
+
     dic = {}
     for var in reponse:
         dic[var[1].lower()] = Item(var[0])
-    
+
     return dic
-    
+
 def sauvegarder_objets():
     conn = sqlite3.connect(os.path.join('sauvegarde','sauvegarde.db'))
     c = conn.cursor()
-    
+
     for val in Joueur.objet_pris:
         # print(val[0][0], val[0][1], val[1], val[2], GameFonctions.MyCharacters.Character1.ID)
         perso = GameFonctions.MyCharacters.Character1.ID
@@ -540,10 +540,10 @@ def sauvegarder_objets():
         carte = val[1]
         objet = val[2]
         c.execute('INSERT INTO objets (objet, personnage, pos_x, pos_y, carte) VALUES (?,?,?,?,?)', (objet, perso, x, y, carte))
-    
+
     conn.commit()
     conn.close()
-    
+
 def charger_sauvegarde_obj():
     conn = sqlite3.connect(os.path.join('sauvegarde','sauvegarde.db'))
     c = conn.cursor()
@@ -554,8 +554,8 @@ def charger_sauvegarde_obj():
         for i in range(len(reponse)):
             for val in Listes.liste_items.values():
                 if val.id == reponse[i][1] and [[reponse[i][3], reponse[i][4]], reponse[i][5]] in val.position:
-                    val.position.remove([[reponse[i][3], reponse[i][4]], reponse[i][5]]) 
-                    Listes.liste_cartes[reponse[i][5]].collisions.remove((reponse[i][3], reponse[i][4]))            
+                    val.position.remove([[reponse[i][3], reponse[i][4]], reponse[i][5]])
+                    Listes.liste_cartes[reponse[i][5]].collisions.remove((reponse[i][3], reponse[i][4]))
 
 class Item:
     def __init__(self, id):
@@ -574,13 +574,13 @@ class Item:
         c.execute("SELECT * FROM objets where id=?", (self.id,))
         reponse = c.fetchall()[0]
         conn.close()
-        
+
         self.nom = reponse[1].lower()
         self.nom_entier = reponse[2]
         self.nombre = reponse[5]
         self.categorie = reponse[4]
         self.image = pygame.image.load(os.path.join('textures', reponse[3])).convert_alpha()
-    
+
         if reponse[6]:
             coords = reponse[6].split("|")
             for val in coords:
@@ -590,7 +590,7 @@ class Item:
                 self.carte.append(carte)
                 self.position.append([[x, y], carte])
                 Listes.liste_cartes[self.carte[-1]].collisions.append((x, y))
-        
+
             # if re.match("^[0-9]*:[0-9]*;[0-9]*$", self.contenu[i]):
                 # self.ligne.append(self.contenu[i].strip())
                 # self.ligne[-1] = self.ligne[-1].split(";")
@@ -677,7 +677,7 @@ def faire_quete(pnj, inventaire, fenetre):
                 for val2 in val['recompense']:
                     type = val2.split(":")[0].strip()
                     recompense = val2.split(":")[1].strip()
-                    
+
                     if type == 'item' and recompense[0] == "-":
                         if recompense[1:] in inventaire:
                             if inventaire[recompense[1:]] > 0:
@@ -695,7 +695,7 @@ def faire_quete(pnj, inventaire, fenetre):
                         xp = int(recompense)
                         # except:
                             # pass
-                                        
+
         for i in range(len(gagnes)):
             gagnes[i] = "«{1}{0}{1}»".format(gagnes[i], b'\xA0'.decode("utf-8", "replace"))
         for i in range(len(perdus)):
@@ -739,18 +739,18 @@ def faire_quete(pnj, inventaire, fenetre):
 
 def sauvegarder_quete():
     conn = sqlite3.connect(os.path.join('sauvegarde','sauvegarde.db'))
-    c = conn.cursor() 
-    
+    c = conn.cursor()
+
     c.execute('DELETE FROM quetes WHERE personnage=?', (GameFonctions.MyCharacters.Character1.ID,))
-    
+
     # quete, avancement, personnage
     for i in range(len(Listes.liste_quetes)):
         if Listes.liste_quetes[i+1].id in Quete.en_cours or Listes.liste_quetes[i+1].id in Quete.quetes_finies:
             c.execute('INSERT INTO quetes (quete, avancement, personnage) VALUES (?,?,?)', (Listes.liste_quetes[i+1].id, Listes.liste_quetes[i+1].actuel, GameFonctions.MyCharacters.Character1.ID))
             conn.commit()
 
-    conn.close()      
-       
+    conn.close()
+
 class Quete:
     en_cours = list()
     quetes_finies = list()
@@ -762,18 +762,18 @@ class Quete:
         c = conn.cursor()
         c.execute("SELECT * FROM quetes WHERE personnage=?", (GameFonctions.MyCharacters.Character1.ID,))
         # id, quete, avancement, perso
-        reponse = c.fetchall()        
+        reponse = c.fetchall()
         for i in range(len(reponse)):
             for j in range(len(Listes.liste_quetes)):
-                if Listes.liste_quetes[j+1].id == int(reponse[i][1]):                   
+                if Listes.liste_quetes[j+1].id == int(reponse[i][1]):
                     if int(reponse[i][2]) == Listes.liste_quetes[j+1].nombre:
                         Quete.quetes_finies.append(reponse[i][1])
                         Listes.liste_quetes[j+1].actuel = reponse[i][2]
                     else:
                         Quete.en_cours.append(reponse[i][1])
                         Listes.liste_quetes[j+1].actuel = reponse[i][2]
-                                                
-                        
+
+
     def __init__(self, id, nom):
         self.nom = nom
         self.id = id
@@ -781,7 +781,7 @@ class Quete:
         self.actuel = int()
         self.objectif = list()
         self.actuel = 0
-        
+
     def charger_quete(self):
         conn = sqlite3.connect(os.path.join('quete','quetes.db'))
         c = conn.cursor()
@@ -794,10 +794,10 @@ class Quete:
 
         c.execute("SELECT * FROM objectifs WHERE quete=?", (self.id,))
         reponse = c.fetchall()
-         
+
         for i in reponse:
             self.objectif.append({'id':i[0], 'quete':i[1], 'personnage':i[2], 'objectif':i[3], 'avancement':i[4], 'requis':i[5], 'recompense':i[6].split(",")})
-            
+
 class Listes:
     mob_prob = {}
     liste_persos = list()
@@ -883,7 +883,7 @@ def options(fenetre, inventaire):
 
     label_personnage =  myfont.render("Personnage", 1, (0,0,0))
     fenetre.blit(label_personnage, (560-80, 300+cst_y))
-    
+
     label_personnage =  myfont.render("Quêtes", 1, (0,0,0))
     fenetre.blit(label_personnage, (560-80, 340+cst_y))
 
@@ -892,7 +892,7 @@ def options(fenetre, inventaire):
 
     label_retour =  myfont.render("Quitter", 1, (0,0,0))
     fenetre.blit(label_retour, (560-80, 420+cst_y))
-    
+
     label_retour =  myfont.render("Retour", 1, (0,0,0))
     fenetre.blit(label_retour, (560-80, 460+cst_y))
 
@@ -947,7 +947,7 @@ def options(fenetre, inventaire):
                         # print(inventaire)
                         afficher_inventaire(fenetre, inventaire)
                         continuer = 0
-                        
+
                     # Quêtes
                     if curseur == 3:
                         afficher_quetes_status(fenetre)
@@ -958,12 +958,13 @@ def options(fenetre, inventaire):
                         GameFonctions.MyCharacters.UpdateSave(GameFonctions.MyCharacters.Character1)
                         sauvegarder_objets()
                         sauvegarder_quete()
-                        print('Sauvegardé !')
-                       
+                        afficher_monde(fenetre)
+                        fenetre_dialogue(fenetre,"Vos progressions ont été sauvegarder !",1)
+                        continuer = 0
                     # Quitter
                     if curseur == 5:
-                        exit()                
-                        
+                        exit()
+
                     # Retour
                     if curseur == 6:
                         afficher_monde(fenetre)
@@ -1050,19 +1051,19 @@ def fenetre_dialogue(fenetre, dialogue, afficher=1):
             if event.type == KEYDOWN:
                 if event.key == K_RETURN:
                     continuer = 0
-                    
+
                     if afficher:
                         afficher_monde(fenetre)
 
 def afficher_quetes_status(fenetre):
     # Quete.quetes_finies
     # Quete.en_cours
-    nombre = 0 
+    nombre = 0
 
     afficher_quetes_en_cours(fenetre, nombre)
 
     curseur = 0
-    
+
     continuer = 1
     while continuer:
         pygame.time.Clock().tick(300)
@@ -1074,31 +1075,31 @@ def afficher_quetes_status(fenetre):
                 if event.key == K_ESCAPE:
                     continuer = 0
                     afficher_monde(fenetre)
-                
+
                 if event.key == K_LEFT and curseur == 1:
                     curseur = 0
                     afficher_quetes_en_cours(fenetre, nombre)
-                
+
                 if event.key == K_RIGHT and curseur == 0:
                     curseur = 1
                     afficher_quetes_finies(fenetre, nombre)
-                    
+
 def afficher_quetes_finies(fenetre, nombre):
     fond = pygame.image.load(os.path.join("images", "quetes.png"))
     fenetre.blit(fond, (0,0))
-    
+
     myfont = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 16)
-    
+
     taille = myfont.render("En cours", 1, (0,0,0)).get_rect().width
     fenetre.blit(myfont.render("En cours ", 1, (0,0,0)), ((425)/2/2-taille/2, 80))
-    
+
     taille = myfont.render("Finies", 1, (0,0,0)).get_rect().width
     fenetre.blit(myfont.render("Finies ", 1, (0,0,0)), ((425)/2+(425)/2/2-taille/2, 80))
-    
+
     x = int((425)/2+(425)/2/2)-10
     y = 110
     pygame.gfxdraw.filled_trigon(fenetre, x+10, y+0, x+0, y+10, x+20, y+10, (0,0,0)) # triangle en cours
-    
+
     font_quetes = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 14)
     font_objectif = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 12)
     y = 140
@@ -1110,52 +1111,52 @@ def afficher_quetes_finies(fenetre, nombre):
             objectif = Listes.liste_quetes[Quete.quetes_finies[i]].objectif
             actuel = Listes.liste_quetes[Quete.quetes_finies[i]].actuel
             nombre = Listes.liste_quetes[Quete.quetes_finies[i]].nombre
-            
+
             if len(texte) == 1:
                 # fenetre.blit(font_quetes.render("{0} : {1}".format(numero, nom), 1, (0,0,0)), (50, y))
                 fenetre.blit(font_quetes.render("{0} : {1}".format("Quête", nom), 1, (0,0,0)), (50, y))
             else:
                 # fenetre.blit(font_quetes.render("{0} : {1}...".format(numero, nom), 1, (0,0,0)), (50, y))
                 fenetre.blit(font_quetes.render("{0} : {1}...".format("Quête", nom), 1, (0,0,0)), (50, y))
-           
+
             for j in range(len(objectif)):
                 if objectif[j]["avancement"] == actuel:
                     texte = textwrap.wrap(objectif[j]["objectif"],35)
                     nom = texte[0]
                     personnage = Listes.liste_pnjs[objectif[j]["personnage"]].nom_entier
-                    
+
                     if len(texte) == 1:
                         fenetre.blit(font_objectif.render("{0}/{2} : {1}".format(objectif[j]["avancement"], nom, nombre), 1, (0,0,0)), (70, y+20))
                     else:
                         fenetre.blit(font_objectif.render("{0}/{2} : {1}...".format(objectif[j]["avancement"], nom, nombre), 1, (0,0,0)), (70, y+20))
-                    
+
                     texte = textwrap.wrap(personnage,30)
                     nom = texte[0]
-                    
+
                     if len(texte) == 1:
                         fenetre.blit(font_objectif.render("PNJ : {0}".format(nom), 1, (0,0,0)), (90, y+35))
                     else:
                         fenetre.blit(font_objectif.render("PNJ : {0}...".format(nom), 1, (0,0,0)), (90, y+35))
 
             y += 60
-    pygame.display.flip() 
-                    
+    pygame.display.flip()
+
 def afficher_quetes_en_cours(fenetre,nombre):
     fond = pygame.image.load(os.path.join("images", "quetes.png"))
     fenetre.blit(fond, (0,0))
-    
+
     myfont = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 16)
-    
+
     taille = myfont.render("En cours", 1, (0,0,0)).get_rect().width
     fenetre.blit(myfont.render("En cours ", 1, (0,0,0)), ((425)/2/2-taille/2, 80))
-    
+
     taille = myfont.render("Finies", 1, (0,0,0)).get_rect().width
     fenetre.blit(myfont.render("Finies ", 1, (0,0,0)), ((425)/2+(425)/2/2-taille/2, 80))
-    
+
     x = int((425)/2/2)-10
     y = 110
     pygame.gfxdraw.filled_trigon(fenetre, x+10, y+0, x+0, y+10, x+20, y+10, (0,0,0)) # triangle en cours
-    
+
     font_quetes = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 14)
     font_objectif = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 12)
     y = 140
@@ -1167,36 +1168,36 @@ def afficher_quetes_en_cours(fenetre,nombre):
             objectif = Listes.liste_quetes[Quete.en_cours[i]].objectif
             actuel = Listes.liste_quetes[Quete.en_cours[i]].actuel
             nombre = Listes.liste_quetes[Quete.en_cours[i]].nombre
-            
+
             if len(texte) == 1:
                 # fenetre.blit(font_quetes.render("{0} : {1}".format(numero, nom), 1, (0,0,0)), (50, y))
                 fenetre.blit(font_quetes.render("{0} : {1}".format("Quête", nom), 1, (0,0,0)), (50, y))
             else:
                 # fenetre.blit(font_quetes.render("{0} : {1}...".format(numero, nom), 1, (0,0,0)), (50, y))
                 fenetre.blit(font_quetes.render("{0} : {1}...".format("Quête", nom), 1, (0,0,0)), (50, y))
-           
+
             for j in range(len(objectif)):
                 if objectif[j]["avancement"] == actuel+1:
                     texte = textwrap.wrap(objectif[j]["objectif"],35)
                     nom = texte[0]
                     personnage = Listes.liste_pnjs[objectif[j]["personnage"]].nom_entier
-                    
+
                     if len(texte) == 1:
                         fenetre.blit(font_objectif.render("{0}/{2} : {1}".format(objectif[j]["avancement"]-1, nom, nombre), 1, (0,0,0)), (70, y+20))
                     else:
                         fenetre.blit(font_objectif.render("{0}/{2} : {1}...".format(objectif[j]["avancement"]-1, nom, nombre), 1, (0,0,0)), (70, y+20))
-                    
+
                     texte = textwrap.wrap(personnage,30)
                     nom = texte[0]
-                    
+
                     if len(texte) == 1:
                         fenetre.blit(font_objectif.render("PNJ : {0}".format(nom), 1, (0,0,0)), (90, y+35))
                     else:
                         fenetre.blit(font_objectif.render("PNJ : {0}...".format(nom), 1, (0,0,0)), (90, y+35))
 
             y += 60
-    pygame.display.flip() 
-  
+    pygame.display.flip()
+
 def afficher_inventaire(fenetre, inventaire):
     image_inventaire = pygame.image.load(os.path.join("images", "inventaire.png"))
     myfont = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 16)
@@ -1706,38 +1707,38 @@ def pygame_input(fenetre, actuel):
 
                 elif event.key == K_RETURN and len(pseudo) > 2 and pseudo not in Listes.liste_persos:
                     return pseudo
-                    
+
 def affichageDebutCombat(fenetre, perso, mob):
     font = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 14)
 
     fenetre.blit(pygame.image.load(os.path.join('images', 'clan.png')).convert_alpha(),(0,0))
     fenetre_dialogue(fenetre, "Un combat vient de commencer avec un {} !".format(mob.Name), 0)
-    
+
     fenetre.blit(pygame.image.load(os.path.join('images', 'clan.png')).convert_alpha(),(0,0))
     fenetre.blit(pygame.image.load(os.path.join('images', 'combat.png')).convert_alpha(),(600-254-15,600-80-15))
-    
+
     x = 600-254-15+40
     y = 600-80-15+20
-    
+
     fenetre.blit(font.render("Attaquer", 1, (0,0,0)), (x, y))
     fenetre.blit(font.render("Parler", 1, (0,0,0)), (x, y+20))
     fenetre.blit(font.render("Objets", 1, (0,0,0)), (x+130, y))
     fenetre.blit(font.render("Fuir", 1, (0,0,0)), (x+130, y+20))
-    
+
     x_c = x - 20
     y_c = y + 4
-    
+
     pygame.gfxdraw.filled_trigon(fenetre, 0+x_c, 0+y_c, 0+x_c, 10+y_c, 5+x_c, 5+y_c, (0,0,0))
-    
+
     pygame.display.flip()
 
     print(perso.Nickname)
     print(perso.ClanName)
-    
+
 def choisirAction(fenetre, perso, mob):
     curseur = [0,0]
     affichageSelectionCombat1(fenetre, curseur, perso, mob)
-    
+
     continuer = 1
     while continuer:
         pygame.time.Clock().tick(60)
@@ -1755,23 +1756,23 @@ def choisirAction(fenetre, perso, mob):
                             return sort
                     elif curseur == [0,1]:
                         fenetre_dialogue(fenetre, mob.Dialogue,0)
-                        affichageSelectionCombat1(fenetre, curseur, perso, mob)                        
-                    
+                        affichageSelectionCombat1(fenetre, curseur, perso, mob)
+
                 if event.key == K_LEFT:
                     if curseur[0] == 1:
                         curseur[0] -= 1
                         affichageSelectionCombat1(fenetre, curseur, perso, mob)
-                
+
                 if event.key == K_RIGHT:
                     if curseur[0] == 0:
                         curseur[0] += 1
                         affichageSelectionCombat1(fenetre, curseur, perso, mob)
-                        
+
                 if event.key == K_DOWN:
                     if curseur[1] == 0:
                         curseur[1] += 1
                         affichageSelectionCombat1(fenetre, curseur, perso, mob)
-                        
+
                 if event.key == K_UP:
                     if curseur[1] == 1:
                         curseur[1] -= 1
@@ -1780,7 +1781,7 @@ def choisirAction(fenetre, perso, mob):
 def choisirSort(fenetre, perso, mob):
     curseur = [0,0]
     affichageSelectionCombat2(fenetre, curseur, perso, mob)
-    
+
     continuer = 1
     while continuer:
         pygame.time.Clock().tick(60)
@@ -1814,129 +1815,129 @@ def choisirSort(fenetre, perso, mob):
                         else:
                             fenetre_dialogue(fenetre, "Ceci n'est pas un sort", 0)
                             affichageSelectionCombat2(fenetre, curseur, perso, mob)
-                            
+
                 if event.key == K_ESCAPE:
                     continuer = 0
                     affichageSelectionCombat1(fenetre, [0,0], perso, mob)
-                                 
+
                 if event.key == K_LEFT:
                     if curseur[0] == 1:
                         curseur[0] -= 1
                         affichageSelectionCombat2(fenetre, curseur, perso, mob)
-                
+
                 if event.key == K_RIGHT:
                     if curseur[0] == 0:
                         curseur[0] += 1
                         affichageSelectionCombat2(fenetre, curseur, perso, mob)
-                        
-                        
+
+
                 if event.key == K_DOWN:
                     if curseur[1] == 0:
                         curseur[1] += 1
                         affichageSelectionCombat2(fenetre, curseur, perso, mob)
-                        
+
                 if event.key == K_UP:
                     if curseur[1] == 1:
                         curseur[1] -= 1
                         affichageSelectionCombat2(fenetre, curseur, perso, mob)
-    
+
 def afficherSelectionCombat(fenetre, curseur, perso, mob):
     font = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 14)
     pfont = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 12)
-    
+
     fenetre.blit(pygame.image.load(os.path.join('images', 'clan.png')).convert_alpha(),(0,0)) # fond
-    
+
     fenetre.blit(pygame.image.load(os.path.join('images', 'combat.png')).convert_alpha(),(600-254-15,600-80-15)) # menu
     fenetre.blit(pygame.image.load(os.path.join('images', 'combat.png')).convert_alpha(),(15,15)) # adversaire
     fenetre.blit(pygame.image.load(os.path.join('images', 'combat.png')).convert_alpha(),(600-254-15,600-80-15-80-10)) # personnage
-    
+
     # perso clans
     try:
-        
+
         fenetre.blit(pygame.transform.scale(pygame.image.load(os.path.join('Clans', perso.ClanName + ".gif")).convert_alpha(), (75, 150)),(140,355))
     except:
         fenetre.blit(pygame.transform.scale(pygame.image.load(os.path.join('Clans', "defaut.gif")).convert_alpha(), (75, 150)),(140,355))
-    
-    
-    
+
+
+
     # mob.TVitality
     # mob.HP
     # perso.TVitality
     # perso.HP
-    
+
     hp_perso = perso.HP / perso.TVitality * 150
     hp_mob = mob.HP / mob.TVitality * 150
     pourcentage_p = perso.HP / perso.TVitality * 100
     pourcentage_m = mob.HP / mob.TVitality * 100
-    
+
     # nom adversaire et lvl
     fenetre.blit(pfont.render(mob.Name, 1, (0,0,0)), (15+20,15+20))
     fenetre.blit(pfont.render("N.{0}".format(mob.Lvl), 1, (0,0,0)), (15+20+160,15+20))
-    
-    
+
+
     # nom personnage et lvl
     fenetre.blit(pfont.render(perso.Nickname, 1, (0,0,0)), (600-254-15+20,600-80-15-80-10+20))
     fenetre.blit(pfont.render("N.{0}".format(perso.Lvl), 1, (0,0,0)), (600-254-15+20+160,600-80-15-80-10+20))
-    
+
     # vie personnage
     fenetre.blit(pfont.render("{}%".format(int(pourcentage_p)), 1, (0,0,0)), (600-254-15+20,600-80-15-80-10+45))
     x = 600-254-15+20+40
     y = 600-80-15-80-10+45 +15
-    
+
     pygame.draw.line(fenetre, (0,0,0), (x, y), (x+160, y))
     pygame.draw.line(fenetre, (0,0,0), (x, y), (x, y-5))
     pygame.draw.line(fenetre, (0,0,0), (x+160, y), (x+160, y-5))
-    
+
     pygame.draw.line(fenetre, (50,160,30), (x+5, y-5), (x+5+hp_perso, y-5), 4)
 
-    
+
     # vie adversaire
     fenetre.blit(pfont.render("{}%".format(int(pourcentage_m)), 1, (0,0,0)), (15+20,60))
     x = 15+20+40
     y = 60+15
-    
+
     pygame.draw.line(fenetre, (0,0,0), (x, y), (x+160, y))
     pygame.draw.line(fenetre, (0,0,0), (x, y), (x, y-5))
     pygame.draw.line(fenetre, (0,0,0), (x+160, y), (x+160, y-5))
-    
+
     pygame.draw.line(fenetre, (50,160,30), (x+5, y-5), (x+5+hp_mob, y-5), 4)
-        
+
     # séparation dialogue / combat
     pygame.draw.line(fenetre, (0,0,0), (15, 600-80-10), (600-254-15-10, 600-80-10))
-    
+
     # affiche "que faire" et vie
     taille = font.render("Que faire ?", 1, (0,0,0)).get_rect().width
     fenetre.blit(font.render("Que faire ?", 1, (0,0,0)), ((600-254-15-15)/2-taille/2,520))
     vie = "Vie : {0} / {1}".format(perso.HP, perso.TVitality)
     taille = font.render(vie, 1, (0,0,0)).get_rect().width
     fenetre.blit(font.render(vie, 1, (0,0,0)), ((600-254-15-15)/2-taille/2, 545))
-    
+
 def affichageSelectionCombat1(fenetre, curseur, perso, mob):
     afficherSelectionCombat(fenetre, curseur, perso, mob)
     font = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 14)
-    
+
     x = 600-254-15+40
     y = 600-80-15+20
-    
+
     fenetre.blit(font.render("Attaquer", 1, (0,0,0)), (x, y))
     fenetre.blit(font.render("Parler", 1, (0,0,0)), (x, y+20))
     fenetre.blit(font.render("Objets", 1, (0,0,0)), (x+130, y))
     fenetre.blit(font.render("Fuir", 1, (0,0,0)), (x+130, y+20))
-    
-    x_c = x - 20 + 130 * curseur[0] 
+
+    x_c = x - 20 + 130 * curseur[0]
     y_c = y + 4 + 20 * curseur[1]
-    
+
     pygame.gfxdraw.filled_trigon(fenetre, 0+x_c, 0+y_c, 0+x_c, 10+y_c, 5+x_c, 5+y_c, (0,0,0))
-    
+
     pygame.display.flip()
-    
+
 def affichageSelectionCombat2(fenetre, curseur, perso, mob):
     afficherSelectionCombat(fenetre, curseur, perso, mob)
     font = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 14)
-    
+
     x = 600-254-15+40
     y = 600-80-15+20
-    
+
     if GameFonctions.MyCharacters.Character1.Sort[0] >= 0:
         sort1 = FightFonctions.Sort.Name[GameFonctions.MyCharacters.Character1.Sort[0]]
     else:
@@ -1953,16 +1954,16 @@ def affichageSelectionCombat2(fenetre, curseur, perso, mob):
         sort4 = FightFonctions.Sort.Name[GameFonctions.MyCharacters.Character1.Sort[3]]
     else:
         sort4 = "- - -"
-    
-    
+
+
     fenetre.blit(font.render(sort1, 1, (0,0,0)), (x, y))
     fenetre.blit(font.render(sort2, 1, (0,0,0)), (x, y+20))
     fenetre.blit(font.render(sort3, 1, (0,0,0)), (x+130, y))
     fenetre.blit(font.render(sort4, 1, (0,0,0)), (x+130, y+20))
-    
-    x_c = x - 20 + 130 * curseur[0] 
+
+    x_c = x - 20 + 130 * curseur[0]
     y_c = y + 4 + 20 * curseur[1]
-    
+
     pygame.gfxdraw.filled_trigon(fenetre, 0+x_c, 0+y_c, 0+x_c, 10+y_c, 5+x_c, 5+y_c, (0,0,0))
-    
+
     pygame.display.flip()
