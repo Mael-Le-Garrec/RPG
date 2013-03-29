@@ -121,6 +121,9 @@ charger_sauvegarde_obj()
 
 afficher_monde(Listes.fenetre)
 
+GameFonctions.MyCharacters.ReadSave(GameFonctions.MyCharacters.Character1.Nickname, GameFonctions.MyCharacters.Character1)
+
+
 continuer = 1
 while continuer == 1:
     pygame.time.Clock().tick(300) # Faut un peu ralentir la boucle
