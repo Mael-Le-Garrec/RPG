@@ -97,12 +97,12 @@ class MyCharacters:
 
         Character.Sort[0]=reponse[11]
         Character.Sort[1]=reponse[12]
-        
+
         classes.Joueur.position_x = reponse[13]
         classes.Joueur.position_y = reponse[14]
         classes.Joueur.carte = reponse[15]
         if reponse[16]:
-            classes.Joueur.inventaire = ast.literal_eval(reponse[16]) 
+            classes.Joueur.inventaire = ast.literal_eval(reponse[16])
 
     class Character1:
         Nickname=""
@@ -209,8 +209,12 @@ class Mobs:
         Mobs.TStrength=x[5]
         Mobs.TChance=x[6]
         Mobs.TAgility=x[7]
-        Mobs.Sort=str(x[8])+","+str(x[9])+","+str(x[10])+","+str(x[11])
-        Mobs.Sort=Mobs.Sort.replace(",-1","").replace("-1,","")
+        Mobs.Sort=[x[8],x[9],x[10],x[11]]
+        Mobs.Sort=[x for x in Mobs.Sort if x!=-1]
+
+##        Mobs.Sort=str(x[8])+","+str(x[9])+","+str(x[10])+","+str(x[11])
+##        Mobs.Sort=Mobs.Sort.replace(",-1","").replace("-1,","")
+
         Mobs.Attitude=x[12]
         Mobs.Dialogue=x[13]
 

@@ -206,7 +206,7 @@ class Fight:
                     if Character.HP>0 and Mob.HP>0:
                          # if Fight.Player.Action_choice(Character,Mob,int(input("Attaquer : 1 ; Fuir : 2"))):
                         action, sort = classes.choisirAction(classes.Listes.fenetre, Character)
-                        if Fight.Player.Action_choice(Character,Mob, action, sort)==1:    
+                        if Fight.Player.Action_choice(Character,Mob, action, sort)==1:
                             print("Fin du combat (fuite)")
                             classes.fenetre_dialogue(classes.Listes.fenetre, "Vous prennez la fuite.", 0)
                             break
@@ -244,8 +244,8 @@ class Fight:
                 """Choisi le comportement du monstre"""
                 UsableSpell=[]
 
-                MobSpellList=GameFonctions.Mobs.Sort.split(",")
-                MobSpellList=list(map(int,MobSpellList))
+                MobSpellList=GameFonctions.Mobs.Sort#.split(",")
+                #MobSpellList=list(map(int,MobSpellList))
 
                 if GameFonctions.Mobs.Attitude==0: #Peureux
                     UsableSpell=Fight.Mob.IA.Attitude_Peureux(MobSpellList)
