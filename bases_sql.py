@@ -211,9 +211,12 @@ c = conn.cursor()
 
 ######################### Quetes en cours
 c.execute("DROP TABLE IF EXISTS quetes")
-c.execute('CREATE TABLE quetes (id integer primary key, quete integer, avancement integer)')
-# c.execute("INSERT INTO quetes (quete, avancement) VALUES (1,1)")
+c.execute('CREATE TABLE quetes (id integer primary key, quete integer, avancement integer, personnage integer)')
+c.execute("INSERT INTO quetes (quete, avancement, personnage) VALUES (1,1,0)")
 # c.execute("INSERT INTO quetes (quete, avancement) VALUES (2,0)")
+
+conn.commit()
+conn.close()
 
 #########################################################################################################################################################################################
 
@@ -269,11 +272,11 @@ conn.close()
 
 ####################################################################################################################################################################################### Sauvegarde objets
 
-conn = sqlite3.connect(os.path.join('sauvegarde','sauvegarde.db'))
-c = conn.cursor()
+# conn = sqlite3.connect(os.path.join('sauvegarde','sauvegarde.db'))
+# c = conn.cursor()
 
-c.execute("DROP TABLE IF EXISTS objets")
-c.execute('CREATE TABLE objets (id integer primary key, objet int, personnage int, pos_x int, pos_y int, carte int)')
+# c.execute("DROP TABLE IF EXISTS objets")
+# c.execute('CREATE TABLE objets (id integer primary key, objet int, personnage int, pos_x int, pos_y int, carte int)')
 
-conn.commit()
-conn.close()
+# conn.commit()
+# conn.close()

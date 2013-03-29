@@ -64,6 +64,8 @@ Listes.liste_quetes = creer_liste_quetes()
 for i in Listes.liste_quetes.keys():
     Listes.liste_quetes[i].charger_quete()
 
+Quete.charger_quete_en_cours()
+
 Listes.liste_pnjs = creer_liste_pnj()
 for i in Listes.liste_pnjs.keys():
     Listes.liste_pnjs[i].charger_pnj()
@@ -87,7 +89,7 @@ for val in Listes.liste_items.values():
 
 # selection_personnage(Listes.fenetre)
 
-Quete.charger_quete_en_cours()
+
 
 Listes.liste_mobs = creer_liste_mobs()
 
@@ -166,9 +168,12 @@ while continuer == 1:
                     print(val, Listes.mob_prob[val]/nb*100)
             
             if event.key == K_h:
-                print("Quêtes en cours : {0}".format(Quete.en_cours))
-                print("Quêtes finies : {0}".format(Quete.quetes_finies))
-                print("\n")
+                # print("Quêtes en cours : {0}".format(Quete.en_cours))
+                # print("Quêtes finies : {0}".format(Quete.quetes_finies))
+                # print("\n")
+                
+                for val in Listes.liste_quetes.values():
+                    print(val.nom, val.actuel)
 
             if event.key == K_u:
                 pygame.image.save(Listes.fenetre, os.path.join("cartes_images", "{0}.png".format(Joueur.carte)))
@@ -181,10 +186,10 @@ while continuer == 1:
 
             if event.key == K_d:
                 # print(GameFonctions.MyCharacters.Character1.Sort)
-                for val in Listes.liste_items.values():
-                    print(val.nom + " : ", val.position)
-                # print(Joueur.objet_pris)
-                    
+                # for val in Listes.liste_items.values():
+                    # print(val.nom + " : ", val.position)
+                print(Joueur.objet_pris)
+                
             if event.key == K_f:
                 FightFonctions.Fight.StartFightMob(GameFonctions.MyCharacters.Character1)
                 GameFonctions.MyCharacters.UpdateSave(GameFonctions.MyCharacters.Character1)

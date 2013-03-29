@@ -737,6 +737,20 @@ def faire_quete(pnj, inventaire, fenetre):
         if len(dialogue) > 0:
             return dialogue
 
+def sauvegarder_quete():
+    conn = sqlite3.connect(os.path.join('sauvegarde','sauvegarde.db'))
+    c = conn.cursor() 
+    
+    c.execute('DELETE FROM quetes WHERE personnage=?', (GameFonctions.MyCharacters.Character1.ID,))
+    
+    # quete, avancement, personnage
+    for i in range(len(Listes.liste_quetes)):
+        if Listes.liste_quetes[i+1].id in Quete.en_cours or Listes.liste_quetes[i+1].id in Quete.quetes_finies:
+            c.execute('INSERT INTO quetes (quete, avancement, personnage) VALUES (?,?,?)', (Listes.liste_quetes[i+1].id, Listes.liste_quetes[i+1].actuel, GameFonctions.MyCharacters.Character1.ID))
+            conn.commit()
+
+    conn.close()      
+       
 class Quete:
     en_cours = list()
     quetes_finies = list()
@@ -744,22 +758,30 @@ class Quete:
     minimum = 0
 
     def charger_quete_en_cours():
-        en_cours = list()
         conn = sqlite3.connect(os.path.join('sauvegarde','sauvegarde.db'))
         c = conn.cursor()
-        c.execute("SELECT * FROM quetes")
-        reponse = c.fetchall()
-        for i in reponse:
-            en_cours.append(i[1])
-        # print(en_cours)
-
+        c.execute("SELECT * FROM quetes WHERE personnage=?", (GameFonctions.MyCharacters.Character1.ID,))
+        # id, quete, avancement, perso
+        reponse = c.fetchall()        
+        for i in range(len(reponse)):
+            for j in range(len(Listes.liste_quetes)):
+                if Listes.liste_quetes[j+1].id == int(reponse[i][1]):                   
+                    if int(reponse[i][2]) == Listes.liste_quetes[j+1].nombre:
+                        Quete.quetes_finies.append(reponse[i][1])
+                        Listes.liste_quetes[j+1].actuel = reponse[i][2]
+                    else:
+                        Quete.en_cours.append(reponse[i][1])
+                        Listes.liste_quetes[j+1].actuel = reponse[i][2]
+                                                
+                        
     def __init__(self, id, nom):
         self.nom = nom
         self.id = id
         self.nombre = int()
         self.actuel = int()
         self.objectif = list()
-
+        self.actuel = 0
+        
     def charger_quete(self):
         conn = sqlite3.connect(os.path.join('quete','quetes.db'))
         c = conn.cursor()
@@ -772,23 +794,14 @@ class Quete:
 
         c.execute("SELECT * FROM objectifs WHERE quete=?", (self.id,))
         reponse = c.fetchall()
-
-
+         
         for i in reponse:
             self.objectif.append({'id':i[0], 'quete':i[1], 'personnage':i[2], 'objectif':i[3], 'avancement':i[4], 'requis':i[5], 'recompense':i[6].split(",")})
-
-        conn = sqlite3.connect(os.path.join('sauvegarde','sauvegarde.db'))
-        c = conn.cursor()
-        c.execute("SELECT avancement FROM quetes WHERE quete=?", (self.id,))
-        try:
-            self.actuel = c.fetchone()[0]
-        except:
-            self.actuel = 0
-
+            
 class Listes:
     mob_prob = {}
     liste_persos = list()
-    liste_quetes = list()
+    liste_quetes = dict()
     liste_items = dict()
     liste_pnjs = list()
     liste_cartes = list()
@@ -944,6 +957,8 @@ def options(fenetre, inventaire):
                     if curseur == 4:
                         GameFonctions.MyCharacters.UpdateSave(GameFonctions.MyCharacters.Character1)
                         sauvegarder_objets()
+                        sauvegarder_quete()
+                        print('Sauvegardé !')
                        
                     # Quitter
                     if curseur == 5:
