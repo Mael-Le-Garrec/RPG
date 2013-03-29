@@ -4,6 +4,8 @@ from time import localtime, strftime
 from random import choice
 from math import floor
 import sqlite3
+import classes
+import ast
 #ClansStats=[]
 #Clans=[]
 ##MobsListe=[]
@@ -56,7 +58,7 @@ class MyCharacters:
                 if reponse==Character.Nickname:
                     print("Ce nom exist deja")
                 else:
-                    c.execute("INSERT INTO caracteristiques (nickname, clanname, lvl, exp, hp, vitality, intelligence, strength,chance,agility,sort_1,sort_2) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)", (Character.Nickname, Character.ClanName, Character.Lvl, Character.Exp ,ClansInfo.Vitality[i], Character.Bonus_Vitality, Character.Bonus_Intelligence, Character.Bonus_Strength, Character.Bonus_Chance,Character.Bonus_Agility, Character.Sort[0], Character.Sort[1] ))
+                    c.execute("INSERT INTO caracteristiques (nickname, clanname, lvl, exp, hp, vitality, intelligence, strength,chance,agility,sort_1,sort_2,pos_x,pos_y,carte,inventaire) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", (Character.Nickname, Character.ClanName, Character.Lvl, Character.Exp ,ClansInfo.Vitality[i], Character.Bonus_Vitality, Character.Bonus_Intelligence, Character.Bonus_Strength, Character.Bonus_Chance,Character.Bonus_Agility, Character.Sort[0], Character.Sort[1],classes.Joueur.position_x, classes.Joueur.position_y, classes.Joueur.carte, str(classes.Joueur.inventaire)))
 
                 conn.commit()
                 conn.close()
@@ -67,7 +69,7 @@ class MyCharacters:
     def UpdateSave(Character):
         conn = sqlite3.connect(os.path.join('MyCharacters','Characters.db'))
         c = conn.cursor()
-        c.execute("UPDATE caracteristiques  SET nickname=?, clanname=?, lvl=?, exp=?, hp=?, vitality=?, intelligence=?, strength=?,chance=?,agility=?,sort_1=?,sort_2=? WHERE nickname=?",(Character.Nickname, Character.ClanName, Character.Lvl, Character.Exp ,Character.HP, Character.Bonus_Vitality, Character.Bonus_Intelligence, Character.Bonus_Strength, Character.Bonus_Chance,Character.Bonus_Agility, Character.Sort[0], Character.Sort[1],Character.Nickname ))
+        c.execute("UPDATE caracteristiques  SET nickname=?, clanname=?, lvl=?, exp=?, hp=?, vitality=?, intelligence=?, strength=?,chance=?,agility=?,sort_1=?,sort_2=?,pos_x=?,pos_y=?,carte=?,inventaire=? WHERE nickname=?",(Character.Nickname, Character.ClanName, Character.Lvl, Character.Exp ,Character.HP, Character.Bonus_Vitality, Character.Bonus_Intelligence, Character.Bonus_Strength, Character.Bonus_Chance,Character.Bonus_Agility, Character.Sort[0], Character.Sort[1],classes.Joueur.position_x, classes.Joueur.position_y, classes.Joueur.carte, str(classes.Joueur.inventaire), Character.Nickname ))
 
         conn.commit()
         conn.close()
@@ -79,23 +81,27 @@ class MyCharacters:
         c = conn.cursor()
         c.execute("SELECT * FROM caracteristiques WHERE nickname=?",(Nickname,))
         reponse = c.fetchall()[0]
-        print(reponse)
         conn.close()
 
         Character.Nickname=reponse[1]
         Character.ClanName=reponse[2]
         Character.Lvl=reponse[3]
+        Character.Exp=reponse[4]
         Character.HP=reponse[5]
         Character.Bonus_Vitality=reponse[6]
-        Character.Exp=reponse[4]
         Character.Bonus_Intelligence=reponse[7]
         Character.Bonus_Strength=reponse[8]
-        Character.Bonus_Chance=reponse[10]
-        Character.Bonus_Agility=reponse[9]
-        Character.Sort[0]=reponse[10]
-        Character.Sort[1]=reponse[11]
+        Character.Bonus_Chance=reponse[9]
+        Character.Bonus_Agility=reponse[10]
 
-
+        Character.Sort[0]=reponse[11]
+        Character.Sort[1]=reponse[12]
+        
+        classes.Joueur.position_x = reponse[13]
+        classes.Joueur.position_y = reponse[14]
+        classes.Joueur.carte = reponse[15]
+        if reponse[16]:
+            classes.Joueur.inventaire = ast.literal_eval(reponse[16]) 
 
     class Character1:
         Nickname=""

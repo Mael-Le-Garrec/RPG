@@ -6,6 +6,7 @@ import re
 import os
 from pprint import pprint
 import sqlite3
+import ast
 
 
 import GameFonctions
@@ -76,17 +77,13 @@ for i in Listes.liste_obstacles.keys():
     # if re.match("[0-9a-zA-Z_\-\.\ ]+.txt", i):
         # Listes.liste_items[i.replace(".txt", "")] = Item(i.replace(".txt", ""))
         # Listes.liste_items[i.replace(".txt", "")].charger_item()
-
-print(Listes.liste_items)        
-       
-inventaire = dict()
+      
+Joueur.inventaire = dict()
 for val in Listes.liste_items.values():
-    inventaire[val.nom] = val.nombre
-
-print(inventaire)    
+    Joueur.inventaire[val.nom] = val.nombre
     
 # print(Listes.liste_items)
-# print(inventaire)
+# print(Joueur.inventaire)
 
 # selection_personnage(Listes.fenetre)
 
@@ -118,6 +115,13 @@ for i in Listes.liste_obstacles.keys():
 
 pygame.display.flip() # Un petit peu d'eau, faut rafraichir
 
+GameFonctions.MyCharacters.ReadSave(GameFonctions.MyCharacters.Character1.Nickname, GameFonctions.MyCharacters.Character1)
+GameFonctions.MyCharacters.UpdateSave(GameFonctions.MyCharacters.Character1)
+# print(type(Joueur.inventaire))
+# print(ast.literal_eval(Joueur.inventaire))
+# print(type(ast.literal_eval(Joueur.inventaire)))
+
+
 continuer = 1
 while continuer == 1:
     pygame.time.Clock().tick(300) # Faut un peu ralentir la boucle
@@ -138,19 +142,19 @@ while continuer == 1:
         if event.type == KEYDOWN:
             # Soit elle se trouve dans les clés de déplacement et on bouge le perso
             if event.key in cle_deplacement:
-                Joueur.bouger_perso(event.key, Listes.fenetre, inventaire);
+                Joueur.bouger_perso(event.key, Listes.fenetre, Joueur.inventaire);
 
             # Soit c'est "Entrée" et on fait parler le personnage
             if event.key == K_RETURN:
-                Joueur.parler_pnj(Listes.fenetre, inventaire)
-                Joueur.prendre_item(inventaire, Listes.fenetre)
+                Joueur.parler_pnj(Listes.fenetre, Joueur.inventaire)
+                Joueur.prendre_item(Joueur.inventaire, Listes.fenetre)
 
             if event.key == K_ESCAPE:
-                options(Listes.fenetre, inventaire)
+                options(Listes.fenetre, Joueur.inventaire)
 
             if event.key == K_i:
-                # pprint(inventaire)
-                afficher_inventaire(Listes.fenetre, inventaire)
+                # pprint(Joueur.inventaire)
+                afficher_Joueur.inventaire(Listes.fenetre, Joueur.inventaire)
             
             if event.key == K_g:
                 nb = 0
