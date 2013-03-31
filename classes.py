@@ -169,7 +169,9 @@ class Joueur:
     position_y = 300
     ancienne_y = 300
     ancienne_x = 300
-
+    
+    inventaire = ""
+    
     objet_pris = list()
     #[[x, y], carte, id]
 
@@ -1451,9 +1453,31 @@ def selection_personnage(fenetre):
                     afficher_personnage(fenetre, actuel)
 
                 if event.key == K_RETURN:
-                    GameFonctions.MyCharacters.Character1.Nickname = Listes.liste_persos[actuel]
-                    continuer = 0
+                    if len(Listes.liste_persos) > 0:
+                        GameFonctions.MyCharacters.Character1.Nickname = Listes.liste_persos[actuel]
+                        continuer = 0
+                    else:
+                        nouveau, clan = selection_clan(fenetre)
 
+                        if nouveau == 0:
+                            afficher_personnage(fenetre, actuel)
+                        else:
+                            Joueur.carte = 0
+                            Joueur.position_x = 300
+                            Joueur.position_y = 300
+                            Joueur.inventaire = ""
+                            GameFonctions.MyCharacters.Character1.Nickname = nouveau
+                            GameFonctions.MyCharacters.Character1.Lvl = 1
+                            GameFonctions.MyCharacters.Character1.Exp = 0
+                            GameFonctions.MyCharacters.Character1.Bonus_Vitality = 0
+                            GameFonctions.MyCharacters.Character1.Intelligence = 0
+                            GameFonctions.MyCharacters.Character1.Strength = 0
+                            GameFonctions.MyCharacters.Character1.Chance = 0
+                            GameFonctions.MyCharacters.Character1.Agility = 0
+                            GameFonctions.MyCharacters.Character1.HP = GameFonctions.ClansInfo.Vitality[GameFonctions.ClansInfo.Name.index(clan)]
+                            GameFonctions.MyCharacters.CreateSave(GameFonctions.MyCharacters.Character1)
+                            continuer = 0
+                        
                 if event.unicode == "a" or event.unicode == "A":
                     nouveau, clan = selection_clan(fenetre)
 
@@ -1528,30 +1552,45 @@ def afficher_personnage(fenetre, actuel):
 
     pygame.gfxdraw.box(fenetre, (200, 200, 200, 200), (0,0,0))
     pygame.gfxdraw.box(fenetre, (202, 202, 196, 196), (255,255,255))
+    
+    if len(Listes.liste_persos) > 0:
+        GameFonctions.MyCharacters.ReadSave(Listes.liste_persos[actuel], GameFonctions.MyCharacters.Character1)
 
-    GameFonctions.MyCharacters.ReadSave(Listes.liste_persos[actuel], GameFonctions.MyCharacters.Character1)
+        
+        taille1 = myfont.render("Appuyez sur A pour ajouter", 1, (0,0,0)).get_rect().width
+        taille2 = myfont.render("un personnage", 1, (0,0,0)).get_rect().width
+        
+        fenetre.blit(myfont.render("Appuyez sur A pour ajouter", 1, (0,0,0)), (300-taille1/2, 130))
+        fenetre.blit(myfont.render("un personnage", 1, (0,0,0)), (300-taille2/2, 150))
 
-    fenetre.blit(myfont.render("Ajouter personnage : A", 1, (0,0,0)), (210, 150))
+        fenetre.blit(myfont.render(str(GameFonctions.MyCharacters.Character1.Nickname), 1, (0,0,0)), (210, 210))
+        fenetre.blit(myfont.render("Clan : " + str(GameFonctions.MyCharacters.Character1.ClanName), 1, (0,0,0)), (210, 210+2*20))
+        fenetre.blit(myfont.render("Force : " + str(GameFonctions.MyCharacters.Character1.Bonus_Strength), 1, (0,0,0)), (210, 210+3*20))
+        fenetre.blit(myfont.render("Agilité : " + str(GameFonctions.MyCharacters.Character1.Bonus_Agility), 1, (0,0,0)), (210, 210+4*20))
+        fenetre.blit(myfont.render("Chance : " + str(GameFonctions.MyCharacters.Character1.Bonus_Chance), 1, (0,0,0)), (210, 210+5*20))
+        fenetre.blit(myfont.render("Intelligence : " + str(GameFonctions.MyCharacters.Character1.Bonus_Intelligence), 1, (0,0,0)), (210, 210+6*20))
+        fenetre.blit(myfont.render("Vitalité : " + str(GameFonctions.MyCharacters.Character1.Bonus_Vitality), 1, (0,0,0)), (210, 210+7*20))
+        fenetre.blit(myfont.render("Niveau : " + str(GameFonctions.MyCharacters.Character1.Lvl), 1, (0,0,0)), (210, 210+8*20))
 
-    fenetre.blit(myfont.render(str(GameFonctions.MyCharacters.Character1.Nickname), 1, (0,0,0)), (210, 210))
-    fenetre.blit(myfont.render("Clan : " + str(GameFonctions.MyCharacters.Character1.ClanName), 1, (0,0,0)), (210, 210+2*20))
-    fenetre.blit(myfont.render("Force : " + str(GameFonctions.MyCharacters.Character1.Bonus_Strength), 1, (0,0,0)), (210, 210+3*20))
-    fenetre.blit(myfont.render("Agilité : " + str(GameFonctions.MyCharacters.Character1.Bonus_Agility), 1, (0,0,0)), (210, 210+4*20))
-    fenetre.blit(myfont.render("Chance : " + str(GameFonctions.MyCharacters.Character1.Bonus_Chance), 1, (0,0,0)), (210, 210+5*20))
-    fenetre.blit(myfont.render("Intelligence : " + str(GameFonctions.MyCharacters.Character1.Bonus_Intelligence), 1, (0,0,0)), (210, 210+6*20))
-    fenetre.blit(myfont.render("Vitalité : " + str(GameFonctions.MyCharacters.Character1.Bonus_Vitality), 1, (0,0,0)), (210, 210+7*20))
-    fenetre.blit(myfont.render("Niveau : " + str(GameFonctions.MyCharacters.Character1.Lvl), 1, (0,0,0)), (210, 210+8*20))
+        taille = myfont.render("{0} / {1}".format(actuel+1, len(Listes.liste_persos)), 1, (0,0,0)).get_rect().width
+        fenetre.blit(myfont.render("{0} / {1}".format(actuel+1, len(Listes.liste_persos)), 1, (0,0,0)), (300-taille/2, 250+8*20))
 
-    taille = myfont.render("{0} / {1}".format(actuel+1, len(Listes.liste_persos)), 1, (0,0,0)).get_rect().width
-    fenetre.blit(myfont.render("{0} / {1}".format(actuel+1, len(Listes.liste_persos)), 1, (0,0,0)), (300-taille/2, 250+8*20))
+        if actuel < len(Listes.liste_persos)-1:
+            pygame.gfxdraw.filled_trigon(fenetre, 0+cst_x1, 0+cst_y, 0+cst_x1, 20+cst_y, 10+cst_x1, 10+cst_y, (0,0,0))
+        if actuel > 0:
+            pygame.gfxdraw.filled_trigon(fenetre, 10+cst_x2, 0+cst_y, 10+cst_x2, 20+cst_y, 0+cst_x2, 10+cst_y, (0,0,0))
 
-    if actuel < len(Listes.liste_persos)-1:
-        pygame.gfxdraw.filled_trigon(fenetre, 0+cst_x1, 0+cst_y, 0+cst_x1, 20+cst_y, 10+cst_x1, 10+cst_y, (0,0,0))
-    if actuel > 0:
-        pygame.gfxdraw.filled_trigon(fenetre, 10+cst_x2, 0+cst_y, 10+cst_x2, 20+cst_y, 0+cst_x2, 10+cst_y, (0,0,0))
+        pygame.display.flip()
 
-    pygame.display.flip()
-
+    else:
+        taille1 = myfont.render("Appuyez sur entrée",1,(0,0,0)).get_rect().width
+        taille2 = myfont.render("pour créer un",1,(0,0,0)).get_rect().width
+        taille3 = myfont.render("personnage",1,(0,0,0)).get_rect().width
+        fenetre.blit(myfont.render("Appuyez sur entrée",1,(0,0,0)), (300-taille1/2, 240))
+        fenetre.blit(myfont.render("pour créer un",1,(0,0,0)), (300-taille2/2, 280))
+        fenetre.blit(myfont.render("personnage",1,(0,0,0)), (300-taille3/2, 320))
+        pygame.display.flip()
+        
 def afficher_clan(fenetre, actuel):
     myfont = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 14)
 
@@ -1564,6 +1603,10 @@ def afficher_clan(fenetre, actuel):
     pygame.gfxdraw.box(fenetre, (202, 202, 196, 196), (255,255,255))
 
 ##    stats = stats_clan(GameFonctions.Clans[actuel])
+
+    taille = myfont.render("Choisissez votre clan", 1, (0,0,0)).get_rect().width
+    
+    fenetre.blit(myfont.render("Choisissez votre clan", 1, (0,0,0)), (300-taille/2, 150))
 
     fenetre.blit(myfont.render(GameFonctions.ClansInfo.Name[actuel], 1, (0,0,0)), (210, 210))
     # fenetre.blit(myfont.render("Description : " + stats["description"], 1, (0,0,0)), (210, 210+2*20))

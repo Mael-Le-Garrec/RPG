@@ -36,8 +36,7 @@ GameFonctions.ClansInfo.Ini_Clans()
 
 Listes.liste_persos = []
 
-for val in os.listdir("MyCharacters"):
-    Listes.liste_persos = creer_liste_perso()
+Listes.liste_persos = creer_liste_perso()
 
 # Selection du personnage
 selection_personnage(Listes.fenetre)
@@ -123,7 +122,6 @@ afficher_monde(Listes.fenetre)
 
 GameFonctions.MyCharacters.ReadSave(GameFonctions.MyCharacters.Character1.Nickname, GameFonctions.MyCharacters.Character1)
 
-
 continuer = 1
 while continuer == 1:
     pygame.time.Clock().tick(300) # Faut un peu ralentir la boucle
@@ -156,7 +154,7 @@ while continuer == 1:
 
             if event.key == K_i:
                 # pprint(Joueur.inventaire)
-                afficher_Joueur.inventaire(Listes.fenetre, Joueur.inventaire)
+                afficher_inventaire(Listes.fenetre, Joueur.inventaire)
             
             if event.key == K_g:
                 nb = 0
