@@ -124,75 +124,78 @@ GameFonctions.MyCharacters.ReadSave(GameFonctions.MyCharacters.Character1.Nickna
 
 continuer = 1
 while continuer == 1:
-    pygame.time.Clock().tick(300) # Faut un peu ralentir la boucle
+    pygame.time.Clock().tick(60) # Faut un peu ralentir la boucle
 
     # Si on clique sur la chtite croix pour quitter
-    for event in pygame.event.get():
-        if event.type == QUIT:
-            continuer = 0
+    # for event in pygame.event.get():
+    event = pygame.event.poll()
+    if event.type == QUIT:
+        continuer = 0
 
-        if event.type == MOUSEBUTTONDOWN and event.button == 1:
-            # if event.pos[0] > 10 and event.pos[0] < 610 and event.pos[1] > 10 and event.pos[1] < 610:
-            Joueur.position_x = event.pos[0]//30*30
-            Joueur.position_y = event.pos[1]//30*30
-            print(Joueur.position_x, Joueur.position_y)
+    if event.type == MOUSEBUTTONDOWN and event.button == 1:
+        # if event.pos[0] > 10 and event.pos[0] < 610 and event.pos[1] > 10 and event.pos[1] < 610:
+        Joueur.position_x = event.pos[0]//30*30
+        Joueur.position_y = event.pos[1]//30*30
+        print(Joueur.position_x, Joueur.position_y)
+        afficher_monde(Listes.fenetre)
+
+    # Si on a pressé une touche
+    if event.type == KEYDOWN:
+        # Soit elle se trouve dans les clés de déplacement et on bouge le perso
+        if event.key in cle_deplacement:
+            Joueur.bouger_perso(event.key, Listes.fenetre, Joueur.inventaire);
+
+        # Soit c'est "Entrée" et on fait parler le personnage
+        if event.key == K_RETURN:
+            Joueur.parler_pnj(Listes.fenetre, Joueur.inventaire)
+            Joueur.prendre_item(Joueur.inventaire, Listes.fenetre)
+
+        if event.key == K_ESCAPE:
+            options(Listes.fenetre, Joueur.inventaire)
+
+        if event.key == K_i:
+            # pprint(Joueur.inventaire)
+            afficher_inventaire(Listes.fenetre, Joueur.inventaire)
             afficher_monde(Listes.fenetre)
-
-        # Si on a pressé une touche
-        if event.type == KEYDOWN:
-            # Soit elle se trouve dans les clés de déplacement et on bouge le perso
-            if event.key in cle_deplacement:
-                Joueur.bouger_perso(event.key, Listes.fenetre, Joueur.inventaire);
-
-            # Soit c'est "Entrée" et on fait parler le personnage
-            if event.key == K_RETURN:
-                Joueur.parler_pnj(Listes.fenetre, Joueur.inventaire)
-                Joueur.prendre_item(Joueur.inventaire, Listes.fenetre)
-
-            if event.key == K_ESCAPE:
-                options(Listes.fenetre, Joueur.inventaire)
-
-            if event.key == K_i:
-                # pprint(Joueur.inventaire)
-                afficher_inventaire(Listes.fenetre, Joueur.inventaire)
+        
+        if event.key == K_g:
+            nb = 0
+            for val in Listes.mob_prob.values():
+                nb += val
             
-            if event.key == K_g:
-                nb = 0
-                for val in Listes.mob_prob.values():
-                    nb += val
-                
-                for val in Listes.mob_prob.keys():
-                    print(val, Listes.mob_prob[val]/nb*100)
+            for val in Listes.mob_prob.keys():
+                print(val, Listes.mob_prob[val]/nb*100)
+        
+        if event.key == K_h:
+            # print("Quêtes en cours : {0}".format(Quete.en_cours))
+            # print("Quêtes finies : {0}".format(Quete.quetes_finies))
+            # print("\n")
             
-            if event.key == K_h:
-                # print("Quêtes en cours : {0}".format(Quete.en_cours))
-                # print("Quêtes finies : {0}".format(Quete.quetes_finies))
-                # print("\n")
-                
-                for val in Listes.liste_quetes.values():
-                    print(val.nom, val.actuel)
+            for val in Listes.liste_quetes.values():
+                print(val.nom, val.actuel)
 
-            if event.key == K_u:
-                pygame.image.save(Listes.fenetre, os.path.join("cartes_images", "{0}.png".format(Joueur.carte)))
+        if event.key == K_u:
+            pygame.image.save(Listes.fenetre, os.path.join("cartes_images", "{0}.png".format(Joueur.carte)))
 
-            if event.key == K_m:
-                try:
-                    Joueur.carte = int(input("carte : "))
-                except:
-                    pass
+        if event.key == K_m:
+            try:
+                Joueur.carte = int(input("carte : "))
+            except:
+                pass
 
-            if event.key == K_d:
-                # print(GameFonctions.MyCharacters.Character1.Sort)
-                # for val in Listes.liste_items.values():
-                    # print(val.nom + " : ", val.position)
-                print(Joueur.objet_pris)
-                
-            if event.key == K_f:
-                FightFonctions.Fight.StartFightMob(GameFonctions.MyCharacters.Character1)
-                GameFonctions.MyCharacters.UpdateSave(GameFonctions.MyCharacters.Character1)
- 
-                afficher_monde(Listes.fenetre)
+        if event.key == K_d:
+            # print(GameFonctions.MyCharacters.Character1.Sort)
+            # for val in Listes.liste_items.values():
+                # print(val.nom + " : ", val.position)
+            print(Joueur.objet_pris)
+            
+        if event.key == K_f:
+            FightFonctions.Fight.StartFightMob(GameFonctions.MyCharacters.Character1)
+            GameFonctions.MyCharacters.UpdateSave(GameFonctions.MyCharacters.Character1)
 
+            afficher_monde(Listes.fenetre)
+        
+    pygame.event.clear()
 
         # if event.type == MOUSEMOTION: # Décommenter pour avoir la position de la souris.
             # print("position {},{}".format(event.pos[0],event.pos[1]))

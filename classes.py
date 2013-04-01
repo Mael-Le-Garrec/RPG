@@ -593,6 +593,15 @@ class Item:
                 self.position.append([[x, y], carte])
                 Listes.liste_cartes[self.carte[-1]].collisions.append((x, y))
 
+        if reponse[7]:
+            self.requis = reponse[7].split(",")
+        else:
+            self.requis = None
+            
+        if reponse[8]:
+            self.utilisation = reponse[8].split(",")
+        else:
+            self.utilisation = None
             # if re.match("^[0-9]*:[0-9]*;[0-9]*$", self.contenu[i]):
                 # self.ligne.append(self.contenu[i].strip())
                 # self.ligne[-1] = self.ligne[-1].split(";")
@@ -949,6 +958,10 @@ def options(fenetre, inventaire):
                         # print(inventaire)
                         afficher_inventaire(fenetre, inventaire)
                         continuer = 0
+                        afficher_monde(fenetre)
+                        
+                    if curseur == 2: # Personnage
+                        print("Vie : ", GameFonctions.MyCharacters.Character1.HP, "/", GameFonctions.MyCharacters.Character1.TVitality)
 
                     # Quêtes
                     if curseur == 3:
@@ -1288,7 +1301,6 @@ def afficher_inventaire(fenetre, inventaire):
 
                 if event.key == K_ESCAPE or event.key == K_i:
                     continuer = 0
-                    afficher_monde(fenetre)
 
 def action_objet(fenetre, objet_actuel, inventaire, nb_actuel, nb_obj):
     fond = pygame.image.load(os.path.join("images", "choix_inventaire.png")) # 149 * 93
@@ -1343,8 +1355,8 @@ def action_objet(fenetre, objet_actuel, inventaire, nb_actuel, nb_obj):
                     continuer = 0
                     choix = None
 
-    # if choix == 0: # Utiliser objet
-        #utiliser
+    if choix == 0: # Utiliser objet
+        utiliser_objet(fenetre, inventaire, objet_actuel)
 
     if choix == 1: # Jeter objet
         inventaire[objet_actuel] -= 1
@@ -1355,6 +1367,73 @@ def action_objet(fenetre, objet_actuel, inventaire, nb_actuel, nb_obj):
 
     else: return nb_actuel
 
+def utiliser_objet(fenetre, inventaire, objet_actuel):
+    requis = list()
+    condition = 0
+
+    if Listes.liste_items[objet_actuel].requis:
+        for val in Listes.liste_items[objet_actuel].requis:
+            type = val.split(":")[0]
+            arg = val.split(":")[1]
+            if type == "lvl":
+                if GameFonctions.MyCharacters.Character1.Lvl >= int(arg):
+                    requis.append(1)
+                else:
+                    requis.append(0)
+                    
+            if type == "item":
+                if arg in inventaire and inventaire[arg] > 0:
+                    requis.append(1)
+                else:
+                    requis.append(0)
+                    
+            if type == "qf": # Quête finie
+                if int(arg) in Quete.quetes_finies:
+                    requis.append(1)
+                else:
+                    requis.append(0)
+            
+            if type == "qc": # Quête en cours
+                if int(arg) in Quete.en_cours:
+                    requis.append(1)
+                else:
+                    requis.append(0)
+                    
+        if 0 in requis:
+            condition = 0
+        else:
+            condition = 1
+    else:
+        condition = 1
+    
+    suppr = 1
+    if condition: # si on remplit les conditions nécessaires, ou s'il n'y en a pas
+        if Listes.liste_items[objet_actuel].utilisation: # si l'objet a une utilisé quelconque
+            for val in Listes.liste_items[objet_actuel].utilisation:
+                type = val.split(":")[0]
+                arg = val.split(":")[1]
+                
+                if type == "pv":
+                    if GameFonctions.MyCharacters.Character1.HP != GameFonctions.MyCharacters.Character1.TVitality: # Si on est pas déjà full life
+                        if GameFonctions.MyCharacters.Character1.HP + int(arg) <= GameFonctions.MyCharacters.Character1.TVitality: # Si vie + potion < vie totale
+                            fenetre_dialogue(fenetre, "Vous regagnez {0} points de vie !".format(arg), 0)
+                            GameFonctions.MyCharacters.Character1.HP = GameFonctions.MyCharacters.Character1.HP + int(arg) # vie = vie + potion
+                        else:
+                            fenetre_dialogue(fenetre, "Vous regagnez {0} points de vie !".format(GameFonctions.MyCharacters.Character1.TVitality - GameFonctions.MyCharacters.Character1.HP), 0)
+                            GameFonctions.MyCharacters.Character1.HP = GameFonctions.MyCharacters.Character1.TVitality # si vie + potion > vie totale, vie = vie totale
+                    else:
+                        fenetre_dialogue(fenetre, "Votre vie est déjà maximale !", 0)
+                        suppr = 0
+            
+            if suppr == 1:
+                inventaire[objet_actuel] -= 1
+            
+        else:
+            fenetre_dialogue(fenetre, "Vous ne pouvez pas utiliser cet objet.", 0)
+    else:
+        fenetre_dialogue(fenetre, "Vous ne remplissez pas les conditions nécessaires à l'utilisation de cet objet.", 0)
+
+    
 def afficher_categorie(fenetre, categorie_actuelle, tab, inventaire, nb_actuel, categories):
     image_inventaire = pygame.image.load(os.path.join("images", "inventaire.png"))
     myfont = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 16)
@@ -1789,15 +1868,18 @@ def choisirAction(fenetre, perso, mob):
                 quit()
             if event.type == KEYDOWN:
                 if event.key == K_RETURN:
-                    if curseur == [1,1]:
+                    if curseur == [1,1]: # fuir
                         continuer = 0
                         return 2, None
-                    elif curseur == [0,0]:
+                    elif curseur == [0,0]: # choisir sort
                         sort = choisirSort(fenetre, perso, mob)
                         if sort:
                             return sort
-                    elif curseur == [0,1]:
+                    elif curseur == [0,1]: # parler
                         fenetre_dialogue(fenetre, mob.Dialogue,0)
+                        affichageSelectionCombat1(fenetre, curseur, perso, mob)
+                    elif curseur == [1,0]: # objets
+                        afficher_inventaire(fenetre, Joueur.inventaire)
                         affichageSelectionCombat1(fenetre, curseur, perso, mob)
 
                 if event.key == K_LEFT:
