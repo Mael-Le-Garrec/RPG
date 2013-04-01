@@ -961,8 +961,10 @@ def options(fenetre, inventaire):
                         afficher_monde(fenetre)
                         
                     if curseur == 2: # Personnage
-                        print("Vie : ", GameFonctions.MyCharacters.Character1.HP, "/", GameFonctions.MyCharacters.Character1.TVitality)
-
+                        afficher_profil(fenetre, inventaire)
+                        continuer = 0
+                        afficher_monde(fenetre)
+                        
                     # Quêtes
                     if curseur == 3:
                         afficher_quetes_status(fenetre)
@@ -983,7 +985,112 @@ def options(fenetre, inventaire):
                     if curseur == 6:
                         afficher_monde(fenetre)
                         continuer = 0
+                        
+def afficher_profil(fenetre, inventaire):               
+    myfont = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 16)
+    font_nom = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 18)
 
+    fenetre.blit(pygame.image.load(os.path.join('images', 'clan.png')).convert_alpha(),(0,0))
+    
+
+    nom = font_nom.render(GameFonctions.MyCharacters.Character1.Nickname, 1, (0,0,0))
+    taille = nom.get_rect().width
+    fenetre.blit(nom, (300-taille/2,45))
+    
+    vie = myfont.render("Vie : {0} / {1}".format(GameFonctions.MyCharacters.Character1.HP, GameFonctions.MyCharacters.Character1.TVitality), 1, (0,0,0))
+    taille = vie.get_rect().width
+    fenetre.blit(vie, (300-taille/2,80))
+    
+    lvl = myfont.render("Niveau : {0}".format(GameFonctions.MyCharacters.Character1.Lvl), 1, (0,0,0))
+    taille = lvl.get_rect().width
+    fenetre.blit(lvl, (300-taille/2,110))
+    
+    
+    lbl_carac = myfont.render("Caractéristiques", 1, (0,0,0))
+    taille = lbl_carac.get_rect().width
+    fenetre.blit(lbl_carac, (300-120-taille/2,180))
+         
+    lbl_stats = myfont.render("Image", 1, (0,0,0))
+    taille = lbl_stats.get_rect().width
+    fenetre.blit(lbl_stats, (300+120-taille/2,180))
+         
+    pygame.gfxdraw.box(fenetre, (80, 200, 200, 200), (0,0,0))
+    pygame.gfxdraw.box(fenetre, (82, 202, 196, 196), (255,255,255))
+
+    pygame.gfxdraw.box(fenetre, (600-200-80, 200, 200, 200), (0,0,0))
+    pygame.gfxdraw.box(fenetre, (600-200-80+2, 202, 196, 196), (255,255,255))    
+    
+    personnage = pygame.transform.scale(pygame.image.load(os.path.join("images", "front.png")).convert_alpha(), (36*2,66*2))
+    fenetre.blit(personnage, (300+120-30,240))
+    
+    # fenetre.blit(pygame.transform.scale(pygame.image.load(os.path.join('Clans', perso.ClanName + ".gif")).convert_alpha(), (75, 150)),(140,355))
+    
+
+    fenetre.blit(myfont.render("Clan : " + str(GameFonctions.MyCharacters.Character1.ClanName), 1, (0,0,0)), (90, 190+2*20))
+    fenetre.blit(myfont.render("Force : " + str(GameFonctions.MyCharacters.Character1.Bonus_Strength), 1, (0,0,0)), (90, 190+3*20))
+    fenetre.blit(myfont.render("Agilité : " + str(GameFonctions.MyCharacters.Character1.Bonus_Agility), 1, (0,0,0)), (90, 190+4*20))
+    fenetre.blit(myfont.render("Chance : " + str(GameFonctions.MyCharacters.Character1.Bonus_Chance), 1, (0,0,0)), (90, 190+5*20))
+    fenetre.blit(myfont.render("Intel. : " + str(GameFonctions.MyCharacters.Character1.Bonus_Intelligence), 1, (0,0,0)), (90, 190+6*20))
+    fenetre.blit(myfont.render("Vitalité : " + str(GameFonctions.MyCharacters.Character1.Bonus_Vitality), 1, (0,0,0)), (90, 190+7*20))
+    fenetre.blit(myfont.render("XP : " + str(GameFonctions.MyCharacters.Character1.Exp), 1, (0,0,0)), (90, 190+8*20))
+    
+    
+    # fenetre.blit(myfont.render("Inventaire : " + str(nb_obj), 1, (0,0,0)), (330, 190+2*20))
+    # fenetre.blit(myfont.render("Combats Gagnés : 5000", 1, (0,0,0)), (330, 190+3*20))
+    # fenetre.blit(myfont.render("Agilité : " + str(GameFonctions.MyCharacters.Character1.Bonus_Agility), 1, (0,0,0)), (330, 190+4*20))
+    # fenetre.blit(myfont.render("Chance : " + str(GameFonctions.MyCharacters.Character1.Bonus_Chance), 1, (0,0,0)), (330, 190+5*20))
+    # fenetre.blit(myfont.render("Intel. : " + str(GameFonctions.MyCharacters.Character1.Bonus_Intelligence), 1, (0,0,0)), (330, 190+6*20))
+    # fenetre.blit(myfont.render("Vitalité : " + str(GameFonctions.MyCharacters.Character1.Bonus_Vitality), 1, (0,0,0)), (330, 190+7*20))
+    # fenetre.blit(myfont.render("XP : " + str(GameFonctions.MyCharacters.Character1.Exp), 1, (0,0,0)), (330, 190+8*20))
+    
+    nb_obj = nombre_inventaire(inventaire, 0)
+    obj_inv = myfont.render("Objets dans l'inventaire : {0}".format(nb_obj), 1, (0,0,0))
+    taille = obj_inv.get_rect().width
+    fenetre.blit(obj_inv, (300-taille/2,440))
+    
+    nb_obj = nombre_inventaire(inventaire, 1)
+    obj_inv = myfont.render("Objets différents : {0}".format(nb_obj), 1, (0,0,0))
+    taille = obj_inv.get_rect().width
+    fenetre.blit(obj_inv, (300-taille/2,460))
+    
+    combat_g = myfont.render("Combat gagnés : x".format(), 1, (0,0,0))
+    taille = combat_g.get_rect().width
+    fenetre.blit(combat_g, (300-taille/2,480))
+    
+    combat_p = myfont.render("Combat perdus : x".format(), 1, (0,0,0))
+    taille = combat_p.get_rect().width
+    fenetre.blit(combat_p, (300-taille/2,500))
+    
+    lvl = GameFonctions.MyCharacters.Character1.Lvl
+    xp = GameFonctions.MyCharacters.Character1.Exp
+    xp_req = myfont.render("Prochain niveau : {0} xp".format(GameFonctions.Exp.EXPNeed(lvl) - xp), 1, (0,0,0))
+    taille = xp_req.get_rect().width
+    fenetre.blit(xp_req, (300-taille/2,520))
+    
+    
+    pygame.display.flip()
+    
+    
+    continuer = 1
+    while continuer:
+        pygame.time.Clock().tick(300)
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                quit()
+            if event.type == KEYDOWN:
+                if event.key == K_ESCAPE or event.key == K_RETURN:
+                    continuer = 0
+
+def nombre_inventaire(inventaire, diff):
+    nb = 0
+    for val in inventaire.values():
+        if val > 0:
+            if diff:
+                nb+=1
+            else:
+                nb+=val
+    return nb
+    
 def afficher_monde(fenetre):
     Listes.liste_cartes[Joueur.carte].afficher_carte(fenetre)
 
@@ -1453,7 +1560,6 @@ def utiliser_objet(fenetre, inventaire, objet_actuel):
             fenetre_dialogue(fenetre, "Vous ne pouvez pas utiliser cet objet.", 0)
     else:
         fenetre_dialogue(fenetre, "Vous ne remplissez pas les conditions nécessaires à l'utilisation de cet objet.", 0)
-
     
 def afficher_categorie(fenetre, categorie_actuelle, tab, inventaire, nb_actuel, categories):
     image_inventaire = pygame.image.load(os.path.join("images", "inventaire.png"))
@@ -1998,7 +2104,6 @@ def afficherSelectionCombat(fenetre, curseur, perso, mob):
 
     # perso clans
     try:
-
         fenetre.blit(pygame.transform.scale(pygame.image.load(os.path.join('Clans', perso.ClanName + ".gif")).convert_alpha(), (75, 150)),(140,355))
     except:
         fenetre.blit(pygame.transform.scale(pygame.image.load(os.path.join('Clans', "defaut.gif")).convert_alpha(), (75, 150)),(140,355))
