@@ -1406,7 +1406,7 @@ def utiliser_objet(fenetre, inventaire, objet_actuel):
     else:
         condition = 1
     
-    suppr = 1
+    suppr = list()
     if condition: # si on remplit les conditions nécessaires, ou s'il n'y en a pas
         if Listes.liste_items[objet_actuel].utilisation: # si l'objet a une utilisé quelconque
             for val in Listes.liste_items[objet_actuel].utilisation:
@@ -1423,9 +1423,30 @@ def utiliser_objet(fenetre, inventaire, objet_actuel):
                             GameFonctions.MyCharacters.Character1.HP = GameFonctions.MyCharacters.Character1.TVitality # si vie + potion > vie totale, vie = vie totale
                     else:
                         fenetre_dialogue(fenetre, "Votre vie est déjà maximale !", 0)
-                        suppr = 0
-            
-            if suppr == 1:
+                        suppr.append(0)
+                
+                if type == "tp":
+                    if arg == "centre":
+                        Joueur.position_x = Joueur.centre[0]
+                        Joueur.position_y = Joueur.centre[1]
+                        Joueur.carte = Joueur.centre[2]
+                        Joueur.orientation = Joueur.centre[3]
+                        fenetre_dialogue(fenetre, "Vous avez été téléporté au dernier centre que vous avez visité !", 0)
+                        suppr.append(1)
+                    else:
+                        x = int(arg.split(";")[0])
+                        y = int(arg.split(";")[1])
+                        carte = int(arg.split(";")[2])
+                        
+                        if carte <= len(Listes.liste_cartes):
+                            Joueur.position_x = x
+                            Joueur.position_y = y
+                            Joueur.carte = carte
+                            fenetre_dialogue(fenetre, "Vous avez été téléporté !", 0)
+                            suppr.append(1)
+                    
+                
+            if 1 in suppr:
                 inventaire[objet_actuel] -= 1
             
         else:
