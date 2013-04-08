@@ -24,6 +24,21 @@ pygame.display.set_caption(titre)
 creer_images_perso()
 
 
+
+freq = 44100    # audio CD quality
+bitsize = -16   # unsigned 16 bit
+channels = 2    # 1 is mono, 2 is stereo
+buffer = 1024    # number of samples
+pygame.mixer.init(freq, bitsize, channels, buffer)
+son =  pygame.mixer.music.load(os.path.join('musique','pkmn.mid'))
+# son =  pygame.mixer.music.load(os.path.join('musique','onestop.mid'))
+# son =  pygame.mixer.music.load(os.path.join('musique','town.mid'))
+# son =  pygame.mixer.music.load(os.path.join('musique','flourish.mid'))
+pygame.mixer.music.set_volume(0.3)
+
+# MUSIQUE !!
+
+
 # Listes.fenetre.blit(pygame.image.load(os.path.join("images", "fond.png")), (0,0))
 Listes.fenetre.fill((240, 240, 240))
 
@@ -170,9 +185,12 @@ while continuer == 1:
             # print("Quêtes en cours : {0}".format(Quete.en_cours))
             # print("Quêtes finies : {0}".format(Quete.quetes_finies))
             # print("\n")
+            # son.play(loops=-1, maxtime=0, fade_ms=0)
+            pygame.mixer.music.play(loops=-1)
             
-            for val in Listes.liste_quetes.values():
-                print(val.nom, val.actuel)
+
+            # for val in Listes.liste_quetes.values():
+                # print(val.nom, val.actuel)
 
         if event.key == K_u:
             pygame.image.save(Listes.fenetre, os.path.join("cartes_images", "{0}.png".format(Joueur.carte)))
