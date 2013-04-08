@@ -27,7 +27,7 @@ class Carte:
         self.aggro = []
 
     def charger_carte(self):
-        '''On charge une carte en fonction du nom donné (0, 1, etc)'''
+        '''Charge la carte, tout simplement. Lis le fichier texte et en extrait les informations. Cartes adjacentes, combats, téléportations, zones traversables ou non...'''
         # self.direction (dictionnaire) donne les cartes autour de celle-ci.
         # self.lignes (liste) donne les intervalles où sont présents des obstacles ainsi que les textures
 
@@ -139,6 +139,7 @@ class Carte:
                             self.tp.append([int(self.coords[i][5]), (int(self.coords[i][0][0]) + j * 30, int(self.coords[i][0][1]) + k * 30), (int(self.coords[i][4][0]), int(self.coords[i][4][1]))])
 
     def afficher_carte(self, fenetre):
+        '''Affiche un fond gris clair puis le fond de la carte, puis les éléments de celle-ci en elle-même.'''
         # On réaffiche le fond
         # fenetre.blit(self.fond, (0, 0))
         fenetre.fill((240, 240, 240))
@@ -153,6 +154,8 @@ class Carte:
             fenetre.blit(self.bloc[i][2], (self.bloc[i][0], self.bloc[i][1]))
 
 def creer_images_perso():
+    '''Charge les images du personnage joué incarné'''
+    
     Joueur.perso = pygame.image.load(os.path.join('images', 'fatman_down.png')).convert_alpha()
     Joueur.perso_d = pygame.image.load(os.path.join('images', 'fatman_right.png')).convert_alpha()
     Joueur.perso_b = pygame.image.load(os.path.join('images', 'fatman_down.png')).convert_alpha()
@@ -180,7 +183,7 @@ class Joueur:
 
     def bouger_perso(key, fenetre, inventaire):
         '''Cette fonction sert à bouger le personnage en fonction de la touche pressée (up/down/left/right)'''
-        # On prend en paramères la touche envoyée, la surface pygame, la liste des Joueur.cartes et pnjs pour pouvoir les afficher et le personnage
+        # On prend en paramères la touche envoyée, la surface pygame et l'inventaire pour les téléportations
         monstres = None
 
         if key == K_DOWN:
@@ -271,22 +274,23 @@ class Joueur:
         for i in range(len(Joueur.carte_actuelle.tp)):
             # Si on se trouve sur une case contenant une téléporation, on change la position du personnage ainsi que sa Joueur.carte
             if Joueur.carte_actuelle.tp[i][1] == (Joueur.position_x, Joueur.position_y):
-                if len(Joueur.carte_actuelle.tp[i]) == 4:
-                    if Joueur.carte_actuelle.tp[i][3] in inventaire:
+                if len(Joueur.carte_actuelle.tp[i]) == 4: # Si le téléporteur requiert un objet, que l'objet existe et qu'on l'a
+                    if Joueur.carte_actuelle.tp[i][3] in inventaire: 
                         if inventaire[Joueur.carte_actuelle.tp[i][3]] > 0:
                             Joueur.position_x = Listes.liste_cartes[Joueur.carte].tp[i][2][0]
                             Joueur.position_y = Listes.liste_cartes[Joueur.carte].tp[i][2][1]
                             Joueur.carte = Listes.liste_cartes[Joueur.carte].tp[i][0]
-                        else:
+                        else: # Sinon, on retp à la position d'avant
                             Joueur.position_y = Joueur.ancienne_y
                             Joueur.position_x = Joueur.ancienne_x
                             fenetre_dialogue(fenetre, "Vous devez posséder l'objet «{1}{0}{1}» pour pouvoir passer.".format(Joueur.carte_actuelle.tp[i][3], b'\xA0'.decode("utf-8", "replace")))
-                else:
+                else: # Si pas d'objet requis, on tp
                     Joueur.position_x = Listes.liste_cartes[Joueur.carte].tp[i][2][0]
                     Joueur.position_y = Listes.liste_cartes[Joueur.carte].tp[i][2][1]
                     Joueur.carte = Listes.liste_cartes[Joueur.carte].tp[i][0]
         # print(Joueur.carte)
-
+        
+        # Combats !
         for i in range(len(Listes.liste_cartes[Joueur.carte].aggro)):
             x1 = Listes.liste_cartes[Joueur.carte].aggro[i][0]
             y1 = Listes.liste_cartes[Joueur.carte].aggro[i][1]
@@ -296,7 +300,7 @@ class Joueur:
 
             # Si on est dans la zone de monstres
             if Joueur.position_x >= x1 and Joueur.position_x < x2 and Joueur.position_y >= y1 and Joueur.position_y < y2:
-                # print(proba)
+                # Si la probabilité est inférieure à la proba de l'aggression, le combat débute
                 if randrange(0,100) <= proba:
                     monstres = Listes.liste_cartes[Joueur.carte].aggro[i][5]
                     break
@@ -310,24 +314,31 @@ class Joueur:
             for val in monstres:
                 monstre = int(val.split(":")[0])
                 proba = int(val.split(":")[1]) # probabilité que le monstre apparaisse /100
-
+                
+                # On choisi le monstre en fonction de sa probabilité d'apparition
                 if monstre in Listes.liste_mobs:
                     if 100-proba <= rand:
                         monstre_choisi = monstre
                         break
                     else:
                         rand = rand + proba
-
+            
+            # On lance le combat
             if monstre_choisi:
                 FightFonctions.Fight.StartFightMob(GameFonctions.MyCharacters.Character1, monstre_choisi)
+                
+                # Pour des stats d'apparation, pour tester...
                 if monstre_choisi in Listes.mob_prob.keys():
                     Listes.mob_prob[monstre_choisi] += 1
                 else:
                     Listes.mob_prob[monstre_choisi] = 1
-
+                
+                # À la fin du combat, on affiche le monde
                 afficher_monde(fenetre)
 
     def parler_pnj(fenetre, inventaire):
+        '''Interaction avec les Personnages Non Joueurs (PNJ). Quêtes et dialogues.'''
+    
         # On définit deux varibles contenant la distance séparant le personnage du bloc qu'il voit
         voir_x = 0
         voir_y = 0
@@ -348,17 +359,18 @@ class Joueur:
             if val.carte == Joueur.carte:
                # Si sa position est égale à celle qu'on regarde
                if Joueur.position_x + voir_x == val.pos_x and Joueur.position_y + voir_y == val.pos_y:
-                    # Alors on affiche le dialogue
-                    # On découpe le dialogue en plusieurs listes pour ne pas déborder de l'écran
-                    dialogue = faire_quete(val, inventaire, fenetre)
-                    choisir_dialogue(val, fenetre)
-                    if dialogue:
+                    # On affiche d'abord le dialogue du personnage puis les éléments de quêtes
+                    dialogue = faire_quete(val, inventaire, fenetre) # Attribution du dialogue de quête
+                    choisir_dialogue(val, fenetre) # Affichage du dialogue du personnage (en fonction des quêtes en cours)
+                    if dialogue: # Si on a un dialogue de quête, on l'affiche après celui du personnage
                         fenetre_dialogue(fenetre, dialogue)
 
-                    if val.centre:
+                    if val.centre: # Si le joueur constitue un centre (téléportation vers lui quand on meurt), on l'ajoute
                         Joueur.centre = [Joueur.position_x, Joueur.position_y, Joueur.carte, Joueur.orientation]
 
     def prendre_item(inventaire, fenetre):
+        '''Prendre un objet, tout simplemet'''
+        
         voir_x = 0
         voir_y = 0
 
@@ -373,22 +385,26 @@ class Joueur:
 
         # Position item : [[x, y, Joueur.carte],[x, y, Joueur.carte]] etc
         for val in Listes.liste_items.values():
-            if Joueur.carte in val.carte :
+            if Joueur.carte in val.carte : # Si l'objet est sur la même carte que le joueur
                 # print([[Joueur.position_x + voir_x, Joueur.position_y + voir_y], Joueur.carte])
                 # print(val.position)
                 # print(val.nom)
-
+                
+                # Préparation du dialogue
                 dialogue = "Vous venez de ramasser l'objet «{2}{0}{2}». Il sera affiché sous le nom «{2}{1}{2}»".format(val.nom_entier, val.nom, b'\xA0'.decode("utf-8", "replace"))
 
+                # Si on regarde bien l'objet en question
                 if [[Joueur.position_x + voir_x, Joueur.position_y + voir_y], Joueur.carte] in val.position:
-                    inventaire[val.nom] +=1
-                    Joueur.objet_pris.append([[Joueur.position_x + voir_x, Joueur.position_y + voir_y], Joueur.carte, val.id])
-                    val.position.remove([[Joueur.position_x + voir_x, Joueur.position_y + voir_y], Joueur.carte])
-                    Listes.liste_cartes[Joueur.carte].collisions.remove((Joueur.position_x + voir_x, Joueur.position_y + voir_y))
+                    inventaire[val.nom] += 1
+                    Joueur.objet_pris.append([[Joueur.position_x + voir_x, Joueur.position_y + voir_y], Joueur.carte, val.id]) # On l'ajoute à la liste des objets pris pour les sauvegardes
+                    val.position.remove([[Joueur.position_x + voir_x, Joueur.position_y + voir_y], Joueur.carte]) # On le supprime de cette position (self)
+                    Listes.liste_cartes[Joueur.carte].collisions.remove((Joueur.position_x + voir_x, Joueur.position_y + voir_y)) # On l'enlève des collisions de la carte
 
-                    fenetre_dialogue(fenetre, dialogue)
+                    fenetre_dialogue(fenetre, dialogue) # Et on affiche le dialogue disant qu'on l'a ramassé
 
 def choisir_dialogue(pnj, fenetre):
+    '''Selectionne le dialogue du Personnage Non Joueur (PNJ) à afficher quand on lui parle en fonction des quêtes en cours'''
+    
     conn = sqlite3.connect(os.path.join('quete','quetes.db'))
     c = conn.cursor()
     c.execute("SELECT * FROM dialogues WHERE personnage = ?", (pnj.id,))
@@ -437,6 +453,8 @@ def choisir_dialogue(pnj, fenetre):
         fenetre_dialogue(fenetre, pnj.dialogues)
 
 def creer_liste_mobs():
+    '''Créer une liste contenant chaque monstre'''
+    
     conn = sqlite3.connect(os.path.join('Mobs','Mobs.db'))
     c = conn.cursor()
     c.execute("SELECT id FROM caracteristiques")
@@ -448,6 +466,7 @@ def creer_liste_mobs():
     return reponse
 
 def creer_liste_pnj():
+    '''Créer un dictionnaire contenant chaque PNJ'''
     conn = sqlite3.connect(os.path.join('pnj','PNJs.db'))
     c = conn.cursor()
     c.execute("SELECT id FROM pnj")
@@ -463,6 +482,7 @@ def creer_liste_pnj():
     return liste
 
 def creer_liste_perso():
+    '''Créer une liste contenant chaque personnage pouvant être incarné'''
     conn = sqlite3.connect(os.path.join('MyCharacters','Characters.db'))
     c = conn.cursor()
     c.execute("SELECT nickname FROM caracteristiques ORDER BY nickname")
@@ -485,6 +505,8 @@ class PNJ:
         self.dialogues = str()
 
     def charger_pnj(self):
+        '''Charge le Personnage Non Joueur (PNJ) : carte, position, dialogue, centre, image...'''
+        
         conn = sqlite3.connect(os.path.join('pnj','PNJs.db'))
         c = conn.cursor()
         c.execute("SELECT * FROM pnj WHERE id = ?", (self.id,))
@@ -508,16 +530,16 @@ class PNJ:
 
         # print("{0} : {1}".format(self.id, self.nom))
 
-        Listes.liste_cartes[self.carte].collisions.append((self.pos_x, self.pos_y))
-
         # nom, nom_entier text, position text, carte real, image text, dialogue_avant text, dialogue_apres text
-
+        Listes.liste_cartes[self.carte].collisions.append((self.pos_x, self.pos_y))   
 
     def afficher_personnage(self, fenetre):
         # On affiche simplement le personnage
         fenetre.blit(self.image, (self.pos_x, self.pos_y))
 
 def creer_liste_objets():
+    '''Créer un dictionnaire contenant chaque objet'''
+    
     conn = sqlite3.connect(os.path.join('items','items.db'))
     c = conn.cursor()
     c.execute("SELECT * FROM objets")
@@ -531,6 +553,8 @@ def creer_liste_objets():
     return dic
 
 def sauvegarder_objets():
+    '''Sauvegarde les objets pris dans la base de donnée'''
+    
     conn = sqlite3.connect(os.path.join('sauvegarde','sauvegarde.db'))
     c = conn.cursor()
 
@@ -547,6 +571,8 @@ def sauvegarder_objets():
     conn.close()
 
 def charger_sauvegarde_obj():
+    '''Charge les objets de la base de données afin de les supprimer en jeu'''
+
     conn = sqlite3.connect(os.path.join('sauvegarde','sauvegarde.db'))
     c = conn.cursor()
     c.execute("SELECT * FROM objets WHERE personnage=?", (GameFonctions.MyCharacters.Character1.ID,))
@@ -571,6 +597,8 @@ class Item:
         self.categorie = str()
 
     def charger_item(self):
+        '''Charge l'objet : nom, positions, cartes, utilisation, catégorie, image...'''
+        
         conn = sqlite3.connect(os.path.join('items','items.db'))
         c = conn.cursor()
         c.execute("SELECT * FROM objets where id=?", (self.id,))
@@ -579,7 +607,7 @@ class Item:
 
         self.nom = reponse[1].lower()
         self.nom_entier = reponse[2]
-        self.nombre = reponse[5]
+        self.nombre = reponse[5] # Nombre dans l'inventaire au démarage du jeu
         self.categorie = reponse[4]
         self.image = pygame.image.load(os.path.join('textures', reponse[3])).convert_alpha()
 
@@ -624,6 +652,8 @@ class Item:
                 fenetre.blit(self.image, (int(val[0][0]), int(val[0][1])))
 
 def creer_liste_quetes():
+    '''Créer une liste contenant chaque quête'''
+
     conn = sqlite3.connect(os.path.join('quete','quetes.db'))
     c = conn.cursor()
     c.execute("SELECT * FROM quetes")
@@ -637,6 +667,10 @@ def creer_liste_quetes():
     return liste
 
 def faire_quete(pnj, inventaire, fenetre):
+    '''Avance l'avancement d'une quête si les conditions sont requises.
+    Affiche les récompenses obtenues et les objets laissés.
+    Ajoutes les quêtes finies/en cours aux listes respectives pour affichage'''
+
     objets_requis = dict()
     xp_requis = 0
 
@@ -749,6 +783,8 @@ def faire_quete(pnj, inventaire, fenetre):
             return dialogue
 
 def sauvegarder_quete():
+    '''Sauvegarde de l'avancement des quêtes du personnage'''
+
     conn = sqlite3.connect(os.path.join('sauvegarde','sauvegarde.db'))
     c = conn.cursor()
 
@@ -769,6 +805,8 @@ class Quete:
     minimum = 0
 
     def charger_quete_en_cours():
+        '''Charge le statut actuel des quêtes du personnage'''
+    
         conn = sqlite3.connect(os.path.join('sauvegarde','sauvegarde.db'))
         c = conn.cursor()
         c.execute("SELECT * FROM quetes WHERE personnage=?", (GameFonctions.MyCharacters.Character1.ID,))
@@ -794,6 +832,8 @@ class Quete:
         self.actuel = 0
 
     def charger_quete(self):
+        '''Charge la quête : nombre d'objectifs, objectifs'''
+    
         conn = sqlite3.connect(os.path.join('quete','quetes.db'))
         c = conn.cursor()
 
@@ -820,6 +860,8 @@ class Listes:
     liste_mobs = list()
 
 def creer_liste_obstacles():
+    '''Créer la liste des obstacles (objets qui s'enlèvent une fois une quête finie)'''
+
     conn = sqlite3.connect(os.path.join('items','items.db'))
     c = conn.cursor()
     c.execute("SELECT id FROM obstacles")
@@ -841,6 +883,8 @@ class Obstacle:
         self.quete = int()
 
     def charger_obs(self):
+        '''Chargement de l'obstacle : nom, carte, position, image, quelle quête le débloque...'''
+        
         conn = sqlite3.connect(os.path.join('items','items.db'))
         c = conn.cursor()
         c.execute("SELECT * FROM obstacles WHERE id = ?", (self.id,))
@@ -870,6 +914,8 @@ class Obstacle:
         fenetre.blit(self.image, (self.pos_x, self.pos_y))
 
 def options(fenetre, inventaire):
+    '''Menu Echap. Lance diverses fonctions suivant la position du curseur : Affichage des monstres, de l'inventaire, du personnage, des quêtes, sauvegarde, quitter le jeu et retour au jeu'''
+
     curseur_x = 520-100
     curseur_y = 220-150
     cst = 35
@@ -951,8 +997,9 @@ def options(fenetre, inventaire):
                         pygame.display.flip()
 
                 if event.key == K_RETURN:
-                    if curseur == 0:
-                        print("LOL MONSTRES")
+                    # Monstres
+                    if curseur == 0: 
+                        print("MONSTRES")
 
                     if curseur == 1:
                         # print(inventaire)
@@ -960,7 +1007,8 @@ def options(fenetre, inventaire):
                         continuer = 0
                         afficher_monde(fenetre)
                         
-                    if curseur == 2: # Personnage
+                    # Personnage
+                    if curseur == 2: 
                         afficher_profil(fenetre, inventaire)
                         continuer = 0
                         afficher_monde(fenetre)
@@ -986,7 +1034,9 @@ def options(fenetre, inventaire):
                         afficher_monde(fenetre)
                         continuer = 0
                         
-def afficher_profil(fenetre, inventaire):               
+def afficher_profil(fenetre, inventaire):
+    '''Affiche le profil du joueur : caractéristiques, vie, expérience, niveau, quelques statistiques...'''
+    
     myfont = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 16)
     font_nom = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 18)
 
@@ -1082,6 +1132,8 @@ def afficher_profil(fenetre, inventaire):
                     continuer = 0
 
 def nombre_inventaire(inventaire, diff):
+    '''Renvoie le nombre d'objets contenus dans l'inventaire, différents ou non'''
+    
     nb = 0
     for val in inventaire.values():
         if val > 0:
@@ -1092,6 +1144,8 @@ def nombre_inventaire(inventaire, diff):
     return nb
     
 def afficher_monde(fenetre):
+    '''Affiche le monde : carte, PNJs, objets, obstacles puis joueur'''
+
     Listes.liste_cartes[Joueur.carte].afficher_carte(fenetre)
 
     for val in Listes.liste_pnjs.values():
@@ -1110,8 +1164,10 @@ def afficher_monde(fenetre):
     pygame.display.flip()
 
 def fenetre_dialogue(fenetre, dialogue, afficher=1):
+    '''Affiche le dialogue passé en paramètre. Affiche optionnellement le monde à la fin'''
+
     myfont = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 14)
-    dialogue_wrap = textwrap.wrap(dialogue.replace("%{0}%", GameFonctions.MyCharacters.Character1.Nickname),65)
+    dialogue_wrap = textwrap.wrap(dialogue.replace("%{0}%", GameFonctions.MyCharacters.Character1.Nickname),65) # On "coupe" le dialogue en une liste pour éviter qu'il dépasse
     fond_dial = pygame.image.load(os.path.join('images', 'fond_dialogue.png')).convert_alpha()
 
     fenetre.blit(fond_dial, (0,500))
@@ -1177,6 +1233,8 @@ def fenetre_dialogue(fenetre, dialogue, afficher=1):
                         afficher_monde(fenetre)
 
 def afficher_quetes_status(fenetre):
+    '''Affiche l'écran de visualisation des quêtes en cours et finies. Affiche par défaut les quêtes en cours'''
+
     # Quete.quetes_finies
     # Quete.en_cours
     nombre = 0
@@ -1206,6 +1264,8 @@ def afficher_quetes_status(fenetre):
                     afficher_quetes_finies(fenetre, nombre)
 
 def afficher_quetes_finies(fenetre, nombre):
+    '''Affiche les quêtes finies du personnage : nom, objectif actuel, nombre d'objectifs et personnage de l'objectif'''
+
     fond = pygame.image.load(os.path.join("images", "quetes.png"))
     fenetre.blit(fond, (0,0))
 
@@ -1263,6 +1323,8 @@ def afficher_quetes_finies(fenetre, nombre):
     pygame.display.flip()
 
 def afficher_quetes_en_cours(fenetre,nombre):
+    '''Affiche les quêtes en cours du personnage : nom, objectif actuel, nombre d'objectifs et personnage de l'objectif'''
+
     fond = pygame.image.load(os.path.join("images", "quetes.png"))
     fenetre.blit(fond, (0,0))
 
@@ -1320,6 +1382,8 @@ def afficher_quetes_en_cours(fenetre,nombre):
     pygame.display.flip()
 
 def afficher_inventaire(fenetre, inventaire):
+    '''Affiche l'inventaire du personnage et permet la navigation dans celui-ci'''
+
     image_inventaire = pygame.image.load(os.path.join("images", "inventaire.png"))
     myfont = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 16)
 
@@ -1410,6 +1474,8 @@ def afficher_inventaire(fenetre, inventaire):
                     continuer = 0
 
 def action_objet(fenetre, objet_actuel, inventaire, nb_actuel, nb_obj):
+    '''Affiche et sélection des choix possibles lors de la sélection d'un objet dans l'inventaire'''
+
     fond = pygame.image.load(os.path.join("images", "choix_inventaire.png")) # 149 * 93
     myfont = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 14)
 
@@ -1475,6 +1541,8 @@ def action_objet(fenetre, objet_actuel, inventaire, nb_actuel, nb_obj):
     else: return nb_actuel
 
 def utiliser_objet(fenetre, inventaire, objet_actuel):
+    '''Utilisation d'un objet en fonction de ses pré-requis et effets'''
+    
     requis = list()
     condition = 0
 
@@ -1562,6 +1630,8 @@ def utiliser_objet(fenetre, inventaire, objet_actuel):
         fenetre_dialogue(fenetre, "Vous ne remplissez pas les conditions nécessaires à l'utilisation de cet objet.", 0)
     
 def afficher_categorie(fenetre, categorie_actuelle, tab, inventaire, nb_actuel, categories):
+    '''Affichage des diverses catégories d'objets existantes'''
+    
     image_inventaire = pygame.image.load(os.path.join("images", "inventaire.png"))
     myfont = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 16)
 
@@ -1636,6 +1706,8 @@ def afficher_categorie(fenetre, categorie_actuelle, tab, inventaire, nb_actuel, 
     return nb_obj, objet_actuel
 
 def selection_personnage(fenetre):
+    '''Selection du personnage dans l'écran d'accueil'''
+
     actuel = 0
 
     afficher_personnage(fenetre, actuel)
@@ -1707,6 +1779,8 @@ def selection_personnage(fenetre):
                         continuer = 0
 
 def selection_clan(fenetre):
+    '''Selection du clan lors de la création du personnage'''
+    
     actuel = 0
 
     afficher_clan(fenetre, actuel)
@@ -1749,6 +1823,8 @@ def selection_clan(fenetre):
                     afficher_clan(fenetre, actuel)
 
 def afficher_personnage(fenetre, actuel):
+    '''Affichage des caractéristiques du personnage lors de la sélection dans l'écran d'accueil'''
+
     cst_x1 = 300+100+20
     cst_x2 = 300-100-20-10
     cst_y = 300-10
@@ -1798,6 +1874,8 @@ def afficher_personnage(fenetre, actuel):
         pygame.display.flip()
         
 def afficher_clan(fenetre, actuel):
+    '''Affichage du clan lors de la création du personnage'''
+    
     myfont = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 14)
 
     cst_x1 = 300+100+20
@@ -1834,6 +1912,8 @@ def afficher_clan(fenetre, actuel):
     pygame.display.flip()
 
 def stats_clan(clan):
+    '''Inutilisée, sert plus à rien, musée, historique, cool'''
+    
     fichier = open(os.path.join("Clans", clan + ".txt"), "r")
     contenu = fichier.readlines()
     fichier.close()
@@ -1858,6 +1938,8 @@ def stats_clan(clan):
     return stats
 
 def description_clan(fenetre, clan):
+    '''Affiche la description du clan lors de la création du personnage après pression de la touche H'''
+    
     description = GameFonctions.ClansInfo.Description[clan].strip()
     name = GameFonctions.ClansInfo.Name[clan].strip()
 
@@ -1896,6 +1978,8 @@ def description_clan(fenetre, clan):
                     continuer = 0
 
 def pygame_input(fenetre, actuel):
+    '''Retourne le pseudo entré en mode graphique pour la création du personnage'''
+
     myfont = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 14)
 
     taille = myfont.render("Nom :", 1, (0,0,0)).get_rect().width
@@ -1957,6 +2041,8 @@ def pygame_input(fenetre, actuel):
                     return pseudo
 
 def affichageDebutCombat(fenetre, perso, mob):
+    '''Affiche le début du combat : dialogue l'annoncant, fond et choix'''
+
     font = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 14)
 
     fenetre.blit(pygame.image.load(os.path.join('images', 'clan.png')).convert_alpha(),(0,0))
@@ -1984,6 +2070,7 @@ def affichageDebutCombat(fenetre, perso, mob):
     print(perso.ClanName)
 
 def choisirAction(fenetre, perso, mob):
+    '''Choix de l'action dans un combat : attaquer, objets, parler, fuir'''
     curseur = [0,0]
     affichageSelectionCombat1(fenetre, curseur, perso, mob)
 
@@ -2030,6 +2117,8 @@ def choisirAction(fenetre, perso, mob):
                         affichageSelectionCombat1(fenetre, curseur, perso, mob)
 
 def choisirSort(fenetre, perso, mob):
+    '''Sélection du sort à lancer dans un combat'''
+
     curseur = [0,0]
     affichageSelectionCombat2(fenetre, curseur, perso, mob)
 
@@ -2093,6 +2182,8 @@ def choisirSort(fenetre, perso, mob):
                         affichageSelectionCombat2(fenetre, curseur, perso, mob)
 
 def afficherSelectionCombat(fenetre, curseur, perso, mob):
+    '''Affiche le combat, personnages, vie, etc'''
+
     font = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 14)
     pfont = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 12)
 
@@ -2163,6 +2254,8 @@ def afficherSelectionCombat(fenetre, curseur, perso, mob):
     fenetre.blit(font.render(vie, 1, (0,0,0)), ((600-254-15-15)/2-taille/2, 545))
 
 def affichageSelectionCombat1(fenetre, curseur, perso, mob):
+    '''Affiche les choix généraux : attaquer, parler, objets, fuir dans un combat'''
+    
     afficherSelectionCombat(fenetre, curseur, perso, mob)
     font = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 14)
 
@@ -2182,6 +2275,8 @@ def affichageSelectionCombat1(fenetre, curseur, perso, mob):
     pygame.display.flip()
 
 def affichageSelectionCombat2(fenetre, curseur, perso, mob):
+    '''Affiche les choix de sorts dans un combat'''
+
     afficherSelectionCombat(fenetre, curseur, perso, mob)
     font = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 14)
 
