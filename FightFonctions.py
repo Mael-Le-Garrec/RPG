@@ -11,8 +11,8 @@ class Etat:
     Name=[]
     Effect=[]
     Turn=[]
-    EtatMob=["",0,0]
-    EtatCharacter1=["",0,0]
+    EtatMob=["",0,0] #Nom de l'état, Nb tour d'effet, Dégat de l'état
+    EtatCharacter1=["",0,0] #Nom de l'état, Nb tour d'effet, Dégat de l'état
     def IniEtat():
          """Récupère les différents Etats"""
 
@@ -29,19 +29,26 @@ class Etat:
 
     def ActionCharacter1(Character):
         """Actionne l'état du joueur"""
+        #On vérifie que le joueur dispose bien d'un état d'activé
         if Etat.EtatCharacter1[1]!=0:
+            #On récupère les dégat de l'état
             Degat=Etat.EtatCharacter1[2]
-            if Character.HP+Degat>Character.TVitality:
+            #Gestion des états de soin. Soin qui dépase la vitality maximal du joueur
+            if Character.HP-Degat>Character.TVitality:
                 Degat=0
-            elif Character.HP+Degat<0:
-                Degat=-Character.HP
-            Character.HP=Character.HP+Degat
-            Etat.EtatCharacter1[2]=Degat
-            if int(Etat.EtatCharacter1[2])<0:
-                print("Player perd {} à cause de {}".format(Etat.EtatCharacter1[2], Etat.EtatCharacter1[0]))
+            #Gestion des états qui tue le joueur. Exemple Dégat = -15 . Vitalité du joueur = 14 donc 14+(-15)=-1 qui n'est pas possible.
+            elif Character.HP-Degat<0:
+                Degat=Character.HP
+
+            Character.HP=Character.HP-Degat
+
+            if int(Degat)>0:
+                print("Player perd {} à cause de {}".format(Degat, Etat.EtatCharacter1[0]))
             else:
-                print("Player gagne {} grâce à {}".format(Etat.EtatCharacter1[2], Etat.EtatCharacter1[0]))
+                print("Player gagne {} grâce à {}".format(Degat, Etat.EtatCharacter1[0]))
             Etat.EtatCharacter1[1]=Etat.EtatCharacter1[1]-1
+
+            #Supprime l'état quand son effet est terminé
             if Etat.EtatCharacter1[1]==0:
                 print("Player sort de l'état {}".format( Etat.EtatCharacter1[0]))
                 Etat.EtatCharacter1=["",0,0]
@@ -51,17 +58,18 @@ class Etat:
         """Actionne l'état du monstre"""
         if Etat.EtatMob[1]!=0:
             Degat=Etat.EtatMob[2]
-            if Mob.HP+Degat>Mob.TVitality:
+            if Mob.HP-Degat>Mob.TVitality:
                 Degat=0
-            elif Mob.HP+Degat<0:
-                 Degat=-Mob.HP
-            Mob.HP=Mob.HP+Degat
-            Etat.EtatMob[2]=Degat
-            if int(Etat.EtatMob[2])<0:
-                print("Mob perd {} à cause de {}".format(Etat.EtatMob[2], Etat.EtatMob[0]))
+            elif Mob.HP-Degat<0:
+                 Degat=Mob.HP
+            Mob.HP=Mob.HP-Degat
+
+            if int(Degat)>0:
+                print("Mob perd {} à cause de {}".format(Degat, Etat.EtatMob[0]))
             else:
-                print("Mob gagne {} grâce à {}".format(Etat.EtatMob[2], Etat.EtatMob[0]))
+                print("Mob gagne {} grâce à {}".format(Degat, Etat.EtatMob[0]))
             Etat.EtatMob[1]=Etat.EtatMob[1]-1
+
             if Etat.EtatMob[1]==0:
                 print("Mob sort de l'état {}".format( Etat.EtatMob[0]))
                 Etat.EtatMob=["",0,0]
@@ -100,122 +108,130 @@ class Fight:
             print("\nTour du mob :")
             print(str(Mob.HP)+"/"+str(Mob.TVitality))
             Etat.ActionMob(Mob)
+            #Vérification que la vitalité du monstre est supérieur à 0
             if Mob.HP>0:
+                #Le monstre choisi un sort
                 MobAttaque=int(Fight.Mob.IA.Choix_attitude())
+                #Vérification si le sort est un sort d'attaque où de d'augmentation de caractéristique.
+                #Sort de Boost
                 if Sort.Boost[MobAttaque]!=0:
+
                     Fight.Sort_bonus("Mob",MobAttaque,Sort.Cible[MobAttaque])
+                    #Gestion de la cible (1 = Adversaire)
                     if Sort.Cible[MobAttaque]==1:
+                        #Gestion des dégats positifs et négatifs
                         if Sort.Boost[MobAttaque]<= 0:
-                            classes.fenetre_dialogue(classes.Listes.fenetre, Character.Nickname+" : -{} {}".format(Sort.Boost[MobAttaque],Sort.Element[MobAttaque]), 0)
-                            print (Character.Nickname+" : -{} {}".format(Sort.Boost[MobAttaque],Sort.Element[MobAttaque])  )
+                            CibleSort="-"
                         else:
-                            print (Character.Nickname+" : +{} {}".format(Sort.Boost[MobAttaque],Sort.Element[MobAttaque]) )
-                            classes.fenetre_dialogue(classes.Listes.fenetre, Character.Nickname+" : +{} {}".format(Sort.Boost[MobAttaque],Sort.Element[MobAttaque]), 0)
+                            CibleSort="+"
+                            #Sortie graphique
+                        classes.fenetre_dialogue(classes.Listes.fenetre, Character.Nickname+" : {}{} {}".format(CibleSort,Sort.Boost[MobAttaque],Sort.Element[MobAttaque]), 0)
                     else:
+                        #Gestion de dégats positifs et négatifs
                         if Sort.Boost[MobAttaque] <= 0:
-                            print(Mob.Name+" : -{} {}".format(Sort.Boost[MobAttaque],Sort.Element[MobAttaque])  )
-                            classes.fenetre_dialogue(classes.Listes.fenetre,  Mob.Name+" : -{} {}".format(Sort.Boost[MobAttaque],Sort.Element[MobAttaque]), 0)
+                            CibleSort="-"
                         else:
-                            classes.fenetre_dialogue(classes.Listes.fenetre, Mob.Name+" : +{} {}".format(Sort.Boost[MobAttaque],Sort.Element[MobAttaque]), 0)
+                            CibleSort="+"
+                        #Sortie graphique
+                        classes.fenetre_dialogue(classes.Listes.fenetre, Mob.Name+" : {}{} {}".format(CibleSort,Sort.Boost[MobAttaque],Sort.Element[MobAttaque]), 0)
 
-
+                #Sort de dégat (avec ou sans sort d'état)
                 else:
-
+                    #On récupère les degats et la cible
                     Degat,Cible=Fight.Sort_normal(GameFonctions.Mobs,MobAttaque,Sort.Cible[MobAttaque])
+
+                    #On vérifie que les degats ne dépasse pas la vita maxi ou 0 en fonction de la cible
                     if Cible==1:
                         Degat=Fight.HP(GameFonctions.MyCharacters.Character1,Degat)
                     else:
                         Degat=Fight.HP(Mob,Degat)
-                    print(Mob.Name+" lance {}".format(Sort.Name[int(MobAttaque)]))
+                    #Sortie grpahique
                     classes.fenetre_dialogue(classes.Listes.fenetre, Mob.Name+" lance {}".format(Sort.Name[int(MobAttaque)]), 0)
+
+                    #Gestion de sort d'attaque avec état
                     if Sort.Etat[MobAttaque]!=-1:
                         Etat.EtatCharacter1=[Etat.Name[Sort.Etat[MobAttaque]],Etat.Turn[Sort.Etat[MobAttaque]],Etat.Effect[Sort.Etat[MobAttaque]]]
                         print ("Player entre dans l'etat {}".format(Etat.Name[Sort.Etat[MobAttaque]]))
                         classes.fenetre_dialogue(classes.Listes.fenetre, "{0} entre dans l'etat {1}".format(Character.Nickname, Etat.Name[Sort.Etat[MobAttaque]]), 0)
 
+                    #Gestion de la cible (1 = Adversaire)
                     if Cible==1:
+                        #Degat supérieur ou égale à 0
                         if Degat >= 0:
-                            print (Character.Nickname+" : -{} ".format(Degat) + str(Character.HP)+"/"+str(Character.TVitality) )
-                            classes.fenetre_dialogue(classes.Listes.fenetre, Character.Nickname+" perd {} points de vie !".format(Degat), 0)
+                            CibleSort="perd"
+                        #Degat inférieur à 0
                         else:
-                            print (Character.Nickname+" : +{} ".format(-Degat)+ str(Character.HP)+"/"+str(Character.TVitality) )
-                            classes.fenetre_dialogue(classes.Listes.fenetre, Character.Nickname+" gagne {} points de vie !".format(Degat), 0)
+                            CibleSort="gagne"
+                        #Sortie graphique
+                        classes.fenetre_dialogue(classes.Listes.fenetre, Character.Nickname+" {} {} points de vie !".format(CibleSort,Degat), 0)
                     else:
+                        #Degat supérieur ou égale à 0
                         if Degat >= 0:
-                            print(Mob.Name+" : -{} : ".format(Degat) + str(Mob.HP)+"/"+str(Mob.TVitality) )
-                            classes.fenetre_dialogue(classes.Listes.fenetre,  Mob.Name+" perd {} points de vie !".format(Degat), 0)
+                            CibleSort="perd"
+                        #Degat inférieur à 0
                         else:
-                            print(Mob.Name+" : +{} : ".format(-Degat) + str(Mob.HP)+"/"+str(Mob.TVitality))
-                            classes.fenetre_dialogue(classes.Listes.fenetre, Mob.Name+" gagne {} points de vie !".format(Degat), 0)
-
+                            CibleSort="gagne"
+                        classes.fenetre_dialogue(classes.Listes.fenetre, Mob.Name+" {} {} points de vie !".format(CibleSort,Degat), 0)
+            #Gestion du gagnant
             if Character.HP==0:
-                print("\nMob Win")
                 classes.fenetre_dialogue(classes.Listes.fenetre, "Vous avez été vaincu par {0}".format(Mob.Name), 0)
 
             elif Mob.HP==0:
-               print("\nPlayer Win")
                classes.fenetre_dialogue(classes.Listes.fenetre, "Vous avez gagné ce combat !", 0)
                Fight.EndFight(Character,Mob,Fight.Turn)
-
-## def RandomMobAttaque():
-## """Choix aléatoire de l'attaque du mobs"""
-## MobSpellList=GameFonctions.Mobs.Sort.split(",")
-## return choice(MobSpellList)
 
 
         def MobCombat(Character,Mob):
             """Gestion des combat contre montres"""
-            #Calcul de l'initiative
             Fight.Turn=1
+
+            #Calcul de l'initiative
             GameFonctions.Mobs.CalcInitiative(Mob)
             GameFonctions.MyCharacters.StatsCalc.CalcInitiative(Character)
 
-            print("Initiative "+ Character.Nickname +" "+ str(Character.Initiative))
-            print("Initiative " + Mob.Name +" "+str(Mob.Initiative))
-
             while Character.HP>0 and Mob.HP>0:
-                print("==============================")
-                print("Turn "+str(Fight.Turn))
-
+                #Gestion de l'initiative égale
                 if Character.Initiative==Mob.Initiative:
                     if randrange(0,2)==0:
                         Character.Initiative+=1
                     else:
                         Character.Initiative-=1
-
+                #Le joueur commence en premier
                 if Character.Initiative>Mob.Initiative:
                     # if Fight.Player.Action_choice(Character,Mob,int(input("Attaquer : 1 ; Fuir : 2"))):
                     action, sort = classes.choisirAction(classes.Listes.fenetre, Character, Mob)
-                    if Fight.Player.Action_choice(Character,Mob, action, sort)==1:
-                        print("Fin du combat (fuite)")
+                    if Fight.Player.Action_choice(Character,Mob, action, sort)==1: #Fuite
+                        #Sortie graphique
                         classes.fenetre_dialogue(classes.Listes.fenetre, "Vous prennez la fuite.", 0)
                         break
                     classes.afficherSelectionCombat(classes.Listes.fenetre, [0,0], Character, Mob)
                     if Character.HP>0 and Mob.HP>0:
-                        if Fight.Mob.IA.Action_choice(Character,Mob)==1:
-                            print("Fin du combat (fuite)")
+                        if Fight.Mob.IA.Action_choice(Character,Mob)==1: #Fuite
+                            #Sortie graphique
                             classes.fenetre_dialogue(classes.Listes.fenetre, "{0} prend la fuite !".format(Mob.Name), 0)
                             break
-
+                #Le monstre commence en premier
                 elif Character.Initiative<Mob.Initiative:
-                    if Fight.Mob.IA.Action_choice(Character,Mob)==1:
-                        print("Fin du combat (fuite)")
+                    if Fight.Mob.IA.Action_choice(Character,Mob)==1: #Fuite
+                        #Sortie graphique
                         classes.fenetre_dialogue(classes.Listes.fenetre, "{0} prend la fuite !".format(Mob.Name), 0)
                         break
                     classes.afficherSelectionCombat(classes.Listes.fenetre, [0,0], Character, Mob)
                     if Character.HP>0 and Mob.HP>0:
                          # if Fight.Player.Action_choice(Character,Mob,int(input("Attaquer : 1 ; Fuir : 2"))):
+                        #Choix de l'action
                         action, sort = classes.choisirAction(classes.Listes.fenetre, Character)
-                        if Fight.Player.Action_choice(Character,Mob, action, sort)==1:
-                            print("Fin du combat (fuite)")
+                        if Fight.Player.Action_choice(Character,Mob, action, sort)==1: #Fuite
+                            #Sortie graphique
                             classes.fenetre_dialogue(classes.Listes.fenetre, "Vous prennez la fuite.", 0)
                             break
 
                 Fight.Turn=Fight.Turn+1
-                print("==============================\n")
-            if Character.HP==0:
-                GameFonctions.MyCharacters.Character1.HP=1
 
+            if Character.HP==0: #Gestion de  la mort du joueur contre un monstre
+                #Le joueur reprend vie avec 1 HP
+                GameFonctions.MyCharacters.Character1.HP=1
+                #Il retourne au dernier points de sauvegarde (Centre (Chekpoint))
                 classes.Joueur.position_x = classes.Joueur.centre[0]
                 classes.Joueur.position_y = classes.Joueur.centre[1]
                 classes.Joueur.carte = classes.Joueur.centre[2]
@@ -541,6 +557,7 @@ class Fight:
             else:
                 Character=GameFonctions.Mobs
 
+        #Augmente la/les caractéristique
         if "strength" in Sort.Element[NbrSort]:
             Character.TStrength+=Sort.Boost[NbrSort]
         elif "intelligence" in Sort.Element[NbrSort]:
