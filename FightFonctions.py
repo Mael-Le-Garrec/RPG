@@ -22,9 +22,9 @@ class Etat:
          reponse = c.fetchall()
          conn.close()
          for i in reponse:
-             Sort.Name.append(i[1])
-             Sort.Effect.append(str(i[2])+";"+str(i[3]))
-             Sort.Turn.append(i[4])
+             Etat.Name.append(i[1])
+             Etat.Effect.append(str(i[2]))
+             Etat.Turn.append(i[3])
 
 
     def ActionCharacter1(Character):
