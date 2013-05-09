@@ -67,6 +67,7 @@ class MyCharacters:
                 break
 
     def UpdateSave(Character):
+        """Met à jours les valeurs de la base de donnée"""
         conn = sqlite3.connect(os.path.join('MyCharacters','Characters.db'))
         c = conn.cursor()
         c.execute("UPDATE caracteristiques  SET nickname=?, clanname=?, lvl=?, exp=?, hp=?, vitality=?, intelligence=?, strength=?,chance=?,agility=?,sort_1=?,sort_2=?,pos_x=?,pos_y=?,carte=?,inventaire=? WHERE nickname=?",(Character.Nickname, Character.ClanName, Character.Lvl, Character.Exp ,Character.HP, Character.Bonus_Vitality, Character.Bonus_Intelligence, Character.Bonus_Strength, Character.Bonus_Chance,Character.Bonus_Agility, Character.Sort[0], Character.Sort[1],classes.Joueur.position_x, classes.Joueur.position_y, classes.Joueur.carte, str(classes.Joueur.inventaire), Character.Nickname ))
@@ -111,22 +112,27 @@ class MyCharacters:
         Exp=0
         HP=0
 
+        #Variable de résistance/réduction de dégat
         Resistance=0
 
+        #Variable du bonus de caractéristique
         Bonus_Vitality=0
         Bonus_Intelligence=0
         Bonus_Strength=0
         Bonus_Chance=0
         Bonus_Agility=0
 
+        #Variable de la valeur total de la caractéristique
         TVitality=0
         TIntelligence=0
         TStrength=0
         TChance=0
         TAgility=0
 
+        #Initiative du joueur
         Initiative=0
 
+        #Variable avec l'ID des sorts
         Sort=[-1,-1,-1,-1]
 
 
@@ -134,7 +140,9 @@ class MyCharacters:
     class StatsCalc:
         def CalcTotalStats(Character):
             """Calcul du total des caractéristique"""
-
+            #Vérifie chaque clans et cherche celui du joueur.
+            #Ensuite la calcul de la caractéristique se fait :
+            #Caractérisque Total = Caractéristique Bonus + Caractérisque Base (Celui donné par le clan)
             for i in range (len(ClansInfo.Name)):
                 if ClansInfo.Name[i]==Character.ClanName:
 
@@ -239,19 +247,25 @@ class Exp:
 
     def NewXP(Character,XP):
         """"Gestion de l'xp et des lvl"""
-
+        #XP pour le prochain niveau
         LvlExp=Exp.EXPNeed(Character.Lvl)
+        #XP Manquant pour le prochain niveau
         LvlExp=LvlExp-Character.Exp
 
+        #Gestion d'erreur dans le cas où l'xp =0
         if XP!=0:
+            #Gestion de l'xp qui fait monter d'un niveau
             if XP>LvlExp:
+                #On complète l'xp jusqu'au seuil du niveau
                 Character.Exp=Character.Exp+(Exp.EXPNeed(Character.Lvl)-Character.Exp)
+                #L'xp est retiré de l'xp gagné
                 XP=XP-LvlExp
+                #On monte d'un niveau
                 Character.Lvl=Character.Lvl+1
                 print("Lvl UP")
 
                 if XP!=0:
-
+                    #Si l'xp est différent de 0 on relance cette fonction
                     Exp.NewXP(Character,XP)
                 else:
                     print("Lvl actuel : "+str(Character.Lvl))
