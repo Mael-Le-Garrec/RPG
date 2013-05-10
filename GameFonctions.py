@@ -219,10 +219,6 @@ class Mobs:
         Mobs.TAgility=x[7]
         Mobs.Sort=[x[8],x[9],x[10],x[11]]
         Mobs.Sort=[x for x in Mobs.Sort if x!=-1]
-
-##        Mobs.Sort=str(x[8])+","+str(x[9])+","+str(x[10])+","+str(x[11])
-##        Mobs.Sort=Mobs.Sort.replace(",-1","").replace("-1,","")
-
         Mobs.Attitude=x[12]
         Mobs.Dialogue=x[13]
 
