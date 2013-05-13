@@ -205,7 +205,8 @@ while continuer == 1:
             # print(GameFonctions.MyCharacters.Character1.Sort)
             # for val in Listes.liste_items.values():
                 # print(val.nom + " : ", val.position)
-            print(Joueur.objet_pris)
+            # print(Joueur.objet_pris)
+            print(Joueur.repousse)
             
         if event.key == K_f:
             FightFonctions.Fight.StartFightMob(GameFonctions.MyCharacters.Character1)

@@ -173,6 +173,9 @@ class Joueur:
     ancienne_y = 300
     ancienne_x = 300
     
+    a_repousse = 0
+    repousse = 0 # éviter les combats
+    
     inventaire = ""
     
     objet_pris = list()
@@ -185,6 +188,8 @@ class Joueur:
         '''Cette fonction sert à bouger le personnage en fonction de la touche pressée (up/down/left/right)'''
         # On prend en paramères la touche envoyée, la surface pygame et l'inventaire pour les téléportations
         monstres = None
+        
+        Joueur.a_repousse = Joueur.repousse
 
         if key == K_DOWN:
             # Si l'Joueur.orientation actuelle est la même que celle du bas, on peut avancer
@@ -207,7 +212,9 @@ class Joueur:
                         Listes.liste_cartes[int(Listes.liste_cartes[Joueur.carte].directions["bas"])].afficher_carte(fenetre)
                         Joueur.carte = int(Listes.liste_cartes[Joueur.carte].directions["bas"])
                         Joueur.position_y = 0
-
+                    if Joueur.repousse > 0:
+                        Joueur.repousse -= 1
+                    
             # Si l'Joueur.orientation n'est pas la même que celle du bas, on tourne le personnage
             else:
                 Joueur.orientation = Joueur.perso_b
@@ -227,6 +234,8 @@ class Joueur:
                         Listes.liste_cartes[int(Listes.liste_cartes[Joueur.carte].directions['haut'])].afficher_carte(fenetre)
                         Joueur.carte = int(Listes.liste_cartes[Joueur.carte].directions['haut'])
                         Joueur.position_y = 600-30
+                    if Joueur.repousse > 0:
+                        Joueur.repousse -= 1 
             else:
                 Joueur.orientation = Joueur.perso_h
 
@@ -244,6 +253,8 @@ class Joueur:
                         Listes.liste_cartes[int(Listes.liste_cartes[Joueur.carte].directions["gauche"])].afficher_carte(fenetre)
                         Joueur.carte = int(Listes.liste_cartes[Joueur.carte].directions["gauche"])
                         Joueur.position_x = 600-30
+                    if Joueur.repousse > 0:
+                        Joueur.repousse -= 1 
             else:
                 Joueur.orientation = Joueur.perso_g
 
@@ -256,16 +267,19 @@ class Joueur:
                         Joueur.ancienne_y = Joueur.position_y
                         Joueur.ancienne_x = Joueur.position_x
                         Joueur.position_x += 30
-
                     else:
                         Listes.liste_cartes[int(Listes.liste_cartes[Joueur.carte].directions["droite"])].afficher_carte(fenetre)
                         Joueur.carte = int(Listes.liste_cartes[Joueur.carte].directions["droite"])
                         Joueur.position_x = 0
+                    if Joueur.repousse > 0:
+                        Joueur.repousse -= 1 
             else:
                 Joueur.orientation = Joueur.perso_d
 
-
-
+        
+        
+        
+        
         # Système de téléportation (pour entrer dans une maison par exemple)
         # On définit une variable contenant la carte actuelle du personnage pour parcourir la boucle
         Joueur.carte_actuelle = Listes.liste_cartes[Joueur.carte]
@@ -307,34 +321,38 @@ class Joueur:
 
         # On affiche la Joueur.carte
         afficher_monde(fenetre)
-
-        monstre_choisi = None
-        if monstres:
-            rand = randrange(0,101)
-            for val in monstres:
-                monstre = int(val.split(":")[0])
-                proba = int(val.split(":")[1]) # probabilité que le monstre apparaisse /100
+        
+        if Joueur.repousse == 0 and Joueur.a_repousse == 1:
+            fenetre_dialogue(fenetre, "L'effet de votre repousse vient de se terminer !")
+        
+        if Joueur.repousse == 0:
+            monstre_choisi = None
+            if monstres:
+                rand = randrange(0,101)
+                for val in monstres:
+                    monstre = int(val.split(":")[0])
+                    proba = int(val.split(":")[1]) # probabilité que le monstre apparaisse /100
+                    
+                    # On choisi le monstre en fonction de sa probabilité d'apparition
+                    if monstre in Listes.liste_mobs:
+                        if 100-proba <= rand:
+                            monstre_choisi = monstre
+                            break
+                        else:
+                            rand = rand + proba
                 
-                # On choisi le monstre en fonction de sa probabilité d'apparition
-                if monstre in Listes.liste_mobs:
-                    if 100-proba <= rand:
-                        monstre_choisi = monstre
-                        break
+                # On lance le combat
+                if monstre_choisi:
+                    FightFonctions.Fight.StartFightMob(GameFonctions.MyCharacters.Character1, monstre_choisi)
+                    
+                    # Pour des stats d'apparation, pour tester...
+                    if monstre_choisi in Listes.mob_prob.keys():
+                        Listes.mob_prob[monstre_choisi] += 1
                     else:
-                        rand = rand + proba
-            
-            # On lance le combat
-            if monstre_choisi:
-                FightFonctions.Fight.StartFightMob(GameFonctions.MyCharacters.Character1, monstre_choisi)
-                
-                # Pour des stats d'apparation, pour tester...
-                if monstre_choisi in Listes.mob_prob.keys():
-                    Listes.mob_prob[monstre_choisi] += 1
-                else:
-                    Listes.mob_prob[monstre_choisi] = 1
-                
-                # À la fin du combat, on affiche le monde
-                afficher_monde(fenetre)
+                        Listes.mob_prob[monstre_choisi] = 1
+                    
+                    # À la fin du combat, on affiche le monde
+                    afficher_monde(fenetre)
 
     def parler_pnj(fenetre, inventaire):
         '''Interaction avec les Personnages Non Joueurs (PNJ). Quêtes et dialogues.'''
@@ -1600,7 +1618,6 @@ def utiliser_objet(fenetre, inventaire, objet_actuel):
                             suppr.append(1)
                     else:
                         fenetre_dialogue(fenetre, "Votre vie est déjà maximale !", 0)
-                        suppr.append(0)
                 
                 if type == "tp":
                     if arg == "centre":
@@ -1621,8 +1638,15 @@ def utiliser_objet(fenetre, inventaire, objet_actuel):
                             Joueur.carte = carte
                             fenetre_dialogue(fenetre, "Vous avez été téléporté !", 0)
                             suppr.append(1)
-                    
                 
+                if type == "rp":
+                    if Joueur.repousse == 0:
+                        Joueur.repousse = int(arg)
+                        fenetre_dialogue(fenetre, "Vous êtes maintenant protégé des aggressions pour {0} pas !".format(Joueur.repousse), 0)
+                        suppr.append(1)
+                    else:
+                        fenetre_dialogue(fenetre, "L'ancien repousse est encore actif ! Pas restant : {0}".format(Joueur.repousse), 0)
+                        
             if 1 in suppr:
                 inventaire[objet_actuel] -= 1
             
