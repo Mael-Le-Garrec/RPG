@@ -1593,9 +1593,11 @@ def utiliser_objet(fenetre, inventaire, objet_actuel):
                         if GameFonctions.MyCharacters.Character1.HP + int(arg) <= GameFonctions.MyCharacters.Character1.TVitality: # Si vie + potion < vie totale
                             fenetre_dialogue(fenetre, "Vous regagnez {0} points de vie !".format(arg), 0)
                             GameFonctions.MyCharacters.Character1.HP = GameFonctions.MyCharacters.Character1.HP + int(arg) # vie = vie + potion
+                            suppr.append(1)
                         else:
                             fenetre_dialogue(fenetre, "Vous regagnez {0} points de vie !".format(GameFonctions.MyCharacters.Character1.TVitality - GameFonctions.MyCharacters.Character1.HP), 0)
                             GameFonctions.MyCharacters.Character1.HP = GameFonctions.MyCharacters.Character1.TVitality # si vie + potion > vie totale, vie = vie totale
+                            suppr.append(1)
                     else:
                         fenetre_dialogue(fenetre, "Votre vie est déjà maximale !", 0)
                         suppr.append(0)
