@@ -258,17 +258,15 @@ class Exp:
                 XP=XP-LvlExp
                 #On monte d'un niveau
                 Character.Lvl=Character.Lvl+1
-                print("Lvl UP")
+                classes.fenetre_dialogue(classes.Listes.fenetre, "Votre personnage monte de niveau.", 0)
 
                 if XP!=0:
                     #Si l'xp est différent de 0 on relance cette fonction
                     Exp.NewXP(Character,XP)
                 else:
-                    print("Lvl actuel : "+str(Character.Lvl))
-                    print("Prochain niveau dans : "+ str(Exp.EXPNeed(Character.Lvl)-Character.Exp) + "xp")
+                    classes.fenetre_dialogue(classes.Listes.fenetre, "Prochain niveau dans : "+ str(Exp.EXPNeed(Character.Lvl)-Character.Exp) + "xp", 0)
             else:
                 Character.Exp=Character.Exp+XP
-                print("Lvl actuel : "+str(Character.Lvl))
-                print("Prochain niveau dans : "+ str(Exp.EXPNeed(Character.Lvl)-Character.Exp) + "xp")
+                classes.fenetre_dialogue(classes.Listes.fenetre, "Prochain niveau dans : "+ str(Exp.EXPNeed(Character.Lvl)-Character.Exp) + "xp", 0)
         else:
             Config.LogFile.Information("Votre joueur a gagné 0 d'expérience. Ceci est peut être erreur du jeu.",2)
