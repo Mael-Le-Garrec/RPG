@@ -156,7 +156,11 @@ class Carte:
 def creer_images_perso():
     '''Charge les images du personnage joué incarné'''
     
-    Joueur.perso = pygame.image.load(os.path.join('images', 'fatman_down.png')).convert_alpha()
+    # Joueur.perso = pygame.transform.scale(pygame.image.load(os.path.join('images', 'fatman_down.png')).convert_alpha(), (20,25))
+    # Joueur.perso_d = pygame.transform.scale(pygame.image.load(os.path.join('images', 'fatman_right.png')).convert_alpha(), (20,25))
+    # Joueur.perso_b = pygame.transform.scale(pygame.image.load(os.path.join('images', 'fatman_down.png')).convert_alpha(), (20,25))
+    # Joueur.perso_g = pygame.transform.scale(pygame.image.load(os.path.join('images', 'fatman_left.png')).convert_alpha(), (20,25))
+    # Joueur.perso_h = pygame.transform.scale(pygame.image.load(os.path.join('images', 'fatman_up.png')).convert_alpha(), (20,25))
     Joueur.perso_d = pygame.image.load(os.path.join('images', 'fatman_right.png')).convert_alpha()
     Joueur.perso_b = pygame.image.load(os.path.join('images', 'fatman_down.png')).convert_alpha()
     Joueur.perso_g = pygame.image.load(os.path.join('images', 'fatman_left.png')).convert_alpha()
@@ -378,7 +382,7 @@ class Joueur:
                # Si sa position est égale à celle qu'on regarde
                if Joueur.position_x + voir_x == val.pos_x and Joueur.position_y + voir_y == val.pos_y:
                     # On affiche d'abord le dialogue du personnage puis les éléments de quêtes
-                    dialogue = faire_quete(val, inventaire, fenetre) # Attribution du dialogue de quête
+                    dialogue = faire_quete(val, inventaire, fenetre) # Attribution du dialogue de quête, objets etc
                     choisir_dialogue(val, fenetre) # Affichage du dialogue du personnage (en fonction des quêtes en cours)
                     if dialogue: # Si on a un dialogue de quête, on l'affiche après celui du personnage
                         fenetre_dialogue(fenetre, dialogue)
@@ -1095,11 +1099,11 @@ def afficher_profil(fenetre, inventaire):
     
 
     fenetre.blit(myfont.render("Clan : " + str(GameFonctions.MyCharacters.Character1.ClanName), 1, (0,0,0)), (90, 190+2*20))
-    fenetre.blit(myfont.render("Force : " + str(GameFonctions.MyCharacters.Character1.Bonus_Strength), 1, (0,0,0)), (90, 190+3*20))
-    fenetre.blit(myfont.render("Agilité : " + str(GameFonctions.MyCharacters.Character1.Bonus_Agility), 1, (0,0,0)), (90, 190+4*20))
-    fenetre.blit(myfont.render("Chance : " + str(GameFonctions.MyCharacters.Character1.Bonus_Chance), 1, (0,0,0)), (90, 190+5*20))
-    fenetre.blit(myfont.render("Intel. : " + str(GameFonctions.MyCharacters.Character1.Bonus_Intelligence), 1, (0,0,0)), (90, 190+6*20))
-    fenetre.blit(myfont.render("Vitalité : " + str(GameFonctions.MyCharacters.Character1.Bonus_Vitality), 1, (0,0,0)), (90, 190+7*20))
+    fenetre.blit(myfont.render("Force : " + str(GameFonctions.MyCharacters.Character1.TStrength), 1, (0,0,0)), (90, 190+3*20))
+    fenetre.blit(myfont.render("Agilité : " + str(GameFonctions.MyCharacters.Character1.TAgility), 1, (0,0,0)), (90, 190+4*20))
+    fenetre.blit(myfont.render("Chance : " + str(GameFonctions.MyCharacters.Character1.TChance), 1, (0,0,0)), (90, 190+5*20))
+    fenetre.blit(myfont.render("Intel. : " + str(GameFonctions.MyCharacters.Character1.TIntelligence), 1, (0,0,0)), (90, 190+6*20))
+    fenetre.blit(myfont.render("Vitalité : " + str(GameFonctions.MyCharacters.Character1.TVitality), 1, (0,0,0)), (90, 190+7*20))
     fenetre.blit(myfont.render("XP : " + str(GameFonctions.MyCharacters.Character1.Exp), 1, (0,0,0)), (90, 190+8*20))
     
     
@@ -2338,3 +2342,122 @@ def affichageSelectionCombat2(fenetre, curseur, perso, mob):
     pygame.gfxdraw.filled_trigon(fenetre, 0+x_c, 0+y_c, 0+x_c, 10+y_c, 5+x_c, 5+y_c, (0,0,0))
 
     pygame.display.flip()
+    
+def affichage_caracs(fenetre, caracs=[0,0,0,0,0]):
+    font = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 20)
+    tfont = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 14)
+    fenetre.blit(pygame.image.load(os.path.join('images', 'clan.png')).convert_alpha(),(0,0)) # fond
+    
+    tfont.render("Vitalité : ", 1, (0,0,0))
+    
+    x2 = 300 - font.render("Nombre de points restants : {}".format(GameFonctions.MyCharacters.Character1.Points_Caracs), 1, (0,0,0)).get_rect().width / 2
+    fenetre.blit(font.render("Nombre de points restants : {}".format(GameFonctions.MyCharacters.Character1.Points_Caracs), 1, (0,0,0)), (x2, 60))
+
+    
+    x = 100
+    y = 150
+    fenetre.blit(font.render("Force : ", 1, (0,0,0)), (x, y))
+    fenetre.blit(font.render("Agilité : ", 1, (0,0,0)), (x, y+60))
+    fenetre.blit(font.render("Chance : ", 1, (0,0,0)), (x, y+60*2))
+    fenetre.blit(font.render("Intelligence : ", 1, (0,0,0)), (x, y+60*3))
+    fenetre.blit(font.render("Vitalité : ", 1, (0,0,0)), (x, y+60*4))
+    fenetre.blit(font.render("Ok !", 1, (0,0,0)), (x, y+60*5))
+    
+    x = 330
+    fenetre.blit(font.render(str(GameFonctions.MyCharacters.Character1.TStrength) + "  + ", 1, (0,0,0)), (x, y))
+    fenetre.blit(font.render(str(GameFonctions.MyCharacters.Character1.TAgility) + "  + ", 1, (0,0,0)), (x, y+60))
+    fenetre.blit(font.render(str(GameFonctions.MyCharacters.Character1.TChance) + "  + ", 1, (0,0,0)), (x, y+60*2))
+    fenetre.blit(font.render(str(GameFonctions.MyCharacters.Character1.TIntelligence) + "  + ", 1, (0,0,0)), (x, y+60*3))
+    fenetre.blit(font.render(str(GameFonctions.MyCharacters.Character1.TVitality) + "  + ", 1, (0,0,0)), (x, y+60*4))
+    
+    
+    x = 150 + 350
+    y = 150
+    pygame.gfxdraw.filled_trigon(fenetre, x, y, x, y+20, x+10, y+10, (0,0,0)) # droite
+    pygame.gfxdraw.filled_trigon(fenetre, x-70, y, x-70, 20+y, x-70-10, 10+y, (0,0,0)) # gauche
+    
+    y = y + 60
+    pygame.gfxdraw.filled_trigon(fenetre, x, y, x, y+20, x+10, y+10, (0,0,0)) # droite
+    pygame.gfxdraw.filled_trigon(fenetre, x-70, y, x-70, 20+y, x-70-10, 10+y, (0,0,0)) # gauche
+    
+    y = y + 60
+    pygame.gfxdraw.filled_trigon(fenetre, x, y, x, y+20, x+10, y+10, (0,0,0)) # droite
+    pygame.gfxdraw.filled_trigon(fenetre, x-70, y, x-70, 20+y, x-70-10, 10+y, (0,0,0)) # gauche
+    
+    y = y + 60
+    pygame.gfxdraw.filled_trigon(fenetre, x, y, x, y+20, x+10, y+10, (0,0,0)) # droite
+    pygame.gfxdraw.filled_trigon(fenetre, x-70, y, x-70, 20+y, x-70-10, 10+y, (0,0,0)) # gauche
+    
+    y = y + 60
+    pygame.gfxdraw.filled_trigon(fenetre, x, y, x, y+20, x+10, y+10, (0,0,0)) # droite
+    pygame.gfxdraw.filled_trigon(fenetre, x-70, y, x-70, 20+y, x-70-10, 10+y, (0,0,0)) # gauche
+    
+    
+    for i in range(5):
+        y = 150 + i * 60   
+
+        x2 = 465 - (font.render(str(caracs[i]), 1, (0,0,0)).get_rect().width)/2
+        fenetre.blit(font.render(str(caracs[i]), 1, (0,0,0)), (x2, y))
+    
+    pygame.display.flip()
+    
+def monter_caracs(fenetre):
+    affichage_caracs(fenetre)
+    font = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 20)
+    
+    restant = GameFonctions.MyCharacters.Character1.Points_Caracs
+    # restant = 20
+    
+    curseur = 0
+    x = 60
+    y = 150
+    
+    caracs = [0,0,0,0,0]
+    
+    pygame.gfxdraw.filled_trigon(fenetre, x, y, x, y+20, x+10, y+10, (0,0,0))
+    
+    pygame.display.flip()
+    
+    continuer = 1
+    while continuer:
+        pygame.time.Clock().tick(30)
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                quit()
+            if event.type == KEYDOWN:
+                if event.key == K_RETURN:
+                    if curseur == 5:
+                        GameFonctions.MyCharacters.Character1.Bonus_Vitality+=caracs[4] # 4
+                        GameFonctions.MyCharacters.Character1.Bonus_Intelligence+=caracs[3] # 3
+                        GameFonctions.MyCharacters.Character1.Bonus_Strength+=caracs[0] # 0
+                        GameFonctions.MyCharacters.Character1.Bonus_Chance+=caracs[2] # 2
+                        GameFonctions.MyCharacters.Character1.Bonus_Agility+=caracs[1] # 1
+                        
+                        GameFonctions.MyCharacters.StatsCalc.CalcTotalStats(GameFonctions.MyCharacters.Character1)
+                        
+                        continuer = 0
+                        afficher_monde(fenetre)
+                if event.key == K_DOWN:
+                    if curseur < 5 :
+                        curseur += 1
+                if event.key == K_UP:
+                    if curseur > 0:
+                        curseur -= 1
+                if event.key == K_LEFT:
+                    if curseur < 5:
+                        if caracs[curseur] > 0:
+                            caracs[curseur] -= 1
+                            restant += 1
+                if event.key == K_RIGHT:
+                    if curseur < 5:
+                        if restant > 0 :
+                            caracs[curseur] += 1
+                            restant -= 1
+                            
+                if continuer == 1:
+                    affichage_caracs(fenetre, caracs)
+                    y = 150 + curseur * 60   
+
+                    pygame.gfxdraw.filled_trigon(fenetre, x, y, x, y+20, x+10, y+10, (0,0,0))
+                    pygame.display.flip()
+        

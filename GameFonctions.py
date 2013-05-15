@@ -121,6 +121,8 @@ class MyCharacters:
         Bonus_Strength=0
         Bonus_Chance=0
         Bonus_Agility=0
+        
+        Points_Caracs=0
 
         #Variable de la valeur total de la caractéristique
         TVitality=0
@@ -161,7 +163,6 @@ class MyCharacters:
         def LvlUpStats(Character,Caracteristique,Nbr):
             """Actualise les caractéristique après un LvlUp"""
             Character.Caracteristique=Character.Caracterisque+Nbr
-
 
 
         def CalcInitiative(Character):
@@ -258,7 +259,11 @@ class Exp:
                 XP=XP-LvlExp
                 #On monte d'un niveau
                 Character.Lvl=Character.Lvl+1
+                Character.Points_Caracs=Character.Points_Caracs + 10 # on ajoute 10 pts au capital
+
                 classes.fenetre_dialogue(classes.Listes.fenetre, "Votre personnage monte de niveau.", 0)
+                classes.monter_caracs(classes.Listes.fenetre)
+                
 
                 if XP!=0:
                     #Si l'xp est différent de 0 on relance cette fonction
