@@ -58,32 +58,43 @@ class Carte:
 
         # Si la ligne ressemble à ça 570:120;600:150;arbre;1...
         for i in range(len(self.lignes)):
-            if re.match("^[0-9]+:[0-9]+;[0-9]+:[0-9]+;[a-zA-Z0-9_]+;(1|0)$", self.lignes[i]):
+            if re.match("^[0-9]+:[0-9]+;[0-9]+:[0-9]+;[a-zA-Z0-9_]+;(1|0)$", self.lignes[i]): # normal
                 self.coords.append(self.lignes[i]) # Si oui, on ajoute la ligne dans la liste des coordonnées
                 self.coords[-1] = self.coords[-1].rstrip().split(";") # On split la dernière entrée au niveau des  ; pour diviser la chaine
                 self.coords[-1][0] = self.coords[-1][0].split(":") # On split le : du premier point (x:y)
                 self.coords[-1][1] = self.coords[-1][1].split(":") # Puis du second
+                # print(self.coords[-1])
+
+            if re.match("^[0-9]+:[0-9]+;[0-9]+:[0-9]+;[a-zA-Z0-9_]+;0;1$", self.lignes[i]): # traversable et personnage derrière derrière (arbres, lampadaires, etc...)
+                self.coords.append(self.lignes[i])
+                self.coords[-1] = self.coords[-1].rstrip().split(";")
+                self.coords[-1][0] = self.coords[-1][0].split(":")
+                self.coords[-1][1] = self.coords[-1][1].split(":")
+                
+                print(self.coords[-1])
+                
+                
 
             # Si la ligne contient également des informations de téléportation, on l'ajoute en splittant les coordonnées
-            elif re.match("[0-9]+:[0-9]+;[0-9]+:[0-9]+;[a-zA-Z0-9_]+;(0|1);[0-9]+:[0-9]+;[0-9]+$", self.lignes[i]):
+            elif re.match("[0-9]+:[0-9]+;[0-9]+:[0-9]+;[a-zA-Z0-9_]+;(0|1);[0-9]+:[0-9]+;[0-9]+$", self.lignes[i]): # tp sans objet
                 self.coords.append(self.lignes[i]) # Si oui, on ajoute la ligne dans la liste des coordonnées
                 self.coords[-1] = self.coords[-1].rstrip().split(";") # On split la dernière entrée au niveau des  ; pour diviser la chaine
                 self.coords[-1][0] = self.coords[-1][0].split(":") # On split le : du premier point (x:y)
                 self.coords[-1][1] = self.coords[-1][1].split(":") # Puis du second
                 self.coords[-1][4] = self.coords[-1][4].split(":") # Ajout des coordonnées de téléportation
 
-            elif re.match("[0-9]+:[0-9]+;[0-9]+:[0-9]+;[a-zA-Z0-9_]+;(0|1);[0-9]+:[0-9]+;[0-9]+;[0-9a-zA-Z ]+$", self.lignes[i]):
+            elif re.match("[0-9]+:[0-9]+;[0-9]+:[0-9]+;[a-zA-Z0-9_]+;(0|1);[0-9]+:[0-9]+;[0-9]+;[0-9a-zA-Z ]+$", self.lignes[i]): # tp avec objets
                 self.coords.append(self.lignes[i]) # Si oui, on ajoute la ligne dans la liste des coordonnées
                 self.coords[-1] = self.coords[-1].rstrip().split(";") # On split la dernière entrée au niveau des  ; pour diviser la chaine
                 self.coords[-1][0] = self.coords[-1][0].split(":") # On split le : du premier point (x:y)
                 self.coords[-1][1] = self.coords[-1][1].split(":") # Puis du second
                 self.coords[-1][4] = self.coords[-1][4].split(":") # Ajout des coordonnées de téléportation
 
-            elif re.match("^fond:[a-zA-Z0-9_\-]", self.lignes[i]):
+            elif re.match("^fond:[a-zA-Z0-9_\-]", self.lignes[i]): # fond
                 # print(self.lignes[i].split(":")[1].strip())
                 self.fond = pygame.image.load(os.path.join("textures", self.lignes[i].split(":")[1].strip()+".png"))
 
-            elif re.match("[0-9]+:[0-9]+;[0-9]+:[0-9]+;[0-9]+(;[0-9]+:[0-9]+)+", self.lignes[i]):
+            elif re.match("[0-9]+:[0-9]+;[0-9]+:[0-9]+;[0-9]+(;[0-9]+:[0-9]+)+", self.lignes[i]): # zone de combat
                 x1 = int(self.lignes[i].split(";")[0].split(":")[0])
                 y1 = int(self.lignes[i].split(";")[0].split(":")[1])
                 x2 = int(self.lignes[i].split(";")[1].split(":")[0])
@@ -94,7 +105,7 @@ class Carte:
 
 
                 self.aggro.append([x1, y1, x2, y2, proba, mobs])
-                print(self.aggro)
+                # print(self.aggro)
 
                 # self.mobs.append(x1,y1,x2,y2,proba, )
 
@@ -131,7 +142,7 @@ class Carte:
                     # print("Point de coordonnées : {0};{1}".format(int(self.coords[i][0][0]) + j * 30, int(self.coords[i][0][1]) + k * 30))
 
                     # On essaye (il peut ne pas y avoir de tp) de mettre dans la liste des tps chaque bloc de la zone
-                    if len(self.coords[i]) > 5: # 4 ou 5, c'est pareil
+                    if len(self.coords[i]) > 5: # >5 pour les tps
                         # self.tp.append([int(self.coords[i][5]), (int(self.coords[i][0][0]) + j * 30, int(self.coords[i][0][1]) + k * 30), (int(self.coords[i][4][0]), int(self.coords[i][4][1]))])
                         if len(self.coords[i]) > 6:
                             self.tp.append([int(self.coords[i][5]), (int(self.coords[i][0][0]) + j * 30, int(self.coords[i][0][1]) + k * 30), (int(self.coords[i][4][0]), int(self.coords[i][4][1])), self.coords[i][6]])
@@ -196,6 +207,7 @@ class Joueur:
         Joueur.a_repousse = Joueur.repousse
 
         if key == K_DOWN:
+        
             # Si l'Joueur.orientation actuelle est la même que celle du bas, on peut avancer
             if Joueur.perso_b == Joueur.orientation:
                 Joueur.orientation = Joueur.perso_b
@@ -271,6 +283,7 @@ class Joueur:
                         Joueur.ancienne_y = Joueur.position_y
                         Joueur.ancienne_x = Joueur.position_x
                         Joueur.position_x += 30
+                        
                     else:
                         Listes.liste_cartes[int(Listes.liste_cartes[Joueur.carte].directions["droite"])].afficher_carte(fenetre)
                         Joueur.carte = int(Listes.liste_cartes[Joueur.carte].directions["droite"])
@@ -307,29 +320,29 @@ class Joueur:
                     Joueur.position_y = Listes.liste_cartes[Joueur.carte].tp[i][2][1]
                     Joueur.carte = Listes.liste_cartes[Joueur.carte].tp[i][0]
         # print(Joueur.carte)
-        
-        # Combats !
-        for i in range(len(Listes.liste_cartes[Joueur.carte].aggro)):
-            x1 = Listes.liste_cartes[Joueur.carte].aggro[i][0]
-            y1 = Listes.liste_cartes[Joueur.carte].aggro[i][1]
-            x2 = Listes.liste_cartes[Joueur.carte].aggro[i][2]
-            y2 = Listes.liste_cartes[Joueur.carte].aggro[i][3]
-            proba = Listes.liste_cartes[Joueur.carte].aggro[i][4]
-
-            # Si on est dans la zone de monstres
-            if Joueur.position_x >= x1 and Joueur.position_x < x2 and Joueur.position_y >= y1 and Joueur.position_y < y2:
-                # Si la probabilité est inférieure à la proba de l'aggression, le combat débute
-                if randrange(0,100) <= proba:
-                    monstres = Listes.liste_cartes[Joueur.carte].aggro[i][5]
-                    break
-
+ 
         # On affiche la Joueur.carte
         afficher_monde(fenetre)
         
         if Joueur.repousse == 0 and Joueur.a_repousse == 1:
             fenetre_dialogue(fenetre, "L'effet de votre repousse vient de se terminer !")
         
-        if Joueur.repousse == 0:
+        if Joueur.repousse == 0 and Joueur.a_repousse == 0: # Pour éviter de se faire aggro directement quand le repousse fini
+            # Combats !
+            for i in range(len(Listes.liste_cartes[Joueur.carte].aggro)):
+                x1 = Listes.liste_cartes[Joueur.carte].aggro[i][0]
+                y1 = Listes.liste_cartes[Joueur.carte].aggro[i][1]
+                x2 = Listes.liste_cartes[Joueur.carte].aggro[i][2]
+                y2 = Listes.liste_cartes[Joueur.carte].aggro[i][3]
+                proba = Listes.liste_cartes[Joueur.carte].aggro[i][4]
+
+                # Si on est dans la zone de monstres
+                if Joueur.position_x >= x1 and Joueur.position_x < x2 and Joueur.position_y >= y1 and Joueur.position_y < y2:
+                    # Si la probabilité est inférieure à la proba de l'aggression, le combat débute
+                    if randrange(0,100) <= proba:
+                        monstres = Listes.liste_cartes[Joueur.carte].aggro[i][5]
+                        break
+                    
             monstre_choisi = None
             if monstres:
                 rand = randrange(0,101)
@@ -1183,6 +1196,26 @@ def afficher_monde(fenetre):
                 Listes.liste_obstacles[i].afficher_obstacle(fenetre)
 
     fenetre.blit(Joueur.orientation, (Joueur.position_x, Joueur.position_y))
+    
+    coords = Listes.liste_cartes[Joueur.carte].coords
+    for val in coords :
+        if len(val) == 5:
+            x = int(val[0][0])
+            y = int(val[0][1])
+            x2 = int(val[1][0])
+            y2 = int(val[1][1])
+            img = Listes.liste_cartes[Joueur.carte].textures[val[2]]
+            
+            if Joueur.position_x >= x and Joueur.position_x <= x2 and Joueur.position_y >= y and Joueur.position_y <= y2:
+                print("t'es dedans")
+                fenetre.blit(Joueur.orientation, (Joueur.position_x, Joueur.position_y))
+                fenetre.blit(img, (Joueur.position_x, Joueur.position_y))
+        # print(Joueur.position_x)
+        # print(Joueur.position_y)
+        # print(Joueur.carte)
+        pass
+    
+    
     pygame.display.flip()
 
 def fenetre_dialogue(fenetre, dialogue, afficher=1):
