@@ -125,6 +125,7 @@ class createurMonde(tkinter.Tk):
         Radiobutton(self.fond_radio_carte, text="Texture traversable", variable=self.radio_carte, value=1).place(x=10,y=50)
         Radiobutton(self.fond_radio_carte, text="Texture non traversable", variable=self.radio_carte, value=2).place(x=10,y=70)
         Radiobutton(self.fond_radio_carte, text="Téléporteur", variable=self.radio_carte, value=3).place(x=10,y=90)
+        Radiobutton(self.fond_radio_carte, text="Tex. Tr. Premier plan", variable=self.radio_carte, value=4).place(x=10,y=110)
            
         # Affichage des coordonnées de téléportation
         self.fond_tp = Canvas(frame_bas, bd=1, relief='solid', height=150, width=200)
@@ -587,6 +588,8 @@ class createurMonde(tkinter.Tk):
             if len(val) == 4:
                 fichier.write("{0}:{1};{2}:{3};{4};{5}\n".format(val[0], val[1], val[0] + 30, val[1] + 30, val[2], val[3]))
                 # x, y, texture, traversable
+            elif len(val) == 5:
+                fichier.write("{0}:{1};{2}:{3};{4};{5};{6}\n".format(val[0], val[1], val[0] + 30, val[1] + 30, val[2], val[3], val[4]))
             else:
                 fichier.write("{0}:{1};{2}:{3};{4};{5};{6}:{7};{8}\n".format(val[0], val[1], val[0] + 30, val[1] + 30, val[2], val[3], val[4], val[5], val[6]))
         
@@ -660,6 +663,12 @@ class createurMonde(tkinter.Tk):
                 self.coords[-1][0] = self.coords[-1][0].split(":") # On split le : du premier point (x:y)
                 self.coords[-1][1] = self.coords[-1][1].split(":") # Puis du second
                 
+            if re.match("^[0-9]+:[0-9]+;[0-9]+:[0-9]+;[a-zA-Z0-9_]+;0;1$", self.lignes[i]): # traversable et personnage derrière derrière (arbres, lampadaires, etc...)
+                self.coords.append(self.lignes[i])
+                self.coords[-1] = self.coords[-1].rstrip().split(";")
+                self.coords[-1][0] = self.coords[-1][0].split(":")
+                self.coords[-1][1] = self.coords[-1][1].split(":")
+                
             # Si la ligne contient également des informations de téléportation, on l'ajoute en splittant les coordonnées
             elif re.match("[0-9]+:[0-9]+;[0-9]+:[0-9]+;[a-zA-Z0-9_]+;(0|1);[0-9]+:[0-9]+;[0-9]+$", self.lignes[i]):
                 self.coords.append(self.lignes[i]) # Si oui, on ajoute la ligne dans la liste des coordonnées
@@ -719,6 +728,10 @@ class createurMonde(tkinter.Tk):
                 # x, y, image, traversable, x dest, y dest, carte
                 # print(self.bloc[i])
                 self.affiches.append([int(self.bloc[i][0]), int(self.bloc[i][1]), self.bloc[i][3], int(self.bloc[i][4]), int(self.bloc[i][5]), int(self.bloc[i][6]), int(self.bloc[i][7])])
+            elif len(self.bloc[i]) == 6:
+                if self.bloc[i][4] == 0:
+                    self.affiches.append([int(self.bloc[i][0]), int(self.bloc[i][1]), self.bloc[i][3], int(self.bloc[i][4]), int(self.bloc[i][5])])
+                    print(self.bloc[i])
             else:
                 self.affiches.append([int(self.bloc[i][0]), int(self.bloc[i][1]), self.bloc[i][3], int(self.bloc[i][4])])
         
@@ -771,6 +784,12 @@ class createurMonde(tkinter.Tk):
                     if val == [int((x)//30*30), int((y)//30*30), val[2], val[3]]:
                         # self.affiches.remove((int(x//30*30), int(y//30*30), val[2]))
                         valeurs.append([val[0], val[1], val[2], val[3]])
+                        
+                if len(val) == 6:
+                    if val == [int((x)//30*30), int((y)//30*30), val[2], val[3], val[4]]:
+                        # self.affiches.remove((int(x//30*30), int(y//30*30), val[2]))
+                        valeurs.append([val[0], val[1], val[2], val[3], val[4]])
+                        
                 elif len(val) == 7:
                     if val == [int((x)//30*30), int((y)//30*30), val[2], val[3], val[4], val[5], val[6]]:
                         # self.affiches.remove((int(x//30*30), int(y//30*30), val[2]))
@@ -808,10 +827,12 @@ class createurMonde(tkinter.Tk):
                         self.affiches.append([int(x//30*30), int(y//30*30), '{0}'.format(self.texture_actuelle), 1])
                     elif self.radio_carte.get() == 3: # téléporteur
                         self.affiches.append([int(x//30*30), int(y//30*30), '{0}'.format(self.texture_actuelle), 0, self.tp_x, self.tp_y, self.carte_aide])
+                    elif self.radio_carte.get() == 4: # traversable + premier plan
+                        self.affiches.append([int(x//30*30), int(y//30*30), '{0}'.format(self.texture_actuelle), 0, 1])
                         # liste_tp, x, y, x dest, y dest, carte
                     # print([int(x//30*30), int(y//30*30), '{0}'.format(self.texture_actuelle), 1])
                 else:
-                    print("coucou")
+                    print("Déjà placée ici !")
             
                        
             elif self.vue_actuelle == "pnj":

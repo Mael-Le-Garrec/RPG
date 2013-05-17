@@ -1206,10 +1206,10 @@ def afficher_monde(fenetre):
             y2 = int(val[1][1])
             img = Listes.liste_cartes[Joueur.carte].textures[val[2]]
             
-            if Joueur.position_x >= x and Joueur.position_x <= x2 and Joueur.position_y >= y and Joueur.position_y <= y2:
-                print("t'es dedans")
+            if Joueur.position_x >= x and Joueur.position_x < x2 and Joueur.position_y >= y and Joueur.position_y < y2:
                 fenetre.blit(Joueur.orientation, (Joueur.position_x, Joueur.position_y))
                 fenetre.blit(img, (Joueur.position_x, Joueur.position_y))
+                break
         # print(Joueur.position_x)
         # print(Joueur.position_y)
         # print(Joueur.carte)
