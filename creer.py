@@ -525,11 +525,14 @@ class createurMonde(tkinter.Tk):
         if self.radio_carte.get() == 1: # traversable
             print(x,y,"traversable")
             for i in range(len(self.affiches)):
-                self.affiches[i][3] = 0
+                if x == self.affiches[i][0] and y == self.affiches[i][1]:
+                    self.affiches[i][3] = 0 # x,y,texture,traversable
+                
         elif self.radio_carte.get() == 2: # non traversable
             print("non traversable")
             for i in range(len(self.affiches)):
-                self.affiches[i][3] = 1
+                if x == self.affiches[i][0] and y == self.affiches[i][1]:
+                    self.affiches[i][3] = 1
     
     def resetCarte(self):
         self.fond_carte.delete("all")
@@ -711,8 +714,10 @@ class createurMonde(tkinter.Tk):
             for j in range(0,(int(self.coords[i][1][0]) - int(self.coords[i][0][0])) // 30):
                 for k in range(0,(int(self.coords[i][1][1]) - int(self.coords[i][0][1])) // 30):
                     if len(self.coords[i]) > 5: # si tp, la longueur est de 6, 7 avec objet requis
-                        print(self.coords[i])
+                        # print(self.coords[i])
                         self.bloc.append((int(self.coords[i][0][0]) + j * 30, int(self.coords[i][0][1]) + k * 30, self.textures_fichier[self.coords[i][2]], self.coords[i][2], self.coords[i][3], self.coords[i][4][0], self.coords[i][4][1], self.coords[i][5]))
+                    elif len(self.coords[i]) ==  5: # premier plan
+                        self.bloc.append((int(self.coords[i][0][0]) + j * 30, int(self.coords[i][0][1]) + k * 30, self.textures_fichier[self.coords[i][2]], self.coords[i][2], self.coords[i][3], self.coords[i][4]))
                     else:
                         self.bloc.append((int(self.coords[i][0][0]) + j * 30, int(self.coords[i][0][1]) + k * 30, self.textures_fichier[self.coords[i][2]], self.coords[i][2], self.coords[i][3]))
                     # print(self.coords[i])
@@ -724,15 +729,18 @@ class createurMonde(tkinter.Tk):
         for i in range(len(self.bloc)):
             # print([int(self.bloc[i][0]), int(self.bloc[i][1]), self.bloc[i][3], int(self.bloc[i][4])])
             self.fond_carte.create_image(self.bloc[i][0]+3,self.bloc[i][1]+3, image=self.bloc[i][2].image, anchor=NW)
-            if len(self.bloc[i]) > 6:
+            if len(self.bloc[i]) > 6: # téléportation 
                 # x, y, image, traversable, x dest, y dest, carte
                 # print(self.bloc[i])
                 self.affiches.append([int(self.bloc[i][0]), int(self.bloc[i][1]), self.bloc[i][3], int(self.bloc[i][4]), int(self.bloc[i][5]), int(self.bloc[i][6]), int(self.bloc[i][7])])
-            elif len(self.bloc[i]) == 6:
-                if self.bloc[i][4] == 0:
-                    self.affiches.append([int(self.bloc[i][0]), int(self.bloc[i][1]), self.bloc[i][3], int(self.bloc[i][4]), int(self.bloc[i][5])])
-                    print(self.bloc[i])
-            else:
+                
+            elif len(self.bloc[i]) == 6: # premier plan
+                if int(self.bloc[i][4]) == 0 and int(self.bloc[i][5]) == 1:
+                    self.affiches.append([int(self.bloc[i][0]), int(self.bloc[i][1]), self.bloc[i][3], 0, 1])
+                    
+            # elif len(self.bloc[i]) == 5:
+                # self.affiches.append([int(self.bloc[i][0]), int(self.bloc[i][1]), self.bloc[i][3], int(self.bloc[i][4]), int(self.bloc[i][5])])
+            else: # le reste
                 self.affiches.append([int(self.bloc[i][0]), int(self.bloc[i][1]), self.bloc[i][3], int(self.bloc[i][4])])
         
             self.pb.step(25/len(self.bloc))
@@ -780,21 +788,23 @@ class createurMonde(tkinter.Tk):
             # print(self.affiches)
             # print([int((x)//30*30), int((y)//30*30), val[2], val[3]])
             for val in self.affiches:
-                if len(val) == 4:
-                    if val == [int((x)//30*30), int((y)//30*30), val[2], val[3]]:
+                # if len(val) == 4:
+                    # if val == [int((x)//30*30), int((y)//30*30), val[2], val[3]]:
                         # self.affiches.remove((int(x//30*30), int(y//30*30), val[2]))
-                        valeurs.append([val[0], val[1], val[2], val[3]])
+                        # valeurs.append([val[0], val[1], val[2], val[3]])
                         
-                if len(val) == 6:
-                    if val == [int((x)//30*30), int((y)//30*30), val[2], val[3], val[4]]:
-                        # self.affiches.remove((int(x//30*30), int(y//30*30), val[2]))
-                        valeurs.append([val[0], val[1], val[2], val[3], val[4]])
+                # if len(val) == 6:
+                    # if val == [int((x)//30*30), int((y)//30*30), val[2], val[3], val[4]]:
+                        # valeurs.append([val[0], val[1], val[2], val[3], val[4]])
                         
-                elif len(val) == 7:
-                    if val == [int((x)//30*30), int((y)//30*30), val[2], val[3], val[4], val[5], val[6]]:
-                        # self.affiches.remove((int(x//30*30), int(y//30*30), val[2]))
-                        valeurs.append([int((x)//30*30), int((y)//30*30), val[2], val[3], val[4], val[5], val[6]])
-            # print(valeurs)
+                # elif len(val) == 7:
+                    # if val == [int((x)//30*30), int((y)//30*30), val[2], val[3], val[4], val[5], val[6]]:
+                        # valeurs.append([int((x)//30*30), int((y)//30*30), val[2], val[3], val[4], val[5], val[6]])
+                
+                if int(x//30*30) == val[0] and int(y//30*30) == val[1]:
+                    valeurs.append(val)
+  
+            print(valeurs)
             for val in valeurs:
                 self.affiches.remove(val)
 
