@@ -183,10 +183,10 @@ def creer_images_perso():
 
 class Joueur:
     # On place le joueur au centre de la Joueur.carte (en attendant les sauvegardes de pos)
-    position_x = 300
-    position_y = 300
-    ancienne_y = 300
-    ancienne_x = 300
+    position_x = 330
+    position_y = 270
+    ancienne_y = 330
+    ancienne_x = 270
     
     a_repousse = 0
     repousse = 0 # éviter les combats
@@ -197,7 +197,7 @@ class Joueur:
     #[[x, y], carte, id]
 
     # On définit la Joueur.carte du joueur comme étant la première (en attendant les sauvegardes toujours)
-    carte = 0
+    carte = 1
 
     def bouger_perso(key, fenetre, inventaire):
         '''Cette fonction sert à bouger le personnage en fonction de la touche pressée (up/down/left/right)'''
@@ -205,7 +205,8 @@ class Joueur:
         monstres = None
         
         Joueur.a_repousse = Joueur.repousse
-
+        bouger = 0
+        
         if key == K_DOWN:
         
             # Si l'Joueur.orientation actuelle est la même que celle du bas, on peut avancer
@@ -214,6 +215,7 @@ class Joueur:
 
                 # Si la position où l'on veut aller n'est pas dans la liste des collisions, on peut avancer
                 if (Joueur.position_x, Joueur.position_y+30) not in Listes.liste_cartes[Joueur.carte].collisions:
+                    bouger = 1
                     # Si on a pas atteint la limite de la Joueur.carte, on avance tranquillou
                     if Joueur.position_y < (600-30):
                         Joueur.ancienne_y = Joueur.position_y
@@ -241,6 +243,7 @@ class Joueur:
             if Joueur.perso_h == Joueur.orientation:
                 Joueur.orientation = Joueur.perso_h
                 if (Joueur.position_x, Joueur.position_y-30) not in Listes.liste_cartes[Joueur.carte].collisions:
+                    bouger = 1
                     if Joueur.position_y > 0:
                         Joueur.ancienne_y = Joueur.position_y
                         Joueur.ancienne_x = Joueur.position_x
@@ -260,6 +263,7 @@ class Joueur:
             if Joueur.perso_g == Joueur.orientation:
                 Joueur.orientation = Joueur.perso_g
                 if (Joueur.position_x-30, Joueur.position_y) not in Listes.liste_cartes[Joueur.carte].collisions:
+                    bouger = 1
                     if Joueur.position_x > 0:
                         Joueur.ancienne_y = Joueur.position_y
                         Joueur.ancienne_x = Joueur.position_x
@@ -279,6 +283,7 @@ class Joueur:
             if Joueur.perso_d == Joueur.orientation:
                 Joueur.orientation = Joueur.perso_d
                 if (Joueur.position_x+30, Joueur.position_y) not in Listes.liste_cartes[Joueur.carte].collisions:
+                    bouger = 1
                     if Joueur.position_x < (600-30):
                         Joueur.ancienne_y = Joueur.position_y
                         Joueur.ancienne_x = Joueur.position_x
@@ -300,25 +305,26 @@ class Joueur:
         # Système de téléportation (pour entrer dans une maison par exemple)
         # On définit une variable contenant la carte actuelle du personnage pour parcourir la boucle
         Joueur.carte_actuelle = Listes.liste_cartes[Joueur.carte]
-
-        # On parcourt la liste des blocs de téléportation présents dans la Joueur.carte
-        for i in range(len(Joueur.carte_actuelle.tp)):
-            # Si on se trouve sur une case contenant une téléporation, on change la position du personnage ainsi que sa Joueur.carte
-            if Joueur.carte_actuelle.tp[i][1] == (Joueur.position_x, Joueur.position_y):
-                if len(Joueur.carte_actuelle.tp[i]) == 4: # Si le téléporteur requiert un objet, que l'objet existe et qu'on l'a
-                    if Joueur.carte_actuelle.tp[i][3] in inventaire: 
-                        if inventaire[Joueur.carte_actuelle.tp[i][3]] > 0:
-                            Joueur.position_x = Listes.liste_cartes[Joueur.carte].tp[i][2][0]
-                            Joueur.position_y = Listes.liste_cartes[Joueur.carte].tp[i][2][1]
-                            Joueur.carte = Listes.liste_cartes[Joueur.carte].tp[i][0]
-                        else: # Sinon, on retp à la position d'avant
-                            Joueur.position_y = Joueur.ancienne_y
-                            Joueur.position_x = Joueur.ancienne_x
-                            fenetre_dialogue(fenetre, "Vous devez posséder l'objet «{1}{0}{1}» pour pouvoir passer.".format(Joueur.carte_actuelle.tp[i][3], b'\xA0'.decode("utf-8", "replace")))
-                else: # Si pas d'objet requis, on tp
-                    Joueur.position_x = Listes.liste_cartes[Joueur.carte].tp[i][2][0]
-                    Joueur.position_y = Listes.liste_cartes[Joueur.carte].tp[i][2][1]
-                    Joueur.carte = Listes.liste_cartes[Joueur.carte].tp[i][0]
+        
+        if bouger:
+            # On parcourt la liste des blocs de téléportation présents dans la Joueur.carte
+            for i in range(len(Joueur.carte_actuelle.tp)):
+                # Si on se trouve sur une case contenant une téléporation, on change la position du personnage ainsi que sa Joueur.carte
+                if Joueur.carte_actuelle.tp[i][1] == (Joueur.position_x, Joueur.position_y):
+                    if len(Joueur.carte_actuelle.tp[i]) == 4: # Si le téléporteur requiert un objet, que l'objet existe et qu'on l'a
+                        if Joueur.carte_actuelle.tp[i][3] in inventaire: 
+                            if inventaire[Joueur.carte_actuelle.tp[i][3]] > 0:
+                                Joueur.position_x = Listes.liste_cartes[Joueur.carte].tp[i][2][0]
+                                Joueur.position_y = Listes.liste_cartes[Joueur.carte].tp[i][2][1]
+                                Joueur.carte = Listes.liste_cartes[Joueur.carte].tp[i][0]
+                            else: # Sinon, on retp à la position d'avant
+                                Joueur.position_y = Joueur.ancienne_y
+                                Joueur.position_x = Joueur.ancienne_x
+                                fenetre_dialogue(fenetre, "Vous devez posséder l'objet «{1}{0}{1}» pour pouvoir passer.".format(Joueur.carte_actuelle.tp[i][3], b'\xA0'.decode("utf-8", "replace")))
+                    else: # Si pas d'objet requis, on tp
+                        Joueur.position_x = Listes.liste_cartes[Joueur.carte].tp[i][2][0]
+                        Joueur.position_y = Listes.liste_cartes[Joueur.carte].tp[i][2][1]
+                        Joueur.carte = Listes.liste_cartes[Joueur.carte].tp[i][0]
         # print(Joueur.carte)
  
         # On affiche la Joueur.carte
@@ -329,47 +335,48 @@ class Joueur:
         
         if Joueur.repousse == 0 and Joueur.a_repousse == 0: # Pour éviter de se faire aggro directement quand le repousse fini
             # Combats !
-            for i in range(len(Listes.liste_cartes[Joueur.carte].aggro)):
-                x1 = Listes.liste_cartes[Joueur.carte].aggro[i][0]
-                y1 = Listes.liste_cartes[Joueur.carte].aggro[i][1]
-                x2 = Listes.liste_cartes[Joueur.carte].aggro[i][2]
-                y2 = Listes.liste_cartes[Joueur.carte].aggro[i][3]
-                proba = Listes.liste_cartes[Joueur.carte].aggro[i][4]
+            if bouger: # Si on a bien changé de case
+                for i in range(len(Listes.liste_cartes[Joueur.carte].aggro)):
+                    x1 = Listes.liste_cartes[Joueur.carte].aggro[i][0]
+                    y1 = Listes.liste_cartes[Joueur.carte].aggro[i][1]
+                    x2 = Listes.liste_cartes[Joueur.carte].aggro[i][2]
+                    y2 = Listes.liste_cartes[Joueur.carte].aggro[i][3]
+                    proba = Listes.liste_cartes[Joueur.carte].aggro[i][4]
 
-                # Si on est dans la zone de monstres
-                if Joueur.position_x >= x1 and Joueur.position_x < x2 and Joueur.position_y >= y1 and Joueur.position_y < y2:
-                    # Si la probabilité est inférieure à la proba de l'aggression, le combat débute
-                    if randrange(0,100) <= proba:
-                        monstres = Listes.liste_cartes[Joueur.carte].aggro[i][5]
-                        break
-                    
-            monstre_choisi = None
-            if monstres:
-                rand = randrange(0,101)
-                for val in monstres:
-                    monstre = int(val.split(":")[0])
-                    proba = int(val.split(":")[1]) # probabilité que le monstre apparaisse /100
-                    
-                    # On choisi le monstre en fonction de sa probabilité d'apparition
-                    if monstre in Listes.liste_mobs:
-                        if 100-proba <= rand:
-                            monstre_choisi = monstre
+                    # Si on est dans la zone de monstres
+                    if Joueur.position_x >= x1 and Joueur.position_x < x2 and Joueur.position_y >= y1 and Joueur.position_y < y2:
+                        # Si la probabilité est inférieure à la proba de l'aggression, le combat débute
+                        if randrange(0,100) <= proba:
+                            monstres = Listes.liste_cartes[Joueur.carte].aggro[i][5]
                             break
+                        
+                monstre_choisi = None
+                if monstres:
+                    rand = randrange(0,101)
+                    for val in monstres:
+                        monstre = int(val.split(":")[0])
+                        proba = int(val.split(":")[1]) # probabilité que le monstre apparaisse /100
+                        
+                        # On choisi le monstre en fonction de sa probabilité d'apparition
+                        if monstre in Listes.liste_mobs:
+                            if 100-proba <= rand:
+                                monstre_choisi = monstre
+                                break
+                            else:
+                                rand = rand + proba
+                    
+                    # On lance le combat
+                    if monstre_choisi:
+                        FightFonctions.Fight.StartFightMob(GameFonctions.MyCharacters.Character1, monstre_choisi)
+                        
+                        # Pour des stats d'apparation, pour tester...
+                        if monstre_choisi in Listes.mob_prob.keys():
+                            Listes.mob_prob[monstre_choisi] += 1
                         else:
-                            rand = rand + proba
-                
-                # On lance le combat
-                if monstre_choisi:
-                    FightFonctions.Fight.StartFightMob(GameFonctions.MyCharacters.Character1, monstre_choisi)
-                    
-                    # Pour des stats d'apparation, pour tester...
-                    if monstre_choisi in Listes.mob_prob.keys():
-                        Listes.mob_prob[monstre_choisi] += 1
-                    else:
-                        Listes.mob_prob[monstre_choisi] = 1
-                    
-                    # À la fin du combat, on affiche le monde
-                    afficher_monde(fenetre)
+                            Listes.mob_prob[monstre_choisi] = 1
+                        
+                        # À la fin du combat, on affiche le monde
+                        afficher_monde(fenetre)
 
     def parler_pnj(fenetre, inventaire):
         '''Interaction avec les Personnages Non Joueurs (PNJ). Quêtes et dialogues.'''
@@ -1803,9 +1810,9 @@ def selection_personnage(fenetre):
                         if nouveau == 0:
                             afficher_personnage(fenetre, actuel)
                         else:
-                            Joueur.carte = 0
-                            Joueur.position_x = 300
-                            Joueur.position_y = 300
+                            Joueur.carte = 1
+                            Joueur.position_x = 330
+                            Joueur.position_y = 270
                             Joueur.inventaire = ""
                             GameFonctions.MyCharacters.Character1.Nickname = nouveau
                             GameFonctions.MyCharacters.Character1.Lvl = 1
@@ -1825,9 +1832,9 @@ def selection_personnage(fenetre):
                     if nouveau == 0:
                         afficher_personnage(fenetre, actuel)
                     else:
-                        Joueur.carte = 0
-                        Joueur.position_x = 300
-                        Joueur.position_y = 300
+                        Joueur.carte = 1
+                        Joueur.position_x = 330
+                        Joueur.position_y = 270
                         Joueur.inventaire = ""
                         GameFonctions.MyCharacters.Character1.Nickname = nouveau
                         GameFonctions.MyCharacters.Character1.Lvl = 1
