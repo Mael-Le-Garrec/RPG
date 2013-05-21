@@ -32,8 +32,9 @@ class Etat:
         #On vérifie que le joueur dispose bien d'un état d'activé
         if Etat.EtatCharacter1[1]!=0:
             #On récupère les dégat de l'état
-            Degat=Etat.EtatCharacter1[2]
+            Degat=int(Etat.EtatCharacter1[2])
             #Gestion des états de soin. Soin qui dépase la vitality maximal du joueur
+
             if Character.HP-Degat>Character.TVitality:
                 Degat=0
             #Gestion des états qui tue le joueur. Exemple Dégat = -15 . Vitalité du joueur = 14 donc 14+(-15)=-1 qui n'est pas possible.
@@ -160,7 +161,7 @@ class Fight:
                         #On met l'état au monstre/joueur
                         Etat.EtatCharacter1=[Etat.Name[Sort.Etat[MobAttaque]],Etat.Turn[Sort.Etat[MobAttaque]],Etat.Effect[Sort.Etat[MobAttaque]]]
                         #Sortie graphique
-                        classes.fenetre_dialogue(classes.Listes.fenetre, "{0} entre dans l'etat {1}".format(Character.Nickname, Etat.Name[Sort.Etat[MobAttaque]]), 0)
+                        classes.fenetre_dialogue(classes.Listes.fenetre, "{0} entre dans l'état {1}".format(Character.Nickname, Etat.Name[Sort.Etat[MobAttaque]]), 0)
 
                     #Gestion de la cible (1 = Adversaire)
                     if Cible==1:
@@ -350,8 +351,8 @@ class Fight:
                             if not "-" in Sort.Degat[i]:
                                 UsableSpell.append(i)
                     else:
-                        #Le monstre n'a que 10% de chance de choisir une attaque qui soigne mais il va préférer dans 90% des cas d'attaquer.
-                        if randrange(1,101)<=10:
+                        #Le monstre n'a que 5% de chance de choisir une attaque qui soigne mais il va préférer dans 90% des cas d'attaquer.
+                        if randrange(1,101)<=5:
                             UsableSpell=MobSpellList
                         else:
                             for i in MobSpellList:
@@ -488,7 +489,7 @@ class Fight:
                      if Sort.Etat[SortID]!=-1:
                         Etat.EtatMob=[Etat.Name[Sort.Etat[SortID]],Etat.Turn[Sort.Etat[SortID]],Etat.Effect[Sort.Etat[SortID]]]
                         #Sortie graphique
-                        classes.fenetre_dialogue(classes.Listes.fenetre, "{0} entre dans l'etat {1}.".format(Mob.Name, Etat.Name[Sort.Etat[SortID]]), 0)
+                        classes.fenetre_dialogue(classes.Listes.fenetre, "{0} entre dans l'état {1}.".format(Mob.Name, Etat.Name[Sort.Etat[SortID]]), 0)
 
                      #Choix de la cible
                      if Cible==1:
