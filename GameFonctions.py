@@ -160,9 +160,17 @@ class MyCharacters:
 
 
 
-        def LvlUpStats(Character,Caracteristique,Nbr):
+        def LvlUpStats(Caracteristique):
             """Actualise les caractéristique après un LvlUp"""
-            Character.Caracteristique=Character.Caracterisque+Nbr
+            for i in Caracteristique:
+                MyCharacters.Character1.Bonus_Agility+=i
+                MyCharacters.Character1.Bonus_Chance+=i
+                MyCharacters.Character1.Bonus_Intelligence+=i
+                MyCharacters.Character1.Bonus_Strength+=i
+                MyCharacters.Character1.Bonus_Vitality+=i
+
+            MyCharacters.StatsCalc.CalcTotalStats(MyCharacters.Character1)
+
 
 
         def CalcInitiative(Character):
