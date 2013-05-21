@@ -70,10 +70,10 @@ class Carte:
                 self.coords[-1] = self.coords[-1].rstrip().split(";")
                 self.coords[-1][0] = self.coords[-1][0].split(":")
                 self.coords[-1][1] = self.coords[-1][1].split(":")
-                
+
                 print(self.coords[-1])
-                
-                
+
+
 
             # Si la ligne contient également des informations de téléportation, on l'ajoute en splittant les coordonnées
             elif re.match("[0-9]+:[0-9]+;[0-9]+:[0-9]+;[a-zA-Z0-9_]+;(0|1);[0-9]+:[0-9]+;[0-9]+$", self.lignes[i]): # tp sans objet
@@ -166,7 +166,7 @@ class Carte:
 
 def creer_images_perso():
     '''Charge les images du personnage joué incarné'''
-    
+
     # Joueur.perso = pygame.transform.scale(pygame.image.load(os.path.join('images', 'fatman_down.png')).convert_alpha(), (20,25))
     # Joueur.perso_d = pygame.transform.scale(pygame.image.load(os.path.join('images', 'fatman_right.png')).convert_alpha(), (20,25))
     # Joueur.perso_b = pygame.transform.scale(pygame.image.load(os.path.join('images', 'fatman_down.png')).convert_alpha(), (20,25))
@@ -187,12 +187,12 @@ class Joueur:
     position_y = 270
     ancienne_y = 330
     ancienne_x = 270
-    
+
     a_repousse = 0
     repousse = 0 # éviter les combats
-    
+
     inventaire = ""
-    
+
     objet_pris = list()
     #[[x, y], carte, id]
 
@@ -203,12 +203,12 @@ class Joueur:
         '''Cette fonction sert à bouger le personnage en fonction de la touche pressée (up/down/left/right)'''
         # On prend en paramères la touche envoyée, la surface pygame et l'inventaire pour les téléportations
         monstres = None
-        
+
         Joueur.a_repousse = Joueur.repousse
         bouger = 0
-        
+
         if key == K_DOWN:
-        
+
             # Si l'Joueur.orientation actuelle est la même que celle du bas, on peut avancer
             if Joueur.perso_b == Joueur.orientation:
                 Joueur.orientation = Joueur.perso_b
@@ -232,7 +232,7 @@ class Joueur:
                         Joueur.position_y = 0
                     if Joueur.repousse > 0:
                         Joueur.repousse -= 1
-                    
+
             # Si l'Joueur.orientation n'est pas la même que celle du bas, on tourne le personnage
             else:
                 Joueur.orientation = Joueur.perso_b
@@ -254,7 +254,7 @@ class Joueur:
                         Joueur.carte = int(Listes.liste_cartes[Joueur.carte].directions['haut'])
                         Joueur.position_y = 600-30
                     if Joueur.repousse > 0:
-                        Joueur.repousse -= 1 
+                        Joueur.repousse -= 1
             else:
                 Joueur.orientation = Joueur.perso_h
 
@@ -274,7 +274,7 @@ class Joueur:
                         Joueur.carte = int(Listes.liste_cartes[Joueur.carte].directions["gauche"])
                         Joueur.position_x = 600-30
                     if Joueur.repousse > 0:
-                        Joueur.repousse -= 1 
+                        Joueur.repousse -= 1
             else:
                 Joueur.orientation = Joueur.perso_g
 
@@ -288,31 +288,31 @@ class Joueur:
                         Joueur.ancienne_y = Joueur.position_y
                         Joueur.ancienne_x = Joueur.position_x
                         Joueur.position_x += 30
-                        
+
                     else:
                         Listes.liste_cartes[int(Listes.liste_cartes[Joueur.carte].directions["droite"])].afficher_carte(fenetre)
                         Joueur.carte = int(Listes.liste_cartes[Joueur.carte].directions["droite"])
                         Joueur.position_x = 0
                     if Joueur.repousse > 0:
-                        Joueur.repousse -= 1 
+                        Joueur.repousse -= 1
             else:
                 Joueur.orientation = Joueur.perso_d
 
-        
-        
-        
-        
+
+
+
+
         # Système de téléportation (pour entrer dans une maison par exemple)
         # On définit une variable contenant la carte actuelle du personnage pour parcourir la boucle
         Joueur.carte_actuelle = Listes.liste_cartes[Joueur.carte]
-        
+
         if bouger:
             # On parcourt la liste des blocs de téléportation présents dans la Joueur.carte
             for i in range(len(Joueur.carte_actuelle.tp)):
                 # Si on se trouve sur une case contenant une téléporation, on change la position du personnage ainsi que sa Joueur.carte
                 if Joueur.carte_actuelle.tp[i][1] == (Joueur.position_x, Joueur.position_y):
                     if len(Joueur.carte_actuelle.tp[i]) == 4: # Si le téléporteur requiert un objet, que l'objet existe et qu'on l'a
-                        if Joueur.carte_actuelle.tp[i][3] in inventaire: 
+                        if Joueur.carte_actuelle.tp[i][3] in inventaire:
                             if inventaire[Joueur.carte_actuelle.tp[i][3]] > 0:
                                 Joueur.position_x = Listes.liste_cartes[Joueur.carte].tp[i][2][0]
                                 Joueur.position_y = Listes.liste_cartes[Joueur.carte].tp[i][2][1]
@@ -326,13 +326,13 @@ class Joueur:
                         Joueur.position_y = Listes.liste_cartes[Joueur.carte].tp[i][2][1]
                         Joueur.carte = Listes.liste_cartes[Joueur.carte].tp[i][0]
         # print(Joueur.carte)
- 
+
         # On affiche la Joueur.carte
         afficher_monde(fenetre)
-        
+
         if Joueur.repousse == 0 and Joueur.a_repousse == 1:
             fenetre_dialogue(fenetre, "L'effet de votre repousse vient de se terminer !")
-        
+
         if Joueur.repousse == 0 and Joueur.a_repousse == 0: # Pour éviter de se faire aggro directement quand le repousse fini
             # Combats !
             if bouger: # Si on a bien changé de case
@@ -349,14 +349,14 @@ class Joueur:
                         if randrange(0,100) <= proba:
                             monstres = Listes.liste_cartes[Joueur.carte].aggro[i][5]
                             break
-                        
+
                 monstre_choisi = None
                 if monstres:
                     rand = randrange(0,101)
                     for val in monstres:
                         monstre = int(val.split(":")[0])
                         proba = int(val.split(":")[1]) # probabilité que le monstre apparaisse /100
-                        
+
                         # On choisi le monstre en fonction de sa probabilité d'apparition
                         if monstre in Listes.liste_mobs:
                             if 100-proba <= rand:
@@ -364,23 +364,23 @@ class Joueur:
                                 break
                             else:
                                 rand = rand + proba
-                    
+
                     # On lance le combat
                     if monstre_choisi:
                         FightFonctions.Fight.StartFightMob(GameFonctions.MyCharacters.Character1, monstre_choisi)
-                        
+
                         # Pour des stats d'apparation, pour tester...
                         if monstre_choisi in Listes.mob_prob.keys():
                             Listes.mob_prob[monstre_choisi] += 1
                         else:
                             Listes.mob_prob[monstre_choisi] = 1
-                        
+
                         # À la fin du combat, on affiche le monde
                         afficher_monde(fenetre)
 
     def parler_pnj(fenetre, inventaire):
         '''Interaction avec les Personnages Non Joueurs (PNJ). Quêtes et dialogues.'''
-    
+
         # On définit deux varibles contenant la distance séparant le personnage du bloc qu'il voit
         voir_x = 0
         voir_y = 0
@@ -412,7 +412,7 @@ class Joueur:
 
     def prendre_item(inventaire, fenetre):
         '''Prendre un objet, tout simplemet'''
-        
+
         voir_x = 0
         voir_y = 0
 
@@ -431,7 +431,7 @@ class Joueur:
                 # print([[Joueur.position_x + voir_x, Joueur.position_y + voir_y], Joueur.carte])
                 # print(val.position)
                 # print(val.nom)
-                
+
                 # Préparation du dialogue
                 dialogue = "Vous venez de ramasser l'objet «{2}{0}{2}». Il sera affiché sous le nom «{2}{1}{2}»".format(val.nom_entier, val.nom, b'\xA0'.decode("utf-8", "replace"))
 
@@ -446,7 +446,7 @@ class Joueur:
 
 def choisir_dialogue(pnj, fenetre):
     '''Selectionne le dialogue du Personnage Non Joueur (PNJ) à afficher quand on lui parle en fonction des quêtes en cours'''
-    
+
     conn = sqlite3.connect(os.path.join('quete','quetes.db'))
     c = conn.cursor()
     c.execute("SELECT * FROM dialogues WHERE personnage = ?", (pnj.id,))
@@ -496,7 +496,7 @@ def choisir_dialogue(pnj, fenetre):
 
 def creer_liste_mobs():
     '''Créer une liste contenant chaque monstre'''
-    
+
     conn = sqlite3.connect(os.path.join('Mobs','Mobs.db'))
     c = conn.cursor()
     c.execute("SELECT id FROM caracteristiques")
@@ -548,7 +548,7 @@ class PNJ:
 
     def charger_pnj(self):
         '''Charge le Personnage Non Joueur (PNJ) : carte, position, dialogue, centre, image...'''
-        
+
         conn = sqlite3.connect(os.path.join('pnj','PNJs.db'))
         c = conn.cursor()
         c.execute("SELECT * FROM pnj WHERE id = ?", (self.id,))
@@ -573,7 +573,7 @@ class PNJ:
         # print("{0} : {1}".format(self.id, self.nom))
 
         # nom, nom_entier text, position text, carte real, image text, dialogue_avant text, dialogue_apres text
-        Listes.liste_cartes[self.carte].collisions.append((self.pos_x, self.pos_y))   
+        Listes.liste_cartes[self.carte].collisions.append((self.pos_x, self.pos_y))
 
     def afficher_personnage(self, fenetre):
         # On affiche simplement le personnage
@@ -581,7 +581,7 @@ class PNJ:
 
 def creer_liste_objets():
     '''Créer un dictionnaire contenant chaque objet'''
-    
+
     conn = sqlite3.connect(os.path.join('items','items.db'))
     c = conn.cursor()
     c.execute("SELECT * FROM objets")
@@ -596,7 +596,7 @@ def creer_liste_objets():
 
 def sauvegarder_objets():
     '''Sauvegarde les objets pris dans la base de donnée'''
-    
+
     conn = sqlite3.connect(os.path.join('sauvegarde','sauvegarde.db'))
     c = conn.cursor()
 
@@ -640,7 +640,7 @@ class Item:
 
     def charger_item(self):
         '''Charge l'objet : nom, positions, cartes, utilisation, catégorie, image...'''
-        
+
         conn = sqlite3.connect(os.path.join('items','items.db'))
         c = conn.cursor()
         c.execute("SELECT * FROM objets where id=?", (self.id,))
@@ -667,7 +667,7 @@ class Item:
             self.requis = reponse[7].split(",")
         else:
             self.requis = None
-            
+
         if reponse[8]:
             self.utilisation = reponse[8].split(",")
         else:
@@ -848,7 +848,7 @@ class Quete:
 
     def charger_quete_en_cours():
         '''Charge le statut actuel des quêtes du personnage'''
-    
+
         conn = sqlite3.connect(os.path.join('sauvegarde','sauvegarde.db'))
         c = conn.cursor()
         c.execute("SELECT * FROM quetes WHERE personnage=?", (GameFonctions.MyCharacters.Character1.ID,))
@@ -875,7 +875,7 @@ class Quete:
 
     def charger_quete(self):
         '''Charge la quête : nombre d'objectifs, objectifs'''
-    
+
         conn = sqlite3.connect(os.path.join('quete','quetes.db'))
         c = conn.cursor()
 
@@ -926,7 +926,7 @@ class Obstacle:
 
     def charger_obs(self):
         '''Chargement de l'obstacle : nom, carte, position, image, quelle quête le débloque...'''
-        
+
         conn = sqlite3.connect(os.path.join('items','items.db'))
         c = conn.cursor()
         c.execute("SELECT * FROM obstacles WHERE id = ?", (self.id,))
@@ -1040,7 +1040,7 @@ def options(fenetre, inventaire):
 
                 if event.key == K_RETURN:
                     # Monstres
-                    if curseur == 0: 
+                    if curseur == 0:
                         print("MONSTRES")
 
                     if curseur == 1:
@@ -1048,13 +1048,13 @@ def options(fenetre, inventaire):
                         afficher_inventaire(fenetre, inventaire)
                         continuer = 0
                         afficher_monde(fenetre)
-                        
+
                     # Personnage
-                    if curseur == 2: 
+                    if curseur == 2:
                         afficher_profil(fenetre, inventaire)
                         continuer = 0
                         afficher_monde(fenetre)
-                        
+
                     # Quêtes
                     if curseur == 3:
                         afficher_quetes_status(fenetre)
@@ -1075,48 +1075,48 @@ def options(fenetre, inventaire):
                     if curseur == 6:
                         afficher_monde(fenetre)
                         continuer = 0
-                        
+
 def afficher_profil(fenetre, inventaire):
     '''Affiche le profil du joueur : caractéristiques, vie, expérience, niveau, quelques statistiques...'''
-    
+
     myfont = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 16)
     font_nom = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 18)
 
     fenetre.blit(pygame.image.load(os.path.join('images', 'clan.png')).convert_alpha(),(0,0))
-    
+
 
     nom = font_nom.render(GameFonctions.MyCharacters.Character1.Nickname, 1, (0,0,0))
     taille = nom.get_rect().width
     fenetre.blit(nom, (300-taille/2,45))
-    
+
     vie = myfont.render("Vie : {0} / {1}".format(GameFonctions.MyCharacters.Character1.HP, GameFonctions.MyCharacters.Character1.TVitality), 1, (0,0,0))
     taille = vie.get_rect().width
     fenetre.blit(vie, (300-taille/2,80))
-    
+
     lvl = myfont.render("Niveau : {0}".format(GameFonctions.MyCharacters.Character1.Lvl), 1, (0,0,0))
     taille = lvl.get_rect().width
     fenetre.blit(lvl, (300-taille/2,110))
-    
-    
+
+
     lbl_carac = myfont.render("Caractéristiques", 1, (0,0,0))
     taille = lbl_carac.get_rect().width
     fenetre.blit(lbl_carac, (300-120-taille/2,180))
-         
+
     lbl_stats = myfont.render("Image", 1, (0,0,0))
     taille = lbl_stats.get_rect().width
     fenetre.blit(lbl_stats, (300+120-taille/2,180))
-         
+
     pygame.gfxdraw.box(fenetre, (80, 200, 200, 200), (0,0,0))
     pygame.gfxdraw.box(fenetre, (82, 202, 196, 196), (255,255,255))
 
     pygame.gfxdraw.box(fenetre, (600-200-80, 200, 200, 200), (0,0,0))
-    pygame.gfxdraw.box(fenetre, (600-200-80+2, 202, 196, 196), (255,255,255))    
-    
+    pygame.gfxdraw.box(fenetre, (600-200-80+2, 202, 196, 196), (255,255,255))
+
     personnage = pygame.transform.scale(pygame.image.load(os.path.join("images", "front.png")).convert_alpha(), (36*2,66*2))
     fenetre.blit(personnage, (300+120-30,240))
-    
+
     # fenetre.blit(pygame.transform.scale(pygame.image.load(os.path.join('Clans', perso.ClanName + ".gif")).convert_alpha(), (75, 150)),(140,355))
-    
+
 
     fenetre.blit(myfont.render("Clan : " + str(GameFonctions.MyCharacters.Character1.ClanName), 1, (0,0,0)), (90, 190+2*20))
     fenetre.blit(myfont.render("Force : " + str(GameFonctions.MyCharacters.Character1.TStrength), 1, (0,0,0)), (90, 190+3*20))
@@ -1125,8 +1125,8 @@ def afficher_profil(fenetre, inventaire):
     fenetre.blit(myfont.render("Intel. : " + str(GameFonctions.MyCharacters.Character1.TIntelligence), 1, (0,0,0)), (90, 190+6*20))
     fenetre.blit(myfont.render("Vitalité : " + str(GameFonctions.MyCharacters.Character1.TVitality), 1, (0,0,0)), (90, 190+7*20))
     fenetre.blit(myfont.render("XP : " + str(GameFonctions.MyCharacters.Character1.Exp), 1, (0,0,0)), (90, 190+8*20))
-    
-    
+
+
     # fenetre.blit(myfont.render("Inventaire : " + str(nb_obj), 1, (0,0,0)), (330, 190+2*20))
     # fenetre.blit(myfont.render("Combats Gagnés : 5000", 1, (0,0,0)), (330, 190+3*20))
     # fenetre.blit(myfont.render("Agilité : " + str(GameFonctions.MyCharacters.Character1.Bonus_Agility), 1, (0,0,0)), (330, 190+4*20))
@@ -1134,35 +1134,35 @@ def afficher_profil(fenetre, inventaire):
     # fenetre.blit(myfont.render("Intel. : " + str(GameFonctions.MyCharacters.Character1.Bonus_Intelligence), 1, (0,0,0)), (330, 190+6*20))
     # fenetre.blit(myfont.render("Vitalité : " + str(GameFonctions.MyCharacters.Character1.Bonus_Vitality), 1, (0,0,0)), (330, 190+7*20))
     # fenetre.blit(myfont.render("XP : " + str(GameFonctions.MyCharacters.Character1.Exp), 1, (0,0,0)), (330, 190+8*20))
-    
+
     nb_obj = nombre_inventaire(inventaire, 0)
     obj_inv = myfont.render("Objets dans l'inventaire : {0}".format(nb_obj), 1, (0,0,0))
     taille = obj_inv.get_rect().width
     fenetre.blit(obj_inv, (300-taille/2,440))
-    
+
     nb_obj = nombre_inventaire(inventaire, 1)
     obj_inv = myfont.render("Objets différents : {0}".format(nb_obj), 1, (0,0,0))
     taille = obj_inv.get_rect().width
     fenetre.blit(obj_inv, (300-taille/2,460))
-    
+
     combat_g = myfont.render("Combat gagnés : x".format(), 1, (0,0,0))
     taille = combat_g.get_rect().width
     fenetre.blit(combat_g, (300-taille/2,480))
-    
+
     combat_p = myfont.render("Combat perdus : x".format(), 1, (0,0,0))
     taille = combat_p.get_rect().width
     fenetre.blit(combat_p, (300-taille/2,500))
-    
+
     lvl = GameFonctions.MyCharacters.Character1.Lvl
     xp = GameFonctions.MyCharacters.Character1.Exp
     xp_req = myfont.render("Prochain niveau : {0} xp".format(GameFonctions.Exp.EXPNeed(lvl) - xp), 1, (0,0,0))
     taille = xp_req.get_rect().width
     fenetre.blit(xp_req, (300-taille/2,520))
-    
-    
+
+
     pygame.display.flip()
-    
-    
+
+
     continuer = 1
     while continuer:
         pygame.time.Clock().tick(300)
@@ -1175,7 +1175,7 @@ def afficher_profil(fenetre, inventaire):
 
 def nombre_inventaire(inventaire, diff):
     '''Renvoie le nombre d'objets contenus dans l'inventaire, différents ou non'''
-    
+
     nb = 0
     for val in inventaire.values():
         if val > 0:
@@ -1184,7 +1184,7 @@ def nombre_inventaire(inventaire, diff):
             else:
                 nb+=val
     return nb
-    
+
 def afficher_monde(fenetre):
     '''Affiche le monde : carte, PNJs, objets, obstacles puis joueur'''
 
@@ -1203,7 +1203,7 @@ def afficher_monde(fenetre):
                 Listes.liste_obstacles[i].afficher_obstacle(fenetre)
 
     fenetre.blit(Joueur.orientation, (Joueur.position_x, Joueur.position_y))
-    
+
     coords = Listes.liste_cartes[Joueur.carte].coords
     for val in coords :
         if len(val) == 5:
@@ -1212,7 +1212,7 @@ def afficher_monde(fenetre):
             x2 = int(val[1][0])
             y2 = int(val[1][1])
             img = Listes.liste_cartes[Joueur.carte].textures[val[2]]
-            
+
             if Joueur.position_x >= x and Joueur.position_x < x2 and Joueur.position_y >= y and Joueur.position_y < y2:
                 fenetre.blit(Joueur.orientation, (Joueur.position_x, Joueur.position_y))
                 fenetre.blit(img, (Joueur.position_x, Joueur.position_y))
@@ -1221,8 +1221,8 @@ def afficher_monde(fenetre):
         # print(Joueur.position_y)
         # print(Joueur.carte)
         pass
-    
-    
+
+
     pygame.display.flip()
 
 def fenetre_dialogue(fenetre, dialogue, afficher=1):
@@ -1604,7 +1604,7 @@ def action_objet(fenetre, objet_actuel, inventaire, nb_actuel, nb_obj):
 
 def utiliser_objet(fenetre, inventaire, objet_actuel):
     '''Utilisation d'un objet en fonction de ses pré-requis et effets'''
-    
+
     requis = list()
     condition = 0
 
@@ -1617,39 +1617,39 @@ def utiliser_objet(fenetre, inventaire, objet_actuel):
                     requis.append(1)
                 else:
                     requis.append(0)
-                    
+
             if type == "item":
                 if arg in inventaire and inventaire[arg] > 0:
                     requis.append(1)
                 else:
                     requis.append(0)
-                    
+
             if type == "qf": # Quête finie
                 if int(arg) in Quete.quetes_finies:
                     requis.append(1)
                 else:
                     requis.append(0)
-            
+
             if type == "qc": # Quête en cours
                 if int(arg) in Quete.en_cours:
                     requis.append(1)
                 else:
                     requis.append(0)
-                    
+
         if 0 in requis:
             condition = 0
         else:
             condition = 1
     else:
         condition = 1
-    
+
     suppr = list()
     if condition: # si on remplit les conditions nécessaires, ou s'il n'y en a pas
         if Listes.liste_items[objet_actuel].utilisation: # si l'objet a une utilisé quelconque
             for val in Listes.liste_items[objet_actuel].utilisation:
                 type = val.split(":")[0]
                 arg = val.split(":")[1]
-                
+
                 if type == "pv":
                     if GameFonctions.MyCharacters.Character1.HP != GameFonctions.MyCharacters.Character1.TVitality: # Si on est pas déjà full life
                         if GameFonctions.MyCharacters.Character1.HP + int(arg) <= GameFonctions.MyCharacters.Character1.TVitality: # Si vie + potion < vie totale
@@ -1662,7 +1662,7 @@ def utiliser_objet(fenetre, inventaire, objet_actuel):
                             suppr.append(1)
                     else:
                         fenetre_dialogue(fenetre, "Votre vie est déjà maximale !", 0)
-                
+
                 if type == "tp":
                     if arg == "centre":
                         Joueur.position_x = Joueur.centre[0]
@@ -1675,14 +1675,14 @@ def utiliser_objet(fenetre, inventaire, objet_actuel):
                         x = int(arg.split(";")[0])
                         y = int(arg.split(";")[1])
                         carte = int(arg.split(";")[2])
-                        
+
                         if carte <= len(Listes.liste_cartes):
                             Joueur.position_x = x
                             Joueur.position_y = y
                             Joueur.carte = carte
                             fenetre_dialogue(fenetre, "Vous avez été téléporté !", 0)
                             suppr.append(1)
-                
+
                 if type == "rp":
                     if Joueur.repousse == 0:
                         Joueur.repousse = int(arg)
@@ -1690,18 +1690,18 @@ def utiliser_objet(fenetre, inventaire, objet_actuel):
                         suppr.append(1)
                     else:
                         fenetre_dialogue(fenetre, "L'ancien repousse est encore actif ! Pas restant : {0}".format(Joueur.repousse), 0)
-                        
+
             if 1 in suppr:
                 inventaire[objet_actuel] -= 1
-            
+
         else:
             fenetre_dialogue(fenetre, "Vous ne pouvez pas utiliser cet objet.", 0)
     else:
         fenetre_dialogue(fenetre, "Vous ne remplissez pas les conditions nécessaires à l'utilisation de cet objet.", 0)
-    
+
 def afficher_categorie(fenetre, categorie_actuelle, tab, inventaire, nb_actuel, categories):
     '''Affichage des diverses catégories d'objets existantes'''
-    
+
     image_inventaire = pygame.image.load(os.path.join("images", "inventaire.png"))
     myfont = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 16)
 
@@ -1825,7 +1825,7 @@ def selection_personnage(fenetre):
                             GameFonctions.MyCharacters.Character1.HP = GameFonctions.ClansInfo.Vitality[GameFonctions.ClansInfo.Name.index(clan)]
                             GameFonctions.MyCharacters.CreateSave(GameFonctions.MyCharacters.Character1)
                             continuer = 0
-                        
+
                 if event.unicode == "a" or event.unicode == "A":
                     nouveau, clan = selection_clan(fenetre)
 
@@ -1850,7 +1850,7 @@ def selection_personnage(fenetre):
 
 def selection_clan(fenetre):
     '''Selection du clan lors de la création du personnage'''
-    
+
     actuel = 0
 
     afficher_clan(fenetre, actuel)
@@ -1904,14 +1904,14 @@ def afficher_personnage(fenetre, actuel):
 
     pygame.gfxdraw.box(fenetre, (200, 200, 200, 200), (0,0,0))
     pygame.gfxdraw.box(fenetre, (202, 202, 196, 196), (255,255,255))
-    
+
     if len(Listes.liste_persos) > 0:
         GameFonctions.MyCharacters.ReadSave(Listes.liste_persos[actuel], GameFonctions.MyCharacters.Character1)
 
-        
+
         taille1 = myfont.render("Appuyez sur A pour ajouter", 1, (0,0,0)).get_rect().width
         taille2 = myfont.render("un personnage", 1, (0,0,0)).get_rect().width
-        
+
         fenetre.blit(myfont.render("Appuyez sur A pour ajouter", 1, (0,0,0)), (300-taille1/2, 130))
         fenetre.blit(myfont.render("un personnage", 1, (0,0,0)), (300-taille2/2, 150))
 
@@ -1942,10 +1942,10 @@ def afficher_personnage(fenetre, actuel):
         fenetre.blit(myfont.render("pour créer un",1,(0,0,0)), (300-taille2/2, 280))
         fenetre.blit(myfont.render("personnage",1,(0,0,0)), (300-taille3/2, 320))
         pygame.display.flip()
-        
+
 def afficher_clan(fenetre, actuel):
     '''Affichage du clan lors de la création du personnage'''
-    
+
     myfont = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 14)
 
     cst_x1 = 300+100+20
@@ -1959,7 +1959,7 @@ def afficher_clan(fenetre, actuel):
 ##    stats = stats_clan(GameFonctions.Clans[actuel])
 
     taille = myfont.render("Choisissez votre clan", 1, (0,0,0)).get_rect().width
-    
+
     fenetre.blit(myfont.render("Choisissez votre clan", 1, (0,0,0)), (300-taille/2, 150))
 
     fenetre.blit(myfont.render(GameFonctions.ClansInfo.Name[actuel], 1, (0,0,0)), (210, 210))
@@ -1983,7 +1983,7 @@ def afficher_clan(fenetre, actuel):
 
 def stats_clan(clan):
     '''Inutilisée, sert plus à rien, musée, historique, cool'''
-    
+
     fichier = open(os.path.join("Clans", clan + ".txt"), "r")
     contenu = fichier.readlines()
     fichier.close()
@@ -2009,7 +2009,7 @@ def stats_clan(clan):
 
 def description_clan(fenetre, clan):
     '''Affiche la description du clan lors de la création du personnage après pression de la touche H'''
-    
+
     description = GameFonctions.ClansInfo.Description[clan].strip()
     name = GameFonctions.ClansInfo.Name[clan].strip()
 
@@ -2254,10 +2254,10 @@ def choisirSort(fenetre, perso, mob):
 def afficherSelectionCombat(fenetre, curseur, perso, mob):
     '''Affiche le combat, personnages, vie, etc'''
 
-    font = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 14)
-    pfont = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 12)
+    font = pygame.font.Font(os.path.join("polices", "TimeReverse.ttf"), 18)
+    pfont = pygame.font.Font(os.path.join("polices", "TimeReverse.ttf"), 16)
 
-    fenetre.blit(pygame.image.load(os.path.join('images', 'clan.png')).convert_alpha(),(0,0)) # fond
+    fenetre.blit(pygame.image.load(os.path.join('images', 'fondcombat.png')).convert_alpha(),(0,0)) # fond
 
     fenetre.blit(pygame.image.load(os.path.join('images', 'combat.png')).convert_alpha(),(600-254-15,600-80-15)) # menu
     fenetre.blit(pygame.image.load(os.path.join('images', 'combat.png')).convert_alpha(),(15,15)) # adversaire
@@ -2269,7 +2269,11 @@ def afficherSelectionCombat(fenetre, curseur, perso, mob):
     except:
         fenetre.blit(pygame.transform.scale(pygame.image.load(os.path.join('Clans', "defaut.gif")).convert_alpha(), (75, 150)),(140,355))
 
-
+    # Monstre
+    try:
+        fenetre.blit(pygame.transform.scale(pygame.image.load(os.path.join('Mobs', str(GameFonctions.Mobs.ID) + ".png")).convert_alpha(), (250, 240)),(325,50))
+    except:
+        fenetre.blit(pygame.transform.scale(pygame.image.load(os.path.join('Mobs', "1.png")).convert_alpha(), (250, 240)),(325,50))
 
     # mob.TVitality
     # mob.HP
@@ -2325,9 +2329,9 @@ def afficherSelectionCombat(fenetre, curseur, perso, mob):
 
 def affichageSelectionCombat1(fenetre, curseur, perso, mob):
     '''Affiche les choix généraux : attaquer, parler, objets, fuir dans un combat'''
-    
+
     afficherSelectionCombat(fenetre, curseur, perso, mob)
-    font = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 14)
+    font = pygame.font.Font(os.path.join("polices", "TimeReverse.ttf"), 18)
 
     x = 600-254-15+40
     y = 600-80-15+20
@@ -2348,7 +2352,7 @@ def affichageSelectionCombat2(fenetre, curseur, perso, mob):
     '''Affiche les choix de sorts dans un combat'''
 
     afficherSelectionCombat(fenetre, curseur, perso, mob)
-    font = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 14)
+    font = pygame.font.Font(os.path.join("polices", "TimeReverse.ttf"), 18)
 
     x = 600-254-15+40
     y = 600-80-15+20
@@ -2382,18 +2386,18 @@ def affichageSelectionCombat2(fenetre, curseur, perso, mob):
     pygame.gfxdraw.filled_trigon(fenetre, 0+x_c, 0+y_c, 0+x_c, 10+y_c, 5+x_c, 5+y_c, (0,0,0))
 
     pygame.display.flip()
-    
+
 def affichage_caracs(fenetre, caracs=[0,0,0,0,0]):
     font = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 20)
     tfont = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 14)
     fenetre.blit(pygame.image.load(os.path.join('images', 'clan.png')).convert_alpha(),(0,0)) # fond
-    
+
     tfont.render("Vitalité : ", 1, (0,0,0))
-    
+
     x2 = 300 - font.render("Nombre de points restants : {}".format(GameFonctions.MyCharacters.Character1.Points_Caracs), 1, (0,0,0)).get_rect().width / 2
     fenetre.blit(font.render("Nombre de points restants : {}".format(GameFonctions.MyCharacters.Character1.Points_Caracs), 1, (0,0,0)), (x2, 60))
 
-    
+
     x = 100
     y = 150
     fenetre.blit(font.render("Force : ", 1, (0,0,0)), (x, y))
@@ -2402,62 +2406,62 @@ def affichage_caracs(fenetre, caracs=[0,0,0,0,0]):
     fenetre.blit(font.render("Intelligence : ", 1, (0,0,0)), (x, y+60*3))
     fenetre.blit(font.render("Vitalité : ", 1, (0,0,0)), (x, y+60*4))
     fenetre.blit(font.render("Ok !", 1, (0,0,0)), (x, y+60*5))
-    
+
     x = 330
     fenetre.blit(font.render(str(GameFonctions.MyCharacters.Character1.TStrength) + "  + ", 1, (0,0,0)), (x, y))
     fenetre.blit(font.render(str(GameFonctions.MyCharacters.Character1.TAgility) + "  + ", 1, (0,0,0)), (x, y+60))
     fenetre.blit(font.render(str(GameFonctions.MyCharacters.Character1.TChance) + "  + ", 1, (0,0,0)), (x, y+60*2))
     fenetre.blit(font.render(str(GameFonctions.MyCharacters.Character1.TIntelligence) + "  + ", 1, (0,0,0)), (x, y+60*3))
     fenetre.blit(font.render(str(GameFonctions.MyCharacters.Character1.TVitality) + "  + ", 1, (0,0,0)), (x, y+60*4))
-    
-    
+
+
     x = 150 + 350
     y = 150
     pygame.gfxdraw.filled_trigon(fenetre, x, y, x, y+20, x+10, y+10, (0,0,0)) # droite
     pygame.gfxdraw.filled_trigon(fenetre, x-70, y, x-70, 20+y, x-70-10, 10+y, (0,0,0)) # gauche
-    
+
     y = y + 60
     pygame.gfxdraw.filled_trigon(fenetre, x, y, x, y+20, x+10, y+10, (0,0,0)) # droite
     pygame.gfxdraw.filled_trigon(fenetre, x-70, y, x-70, 20+y, x-70-10, 10+y, (0,0,0)) # gauche
-    
+
     y = y + 60
     pygame.gfxdraw.filled_trigon(fenetre, x, y, x, y+20, x+10, y+10, (0,0,0)) # droite
     pygame.gfxdraw.filled_trigon(fenetre, x-70, y, x-70, 20+y, x-70-10, 10+y, (0,0,0)) # gauche
-    
+
     y = y + 60
     pygame.gfxdraw.filled_trigon(fenetre, x, y, x, y+20, x+10, y+10, (0,0,0)) # droite
     pygame.gfxdraw.filled_trigon(fenetre, x-70, y, x-70, 20+y, x-70-10, 10+y, (0,0,0)) # gauche
-    
+
     y = y + 60
     pygame.gfxdraw.filled_trigon(fenetre, x, y, x, y+20, x+10, y+10, (0,0,0)) # droite
     pygame.gfxdraw.filled_trigon(fenetre, x-70, y, x-70, 20+y, x-70-10, 10+y, (0,0,0)) # gauche
-    
-    
+
+
     for i in range(5):
-        y = 150 + i * 60   
+        y = 150 + i * 60
 
         x2 = 465 - (font.render(str(caracs[i]), 1, (0,0,0)).get_rect().width)/2
         fenetre.blit(font.render(str(caracs[i]), 1, (0,0,0)), (x2, y))
-    
+
     pygame.display.flip()
-    
+
 def monter_caracs(fenetre):
     affichage_caracs(fenetre)
     font = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 20)
-    
+
     restant = GameFonctions.MyCharacters.Character1.Points_Caracs
     # restant = 20
-    
+
     curseur = 0
     x = 60
     y = 150
-    
+
     caracs = [0,0,0,0,0]
-    
+
     pygame.gfxdraw.filled_trigon(fenetre, x, y, x, y+20, x+10, y+10, (0,0,0))
-    
+
     pygame.display.flip()
-    
+
     continuer = 1
     while continuer:
         pygame.time.Clock().tick(30)
@@ -2467,14 +2471,8 @@ def monter_caracs(fenetre):
             if event.type == KEYDOWN:
                 if event.key == K_RETURN:
                     if curseur == 5:
-                        GameFonctions.MyCharacters.Character1.Bonus_Vitality+=caracs[4] # 4
-                        GameFonctions.MyCharacters.Character1.Bonus_Intelligence+=caracs[3] # 3
-                        GameFonctions.MyCharacters.Character1.Bonus_Strength+=caracs[0] # 0
-                        GameFonctions.MyCharacters.Character1.Bonus_Chance+=caracs[2] # 2
-                        GameFonctions.MyCharacters.Character1.Bonus_Agility+=caracs[1] # 1
-                        
-                        GameFonctions.MyCharacters.StatsCalc.CalcTotalStats(GameFonctions.MyCharacters.Character1)
-                        
+                        Caractéristique=[caracs[1],caracs[2],caracs[3],caracs[0],caracs[4]]
+                        GameFonctions.MyCharacters.StatsCalc.LvlUpStats(Caractéristique)
                         continuer = 0
                         afficher_monde(fenetre)
                 if event.key == K_DOWN:
@@ -2493,11 +2491,10 @@ def monter_caracs(fenetre):
                         if restant > 0 :
                             caracs[curseur] += 1
                             restant -= 1
-                            
+
                 if continuer == 1:
                     affichage_caracs(fenetre, caracs)
-                    y = 150 + curseur * 60   
+                    y = 150 + curseur * 60
 
                     pygame.gfxdraw.filled_trigon(fenetre, x, y, x, y+20, x+10, y+10, (0,0,0))
                     pygame.display.flip()
-        
