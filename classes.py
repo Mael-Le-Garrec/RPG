@@ -2115,10 +2115,10 @@ def affichageDebutCombat(fenetre, perso, mob):
 
     font = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 14)
 
-    fenetre.blit(pygame.image.load(os.path.join('images', 'clan.png')).convert_alpha(),(0,0))
+    fenetre.blit(pygame.image.load(os.path.join('images', 'fondcombat.png')).convert_alpha(),(0,0))
     fenetre_dialogue(fenetre, "Un combat vient de commencer avec un {} !".format(mob.Name), 0)
 
-    fenetre.blit(pygame.image.load(os.path.join('images', 'clan.png')).convert_alpha(),(0,0))
+    fenetre.blit(pygame.image.load(os.path.join('images', 'fondcombat.png')).convert_alpha(),(0,0))
     fenetre.blit(pygame.image.load(os.path.join('images', 'combat.png')).convert_alpha(),(600-254-15,600-80-15))
 
     x = 600-254-15+40
