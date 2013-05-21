@@ -121,7 +121,7 @@ class MyCharacters:
         Bonus_Strength=0
         Bonus_Chance=0
         Bonus_Agility=0
-        
+
         Points_Caracs=0
 
         #Variable de la valeur total de la caractéristique
@@ -178,6 +178,7 @@ class MyCharacters:
 
 
 class Mobs:
+    ID=0
     Name=""
     Dialogue=""
     Lvl=0
@@ -209,7 +210,7 @@ class Mobs:
 
     def MobStats(x):
         """Charge les caractéristiques du monstre"""
-
+        Mobs.ID=x[0]
         Mobs.Name=x[1]
         Mobs.Lvl=x[2]
         Mobs.HP=x[3]
@@ -222,6 +223,7 @@ class Mobs:
         Mobs.Sort=[x for x in Mobs.Sort if x!=-1]
         Mobs.Attitude=x[12]
         Mobs.Dialogue=x[13]
+
 
     def CalcInitiative(Mob):
             """Calcul de l'initiative"""
@@ -263,7 +265,7 @@ class Exp:
 
                 classes.fenetre_dialogue(classes.Listes.fenetre, "Votre personnage monte de niveau.", 0)
                 classes.monter_caracs(classes.Listes.fenetre)
-                
+
 
                 if XP!=0:
                     #Si l'xp est différent de 0 on relance cette fonction
