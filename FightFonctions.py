@@ -223,15 +223,17 @@ class Fight:
                             break
                 #Le monstre commence en premier
                 elif Character.Initiative<Mob.Initiative:
+                    classes.afficherSelectionCombat(classes.Listes.fenetre, [0,0], Character, Mob)
+
                     if Fight.Mob.IA.Action_choice(Character,Mob)==1: #Fuite
                         #Sortie graphique
                         classes.fenetre_dialogue(classes.Listes.fenetre, "{0} prend la fuite !".format(Mob.Name), 0)
                         break
-                    classes.afficherSelectionCombat(classes.Listes.fenetre, [0,0], Character, Mob)
+                    #classes.afficherSelectionCombat(classes.Listes.fenetre, [0,0], Character, Mob)
                     if Character.HP>0 and Mob.HP>0: #Vie joueur et monstre > 0
 
                         #Choix de l'action
-                        action, sort = classes.choisirAction(classes.Listes.fenetre, Character)
+                        action, sort = classes.choisirAction(classes.Listes.fenetre, Character, Mob)
                         if Fight.Player.Action_choice(Character,Mob, action, sort)==1: #Fuite
                             #Sortie graphique
                             classes.fenetre_dialogue(classes.Listes.fenetre, "Vous prennez la fuite.", 0)
