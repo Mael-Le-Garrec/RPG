@@ -123,10 +123,11 @@ class createurMonde(tkinter.Tk):
         self.radio_carte = IntVar()
         self.radio_carte.set(1)
          
-        Radiobutton(self.fond_radio_carte, text="Texture traversable", variable=self.radio_carte, value=1).place(x=10,y=50)
-        Radiobutton(self.fond_radio_carte, text="Texture non traversable", variable=self.radio_carte, value=2).place(x=10,y=70)
-        Radiobutton(self.fond_radio_carte, text="Téléporteur", variable=self.radio_carte, value=3).place(x=10,y=90)
-        Radiobutton(self.fond_radio_carte, text="Tex. Tr. Premier plan", variable=self.radio_carte, value=4).place(x=10,y=110)
+        Radiobutton(self.fond_radio_carte, text="Texture traversable", variable=self.radio_carte, value=1).place(x=10,y=40)
+        Radiobutton(self.fond_radio_carte, text="Texture non traversable", variable=self.radio_carte, value=2).place(x=10,y=60)
+        Radiobutton(self.fond_radio_carte, text="Téléporteur", variable=self.radio_carte, value=3).place(x=10,y=80)
+        Radiobutton(self.fond_radio_carte, text="Tex. Tr. Premier plan", variable=self.radio_carte, value=4).place(x=10,y=100)
+        Radiobutton(self.fond_radio_carte, text="Zone de combat", variable=self.radio_carte, value=5).place(x=10,y=120)
            
         # Affichage des coordonnées de téléportation
         self.fond_tp = Canvas(frame_bas, bd=1, relief='solid', height=150, width=200)
@@ -156,6 +157,36 @@ class createurMonde(tkinter.Tk):
         self.fond_fond_carte.bind("<Button-1>", self.choisirFond)
         self.fond_fond_carte.bind("<Button-3>", self.effacerFond)
         
+        # Monstres
+        self.fond_monstres = Canvas(frame_bas, bd=1, relief='solid', height=150, width=150)
+        self.fond_monstres.grid(row=0, column=3, sticky=N+S+E+W)
+        
+        self.monstre_id = StringVar() 
+        self.monstre_prob = StringVar() 
+        self.monstre_prob_g = StringVar() 
+        
+        label = Label(self.fond_monstres, text="Monstres :")
+        label.place(x=10, y=10)
+        
+        label = Label(self.fond_monstres, text="IDs :")
+        label.place(x=10, y=50)
+        
+        label = Label(self.fond_monstres, text="Probas :")
+        label.place(x=10, y=70)
+        
+        label = Label(self.fond_monstres, text="Générale :")
+        label.place(x=10, y=90)
+        
+        entry_monstres_id = tkinter.Entry(self.fond_monstres,textvariable=self.monstre_id,width=10)
+        entry_monstres_id.place(x=60,y=50)
+        
+        entry_monstres_prob = tkinter.Entry(self.fond_monstres,textvariable=self.monstre_prob,width=10)
+        entry_monstres_prob.place(x=60,y=70)
+        
+        entry_monstres_prob = tkinter.Entry(self.fond_monstres,textvariable=self.monstre_prob_g,width=10)
+        entry_monstres_prob.place(x=60,y=90)
+        
+        
         
         # Directions de la carte
         self.direction_haut = StringVar() 
@@ -169,7 +200,7 @@ class createurMonde(tkinter.Tk):
         self.direction_gauche.set("0")
         
         self.fond_directions = Canvas(frame_bas, bd=1, relief='solid', height=150, width=200)
-        self.fond_directions.grid(row=0, column=3, sticky=N+S+E+W)
+        self.fond_directions.grid(row=0, column=4, sticky=N+S+E+W)
         
         label = Label(self.fond_directions, text="Directions :")
         label.place(x=10, y=10)
@@ -251,6 +282,7 @@ class createurMonde(tkinter.Tk):
         self.liste_tp = list()
         self.fond_save = None
         self.liste_fond = list()
+        self.combats = list()
         
         self.pnjs_affiches = list()
         
@@ -408,11 +440,13 @@ class createurMonde(tkinter.Tk):
         self.fond_radio_carte.grid(row=0, column=0, sticky=N+S+E+W)
         self.fond_tp.grid(row=0, column=1, sticky=N+S+E+W)
         self.fond_fond_carte.grid(row=0, column=2, sticky=N+S+E+W)
-        self.fond_directions.grid(row=0, column=3, sticky=N+S+E+W)
+        self.fond_monstres.grid(row=0, column=3, sticky=N+S+E+W)
+        self.fond_directions.grid(row=0, column=4, sticky=N+S+E+W)
         self.vue_actuelle = "carte"
         
     def effacerFrameBas(self):
         self.fond_radio_carte.grid_forget()
+        self.fond_monstres.grid_forget()
         self.fond_tp.grid_forget()
         self.fond_pnj.grid_forget()
         self.fond_pnj_dial.grid_forget()
@@ -556,7 +590,8 @@ class createurMonde(tkinter.Tk):
         self.carte_actuelle = None
         self.carte_var.set("Aucune")
         del self.liste_fond [:]
-        self.afficherPNJ()    
+        del self.combats[:]
+        self.afficherPNJ()
       
     def resetPNJ(self):
         del self.pnjs_affiches[:]
@@ -602,6 +637,8 @@ class createurMonde(tkinter.Tk):
         except:
             pass
 
+        for val in self.combats:
+            fichier.write("{}\n".format(val))
         
         for val in self.affiches:
             if len(val) == 4:
@@ -637,6 +674,7 @@ class createurMonde(tkinter.Tk):
         del self.liste_tp[:]
         del self.coords[:]
         del self.bloc[:]
+        del self.combats[:]
         
         self.textures_fichier = dict()
         self.fichier_carte = open(os.path.join('{}'.format(self.fichier_carte)), "r")
@@ -702,6 +740,9 @@ class createurMonde(tkinter.Tk):
                 self.coords[-1][0] = self.coords[-1][0].split(":") # On split le : du premier point (x:y)
                 self.coords[-1][1] = self.coords[-1][1].split(":") # Puis du second
                 self.coords[-1][4] = self.coords[-1][4].split(":") # Ajout des coordonnées de téléportation
+                
+            elif re.match("[0-9]+:[0-9]+;[0-9]+:[0-9]+;[0-9]+(;[0-9]+:[0-9]+)+", self.lignes[i]): # zone de combat
+                self.combats.append(self.lignes[i].strip())
                 
             elif re.match("^fond:[a-zA-Z0-9_\-]", self.lignes[i]):
                 # print(self.lignes[i].split(":")[1].strip())
@@ -846,16 +887,34 @@ class createurMonde(tkinter.Tk):
         if x < 600 and y < 600 and self.texture_actuelle:
             if self.vue_actuelle == "carte":
                 if [x//30*30, y//30*30, self.texture_actuelle, 1] not in self.affiches and [x//30*30, y//30*30, self.texture_actuelle, 0] not in self.affiches:
-                    self.fond_carte.create_image(((x)//30) * 30+3,((y)//30) * 30+3, image=self.textures[self.texture_actuelle].image, anchor=NW)
                     if self.radio_carte.get() == 1: # traversable
                         self.affiches.append([int(x//30*30), int(y//30*30), '{0}'.format(self.texture_actuelle), 0])
+                        self.fond_carte.create_image(((x)//30) * 30+3,((y)//30) * 30+3, image=self.textures[self.texture_actuelle].image, anchor=NW)
                     elif self.radio_carte.get() == 2: # non traversable
                         self.affiches.append([int(x//30*30), int(y//30*30), '{0}'.format(self.texture_actuelle), 1])
+                        self.fond_carte.create_image(((x)//30) * 30+3,((y)//30) * 30+3, image=self.textures[self.texture_actuelle].image, anchor=NW)
                     elif self.radio_carte.get() == 3: # téléporteur
                         self.affiches.append([int(x//30*30), int(y//30*30), '{0}'.format(self.texture_actuelle), 0, self.tp_x, self.tp_y, self.carte_aide])
+                        self.fond_carte.create_image(((x)//30) * 30+3,((y)//30) * 30+3, image=self.textures[self.texture_actuelle].image, anchor=NW)
                     elif self.radio_carte.get() == 4: # traversable + premier plan
                         self.affiches.append([int(x//30*30), int(y//30*30), '{0}'.format(self.texture_actuelle), 0, 1])
-                        # liste_tp, x, y, x dest, y dest, carte
+                        self.fond_carte.create_image(((x)//30) * 30+3,((y)//30) * 30+3, image=self.textures[self.texture_actuelle].image, anchor=NW)
+                    elif self.radio_carte.get() == 5: # zone de combat
+                        monstres = self.monstre_id.get().split(",")
+                        proba = self.monstre_prob.get().split(",")
+                        proba_g = self.monstre_prob_g.get()
+                                                
+                        var = list()
+                        # 90:390;240:510;20;1:90,2:10
+                        
+                        if len(monstres) == len(proba):
+                            for i in range(len(monstres)):
+                                # ligne.append([int(x//30*30), int(y//30*30), int(x//30*30)+30, int(y//30*30)+30,])
+                                var.append(";{}:{}".format(monstres[i], proba[i]))
+                        
+                        ligne = "{}:{};{}:{};{}{}".format(int(x//30*30), int(y//30*30), int(x//30*30+30), int(y//30*30+30), proba_g, "".join(var))
+                        self.combats.append(ligne)
+                    # liste_tp, x, y, x dest, y dest, carte
                     # print([int(x//30*30), int(y//30*30), '{0}'.format(self.texture_actuelle), 1])
                 else:
                     print("Déjà placée ici !")
