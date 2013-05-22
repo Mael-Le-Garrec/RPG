@@ -93,6 +93,7 @@ class createurMonde(tkinter.Tk):
         self.fond_carte.bind("<Button-1>", self.dessinerTexture)
         self.fond_carte.bind("<Button-2>", self.modifierTexture)
         self.fond_carte.bind("<Button-3>", self.effacerTexture)
+        self.fond_carte.bind("<Motion>", self.carreJaune)
 
         frame_texture = Frame(self, bd=1)
         yscrollbar = Scrollbar(frame_texture)
@@ -243,7 +244,9 @@ class createurMonde(tkinter.Tk):
         self.resizable(False,False)
         self.popup_carte = None
         self.coords_aide = [0,0]
+        self.carre_j = [0,0]
         self.rectangle_aide = list()
+        self.carre_jaune = list()
         self.vue_actuelle = "carte"        
         self.liste_tp = list()
         self.fond_save = None
@@ -450,6 +453,19 @@ class createurMonde(tkinter.Tk):
         self.tp_y = int(self.fond_aide.canvasy(event.y)//30*30)
         
         self.label_tp_var.set("{0};{1} sur carte {2}".format(self.tp_x , self.tp_y, self.carte_aide))
+        
+    def carreJaune(self, event):
+        x = int(self.fond_carte.canvasx(event.x)//30*30)
+        y = int(self.fond_carte.canvasy(event.y)//30*30)
+                
+        if x < 600 and y < 600:
+            if self.carre_j[0] != [x,y]:
+                try:
+                    self.fond_carte.delete(self.carre_jaune[-1])
+                except:
+                    pass
+                self.carre_jaune.append(self.fond_carte.create_rectangle(x+3, y+3, x+30+3, y+30+3, outline="yellow"))
+                self.carre_j = [x,y]
         
     def afficherCoordonnees(self, event):
         x = int(self.fond_aide.canvasx(event.x)//30*30)
