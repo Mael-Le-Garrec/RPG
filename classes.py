@@ -2471,8 +2471,8 @@ def monter_caracs(fenetre):
             if event.type == KEYDOWN:
                 if event.key == K_RETURN:
                     if curseur == 5:
-                        Caractéristique=[caracs[1],caracs[2],caracs[3],caracs[0],caracs[4]]
-                        GameFonctions.MyCharacters.StatsCalc.LvlUpStats(Caractéristique)
+                        Carac=[caracs[1],caracs[2],caracs[3],caracs[0],caracs[4]]
+                        GameFonctions.MyCharacters.StatsCalc.LvlUpStats(Carac)
                         continuer = 0
                         afficher_monde(fenetre)
                 if event.key == K_DOWN:
