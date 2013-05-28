@@ -53,7 +53,7 @@ class Etat:
             if Etat.EtatCharacter1[1]==0:
                 classes.fenetre_dialogue(classes.Listes.fenetre, "{} sort de l'état {} !".format(Character.Nickname,Etat.EtatCharacter1[0]), 0)
                 Etat.EtatCharacter1=["",0,0]
-
+            classes.afficherSelectionCombat(classes.Listes.fenetre, [0,0], Character, GameFonctions.Mobs)
 
     def ActionMob(Mob):
         """Actionne l'état du monstre"""
@@ -82,6 +82,7 @@ class Etat:
                 classes.fenetre_dialogue(classes.Listes.fenetre, "{} sort de l'état {} !".format(Mob.Name,Etat.EtatMob[0]), 0)
                 #Suppresion de l'état
                 Etat.EtatMob=["",0,0]
+            classes.afficherSelectionCombat(classes.Listes.fenetre, [0,0], GameFonctions.MyCharacters.Character1, Mob)
 
 
 class Sort:
@@ -93,7 +94,12 @@ class Sort:
     Cible=[]
     def IniSort():
         """Initialise les sorts"""
-
+        Sort.Name=[]
+        Sort.Degat=[]
+        Sort.Element=[]
+        Sort.Boost=[]
+        Sort.Etat=[]
+        Sort.Cible=[]
         conn = sqlite3.connect(os.path.join('Sorts','Sorts.db'))
         c = conn.cursor()
         c.execute("SELECT * FROM caracteristiques")
@@ -107,7 +113,7 @@ class Sort:
             Sort.Cible.append(i[6])
             Sort.Boost.append(i[7])
 
-
+        print(Sort.Name)
 class Fight:
     Turn=0
     class Mob:
@@ -126,22 +132,23 @@ class Fight:
 
                     Fight.Sort_bonus("Mob",MobAttaque,Sort.Cible[MobAttaque])
                     #Gestion de la cible (1 = Adversaire)
+                    classes.fenetre_dialogue(classes.Listes.fenetre, Mob.Name+" lance {} !".format(Sort.Name[int(MobAttaque)]), 0)
                     if Sort.Cible[MobAttaque]==1:
                         #Gestion des dégats positifs et négatifs
                         if Sort.Boost[MobAttaque]<= 0:
-                            CibleSort="-"
+                            CibleSort="diminue"
                         else:
-                            CibleSort="+"
+                            CibleSort="augmente"
                         #Sortie graphique
-                        classes.fenetre_dialogue(classes.Listes.fenetre, Character.Nickname+" : {}{} {}".format(CibleSort,Sort.Boost[MobAttaque],Sort.Element[MobAttaque]), 0)
+                        classes.fenetre_dialogue(classes.Listes.fenetre, Mob.Name+" {} ".format(CibleSort) +" les caractéristique de "+Character.Nickname, 0)
                     else:
                         #Gestion de dégats positifs et négatifs
                         if Sort.Boost[MobAttaque] <= 0:
-                            CibleSort="-"
+                            CibleSort="diminue"
                         else:
-                            CibleSort="+"
+                            CibleSort="augmente"
                         #Sortie graphique
-                        classes.fenetre_dialogue(classes.Listes.fenetre, Mob.Name+" : {}{} {}".format(CibleSort,Sort.Boost[MobAttaque],Sort.Element[MobAttaque]), 0)
+                        classes.fenetre_dialogue(classes.Listes.fenetre, Mob.Name+" {} ces caractéristiques.".format(CibleSort), 0)
 
                 #Sort de dégat (avec ou sans sort d'état)
                 else:
@@ -162,34 +169,43 @@ class Fight:
                         Etat.EtatCharacter1=[Etat.Name[Sort.Etat[MobAttaque]],Etat.Turn[Sort.Etat[MobAttaque]],Etat.Effect[Sort.Etat[MobAttaque]]]
                         #Sortie graphique
                         classes.fenetre_dialogue(classes.Listes.fenetre, "{0} entre dans l'état {1}".format(Character.Nickname, Etat.Name[Sort.Etat[MobAttaque]]), 0)
+                    if Degat!=0:
+                        #Gestion de la cible (1 = Adversaire)
+                        if Cible==1:
+                            #Degat supérieur ou égale à 0
+                            if Degat >= 0:
+                                CibleSort=Character.Nickname + " perd"
+                            #Degat inférieur à 0
+                            else:
+                                CibleSort=Character.Nickname + " gagne"
+                            #Sortie graphique
 
-                    #Gestion de la cible (1 = Adversaire)
-                    if Cible==1:
-                        #Degat supérieur ou égale à 0
-                        if Degat >= 0:
-                            CibleSort=Character.Nickname + " perd"
-                        #Degat inférieur à 0
                         else:
-                            CibleSort=Character.Nickname + " gagne"
-                        #Sortie graphique
-
+                            #Degat supérieur ou égale à 0
+                            if Degat >= 0:
+                                CibleSort=Mob.Name+" perd"
+                            #Degat inférieur à 0
+                            else:
+                                CibleSort=Mob.Name+" gagne"
+                        classes.fenetre_dialogue(classes.Listes.fenetre, "{} {} points de vie !".format(CibleSort,abs(Degat)), 0)
                     else:
-                        #Degat supérieur ou égale à 0
-                        if Degat >= 0:
-                            CibleSort=Mob.Name+" perd"
-                        #Degat inférieur à 0
-                        else:
-                            CibleSort=Mob.Name+" gagne"
-                    classes.fenetre_dialogue(classes.Listes.fenetre, "{} {} points de vie !".format(CibleSort,Degat), 0)
+                        classes.fenetre_dialogue(classes.Listes.fenetre, "Rien ne se passe !", 0)
+
             #Gestion du gagnant
             if Character.HP==0:
+                #Suppresion des états
+                Etat.EtatCharacter1=["",0,0]
+                Etat.EtatMob=["",0,0]
                 #Sortie graphique
                 classes.fenetre_dialogue(classes.Listes.fenetre, "Vous avez été vaincu par {0}".format(Mob.Name), 0)
 
             elif Mob.HP==0:
-               #Sortie graphique
-               classes.fenetre_dialogue(classes.Listes.fenetre, "Vous avez gagné ce combat !", 0)
-               Fight.EndFight(Character,Mob,Fight.Turn)
+                #Suppresion des états
+                Etat.EtatCharacter1=["",0,0]
+                Etat.EtatMob=["",0,0]
+                #Sortie graphique
+                classes.fenetre_dialogue(classes.Listes.fenetre, "Vous avez gagné ce combat !", 0)
+                Fight.EndFight(Character,Mob,Fight.Turn)
 
 
         def MobCombat(Character,Mob):
@@ -209,13 +225,13 @@ class Fight:
                         Character.Initiative-=1
                 #Le joueur commence en premier
                 if Character.Initiative>Mob.Initiative:
-
-                    action, sort = classes.choisirAction(classes.Listes.fenetre, Character, Mob)
-                    if Fight.Player.Action_choice(Character,Mob, action, sort)==1: #Fuite
-                        #Sortie graphique
-                        classes.fenetre_dialogue(classes.Listes.fenetre, "Vous prennez la fuite.", 0)
-                        break
-                    classes.afficherSelectionCombat(classes.Listes.fenetre, [0,0], Character, Mob)
+                    if Character.HP>0 and Mob.HP>0:
+                        action, sort = classes.choisirAction(classes.Listes.fenetre, Character, Mob)
+                        if Fight.Player.Action_choice(Character,Mob, action, sort)==1: #Fuite
+                            #Sortie graphique
+                            classes.fenetre_dialogue(classes.Listes.fenetre, "Vous prennez la fuite.", 0)
+                            break
+                        classes.afficherSelectionCombat(classes.Listes.fenetre, [0,0], Character, Mob)
                     if Character.HP>0 and Mob.HP>0:
                         if Fight.Mob.IA.Action_choice(Character,Mob)==1: #Fuite
                             #Sortie graphique
@@ -224,19 +240,21 @@ class Fight:
                 #Le monstre commence en premier
                 elif Character.Initiative<Mob.Initiative:
                     classes.afficherSelectionCombat(classes.Listes.fenetre, [0,0], Character, Mob)
+                    if Character.HP>0 and Mob.HP>0:
+                        if Fight.Mob.IA.Action_choice(Character,Mob)==1: #Fuite
+                            #Sortie graphique
+                            classes.fenetre_dialogue(classes.Listes.fenetre, "{0} prend la fuite !".format(Mob.Name), 0)
+                            break
 
-                    if Fight.Mob.IA.Action_choice(Character,Mob)==1: #Fuite
-                        #Sortie graphique
-                        classes.fenetre_dialogue(classes.Listes.fenetre, "{0} prend la fuite !".format(Mob.Name), 0)
-                        break
-                    #classes.afficherSelectionCombat(classes.Listes.fenetre, [0,0], Character, Mob)
                     if Character.HP>0 and Mob.HP>0: #Vie joueur et monstre > 0
-
                         #Choix de l'action
                         action, sort = classes.choisirAction(classes.Listes.fenetre, Character, Mob)
                         if Fight.Player.Action_choice(Character,Mob, action, sort)==1: #Fuite
                             #Sortie graphique
                             classes.fenetre_dialogue(classes.Listes.fenetre, "Vous prennez la fuite.", 0)
+                            #Remise à 0 des états
+                            Etat.EtatCharacter1=["",0,0]
+                            Etat.EtatMob=["",0,0]
                             break
 
                 Fight.Turn=Fight.Turn+1
@@ -279,7 +297,11 @@ class Fight:
                 """Choisi le comportement du monstre"""
                 UsableSpell=[] #Sort Utilisable
 
-                MobSpellList=GameFonctions.Mobs.Sort #Sort disponible du monstre
+                MobSpellList=list(GameFonctions.Mobs.Sort) #Sort disponible du monstre
+
+                for i in range(len(MobSpellList)):
+                    MobSpellList[i]=MobSpellList[i]-1
+
 
                 if GameFonctions.Mobs.Attitude==0: #Peureux
                     UsableSpell=Fight.Mob.IA.Attitude_Peureux(MobSpellList)
@@ -378,10 +400,10 @@ class Fight:
                     UsableSpell=[] #Sort Utilisable
                     MaxSpell=[] #Degat des sorts
 
-                    #Filtre le sorts soignant et les sorts infligeant des degats.
+                    #Filtre le sorts soignant, les sorts infligeant des degats, et les sorts de boost.
                     for i in Spell:
-                            if not "-" in Sort.Degat[i] or 0 in Sort.Boost[i] :
-                                UsableSpell.append(i)
+                            if not "-" in Sort.Degat[i] and Sort.Boost[i]!=0 :
+                                UsableSpell.append(i) #On récupère uniquement les sort de degat
                     #Convertie le sort en degats
                     for i in range(len(UsableSpell)):
                                 #Ajout les degats du sort et trouve celui qui tape le plus fort
@@ -404,7 +426,7 @@ class Fight:
                     Max=int((Sort.Degat[int(NbrSort)].split(";")[1]))
 
                     #Récupère l'element du sort
-                    if Sort.Element[int(NbrSort)]!="error":
+                    if Sort.Element[int(NbrSort)] in ["intelligence","strength","chance","agility"] :
                         if Sort.Element[int(NbrSort)]=="intelligence":
                             Element=Character.TIntelligence
                         elif Sort.Element[int(NbrSort)]=="strength":
@@ -414,17 +436,23 @@ class Fight:
                         elif Sort.Element[int(NbrSort)]=="agility":
                             Element=Character.TAgility
 
-                    #Formule de calcul des dégats
-                    for i in range(10):
-                        Degat = Degat + randrange(floor(Min * (100 + Element ) / 100),floor((Max * (100 + Element ) / 100)+1))
 
-                    return Degat
+
+                        #Formule de calcul des dégats
+                        for i in range(10):
+                            Degat = Degat + randrange(floor(Min * (100 + Element ) / 100),floor((Max * (100 + Element ) / 100)+1))
+
+                        return Degat
+                    else:
+                        Config.LogFile.Information("Il n'y a pas d'element",2)
+                        return 0
 
                 def Bonus_Spell(Spell):
                     """Filtre les sort de bonus"""
                     UsableSpell=[]
                     for i in Spell:
-                       if not 0 in Sort.Boost[i] :
+                        print(Sort.Boost[i])
+                        if Sort.Boost[i]!=0:
                             UsableSpell.append(i)
 
                     return UsableSpell
@@ -455,7 +483,7 @@ class Fight:
                 #On boucle jusqu'à avoir un sort valide
                  while True:
                         try:
-                            SortID=sort
+                            SortID=sort-1
                             break
                         except ValueError:
                             continue
@@ -463,20 +491,26 @@ class Fight:
                  if Sort.Boost[SortID]!=0:
                     #Effet du sort de boost
                     Fight.Sort_bonus("Character",SortID,Sort.Cible[SortID])
+                    #Sortie graphique
+                    classes.fenetre_dialogue(classes.Listes.fenetre, "{0} lance {1} !".format(Character.Nickname, Sort.Name[int(SortID)]), 0)
 
                     #Uniquement nécessaire pour la gestion graphique
-                    if Sort.Cible[SortID]==1:
+                    if Sort.Cible[SortID]==1: #1=Adversaire
                          if Sort.Boost[SortID] <= 0:
-                            CibleSort="-"
+                            CibleSort="diminue"
                          else:
-                            CibleSort="+"
+                            CibleSort="augmente"
+                         #Sortie graphique
+                         classes.fenetre_dialogue(classes.Listes.fenetre, Character.Nickname+" {} ".format(CibleSort)+"les caractéristiques de " + Mob.Name, 0)
+
                     else:
                          if Sort.Boost[SortID] <= 0:
-                             CibleSort="-"
+                             CibleSort="diminue"
                          else:
-                            CibleSort="+"
-                    #Sortie graphique
-                    classes.fenetre_dialogue(classes.Listes.fenetre, Character.Nickname+" : {}{} {}".format(CibleSort,Sort.Boost[SortID],Sort.Element[SortID]), 0)
+                            CibleSort="augmente"
+                         #Sortie graphique
+                         classes.fenetre_dialogue(classes.Listes.fenetre, Character.Nickname+" {} ces caractéristiques.".format(CibleSort), 0)
+
 
                  else: #Sort d'attaque normal
                      Degat, Cible=Fight.Sort_normal(Character,SortID, Sort.Cible[SortID])
@@ -493,26 +527,37 @@ class Fight:
                         #Sortie graphique
                         classes.fenetre_dialogue(classes.Listes.fenetre, "{0} entre dans l'état {1}.".format(Mob.Name, Etat.Name[Sort.Etat[SortID]]), 0)
 
-                     #Choix de la cible
-                     if Cible==1:
-                         if Degat >= 0:
-                            CibleSort=Mob.Name+" perd"
-                         else:
-                            CibleSort=Mob.Name+" gagne"
-                     else:
-                         if Degat >= 0:
-                             CibleSort=Character.Nickname+" perd"
-                         else:
-                            CibleSort=Character.Nickname+" gagne"
-                     #Sortie graphique
-                     classes.fenetre_dialogue(classes.Listes.fenetre,"{} {} points de vie !".format(CibleSort,abs(Degat)), 0)
+                     if Degat!=0:
+                         #Choix de la cible
+                         if Cible==1:
+                             if Degat >= 0:
+                                CibleSort=Mob.Name+" perd"
+                             else:
+                                CibleSort=Mob.Name+" gagne"
 
+
+                         else:
+                             if Degat >= 0:
+                                 CibleSort=Character.Nickname+" perd"
+                             else:
+                                CibleSort=Character.Nickname+" gagne"
+                         #Sortie graphique
+                         classes.fenetre_dialogue(classes.Listes.fenetre,"{} {} points de vie !".format(CibleSort,abs(Degat)), 0)
+                     else:
+                        classes.fenetre_dialogue(classes.Listes.fenetre, "Rien ne se passe !", 0)
             #Vérification s'il y a un gagnant
              if Mob.HP==0:
-               #Sortie graphique
-               classes.fenetre_dialogue(classes.Listes.fenetre, "Vous avez gagné ce combat !", 0)
-               Fight.EndFight(Character,Mob,Fight.Turn)
+                #Suppresion des états
+                Etat.EtatCharacter1=["",0,0]
+                Etat.EtatMob=["",0,0]
+                #Sortie graphique
+                classes.fenetre_dialogue(classes.Listes.fenetre, "Vous avez gagné ce combat !", 0)
+                Fight.EndFight(Character,Mob,Fight.Turn)
              elif Character.HP==0:
+                #Suppresion des états
+                Etat.EtatCharacter1=["",0,0]
+                Etat.EtatMob=["",0,0]
+                #Remise à 1 de la vie du joueur
                 Character.HP=1
                 #Sortie graphique
                 classes.fenetre_dialogue(classes.Listes.fenetre, "Vous avez été vaincu par {0}".format(Mob.Name), 0)
@@ -562,6 +607,7 @@ class Fight:
                 Element=Character.TChance
             elif Sort.Element[int(NbrSort)]=="agility":
                 Element=Character.TAgility
+
 
 
             #Formule de calcul des dégats
