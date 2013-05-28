@@ -270,6 +270,7 @@ class Exp:
                 #On monte d'un niveau
                 Character.Lvl=Character.Lvl+1
                 Character.Points_Caracs=Character.Points_Caracs + 10 # on ajoute 10 pts au capital
+                Character.HP=Character.TVitality #On lui redonne toute sa vie
 
                 classes.fenetre_dialogue(classes.Listes.fenetre, "Votre personnage monte de niveau.", 0)
                 classes.monter_caracs(classes.Listes.fenetre)
