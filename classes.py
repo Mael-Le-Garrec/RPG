@@ -220,7 +220,10 @@ class Joueur:
                     if Joueur.position_y < (600-30):
                         Joueur.ancienne_y = Joueur.position_y
                         Joueur.ancienne_x = Joueur.position_x
-                        Joueur.position_y += 30
+                        for i in range (10):
+                            Joueur.position_y += 3
+                            afficher_monde(fenetre)
+
 
                     # Sinon on change de Joueur.carte
                     else:
@@ -247,7 +250,10 @@ class Joueur:
                     if Joueur.position_y > 0:
                         Joueur.ancienne_y = Joueur.position_y
                         Joueur.ancienne_x = Joueur.position_x
-                        Joueur.position_y -= 30
+                        for i in range (10):
+                            Joueur.position_y -= 3
+                            afficher_monde(fenetre)
+
 
                     else:
                         Listes.liste_cartes[int(Listes.liste_cartes[Joueur.carte].directions['haut'])].afficher_carte(fenetre)
@@ -267,7 +273,10 @@ class Joueur:
                     if Joueur.position_x > 0:
                         Joueur.ancienne_y = Joueur.position_y
                         Joueur.ancienne_x = Joueur.position_x
-                        Joueur.position_x -= 30
+                        for i in range (10):
+                            Joueur.position_x -= 3
+                            afficher_monde(fenetre)
+
 
                     else:
                         Listes.liste_cartes[int(Listes.liste_cartes[Joueur.carte].directions["gauche"])].afficher_carte(fenetre)
@@ -287,7 +296,10 @@ class Joueur:
                     if Joueur.position_x < (600-30):
                         Joueur.ancienne_y = Joueur.position_y
                         Joueur.ancienne_x = Joueur.position_x
-                        Joueur.position_x += 30
+                        for i in range (10):
+                            Joueur.position_x += 3
+                            afficher_monde(fenetre)
+
 
                     else:
                         Listes.liste_cartes[int(Listes.liste_cartes[Joueur.carte].directions["droite"])].afficher_carte(fenetre)
@@ -1082,7 +1094,7 @@ def afficher_profil(fenetre, inventaire):
     myfont = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 16)
     font_nom = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 18)
 
-    fenetre.blit(pygame.image.load(os.path.join('images', 'clan.png')).convert_alpha(),(0,0))
+    fenetre.blit(pygame.image.load(os.path.join('images', 'background.png')).convert_alpha(),(0,0))
 
 
     nom = font_nom.render(GameFonctions.MyCharacters.Character1.Nickname, 1, (0,0,0))
@@ -2282,8 +2294,8 @@ def afficherSelectionCombat(fenetre, curseur, perso, mob):
 
     hp_perso = perso.HP / perso.TVitality * 150
     hp_mob = mob.HP / mob.TVitality * 150
-    pourcentage_p = perso.HP / perso.TVitality * 100
-    pourcentage_m = mob.HP / mob.TVitality * 100
+    pourcentage_p = math.ceil(perso.HP / perso.TVitality * 100)
+    pourcentage_m = math.ceil(mob.HP / mob.TVitality * 100)
 
     # nom adversaire et lvl
     fenetre.blit(pfont.render(mob.Name, 1, (0,0,0)), (15+20,15+20))
@@ -2358,19 +2370,23 @@ def affichageSelectionCombat2(fenetre, curseur, perso, mob):
     y = 600-80-15+20
 
     if GameFonctions.MyCharacters.Character1.Sort[0] >= 0:
-        sort1 = FightFonctions.Sort.Name[GameFonctions.MyCharacters.Character1.Sort[0]]
+        sort1 = FightFonctions.Sort.Name[GameFonctions.MyCharacters.Character1.Sort[0]-1]
+        sort1=sort1[0].upper()+sort1[1:]
     else:
         sort1 = "- - -"
     if GameFonctions.MyCharacters.Character1.Sort[1] >= 0:
-        sort2 = FightFonctions.Sort.Name[GameFonctions.MyCharacters.Character1.Sort[1]]
+        sort2 = FightFonctions.Sort.Name[GameFonctions.MyCharacters.Character1.Sort[1]-1]
+        sort2=sort2[0].upper()+sort2[1:]
     else:
         sort2 = "- - -"
     if GameFonctions.MyCharacters.Character1.Sort[2] >= 0:
-        sort3 = FightFonctions.Sort.Name[GameFonctions.MyCharacters.Character1.Sort[2]]
+        sort3 = FightFonctions.Sort.Name[GameFonctions.MyCharacters.Character1.Sort[2]-1]
+        sort3=sort3[0].upper()+sort3[1:]
     else:
         sort3 = "- - -"
     if GameFonctions.MyCharacters.Character1.Sort[3] >= 0:
-        sort4 = FightFonctions.Sort.Name[GameFonctions.MyCharacters.Character1.Sort[3]]
+        sort4 = FightFonctions.Sort.Name[GameFonctions.MyCharacters.Character1.Sort[3]-1]
+        sort4=sort4[0].upper()+sort4[1:]
     else:
         sort4 = "- - -"
 
@@ -2390,7 +2406,7 @@ def affichageSelectionCombat2(fenetre, curseur, perso, mob):
 def affichage_caracs(fenetre, caracs=[0,0,0,0,0]):
     font = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 20)
     tfont = pygame.font.Font(os.path.join("polices", "MonospaceTypewriter.ttf"), 14)
-    fenetre.blit(pygame.image.load(os.path.join('images', 'clan.png')).convert_alpha(),(0,0)) # fond
+    fenetre.blit(pygame.image.load(os.path.join('images', 'background.png')).convert_alpha(),(0,0)) # fond
 
     tfont.render("Vitalité : ", 1, (0,0,0))
 
@@ -2498,3 +2514,5 @@ def monter_caracs(fenetre):
 
                     pygame.gfxdraw.filled_trigon(fenetre, x, y, x, y+20, x+10, y+10, (0,0,0))
                     pygame.display.flip()
+
+    GameFonctions.MyCharacters.Character1.Points_Caracs=restant
